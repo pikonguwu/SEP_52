@@ -38,7 +38,7 @@ public class LoginPage {
 
         // 创建背景面板
         BackgroundPanel backgroundPanel = new BackgroundPanel(
-                "E:\\0000Code\\BuckBrainAI\\src\\photo\\background.jpg");
+                "bin\\photo\\background.jpg");
         backgroundPanel.setLayout(null);
         frame.setContentPane(backgroundPanel);
 

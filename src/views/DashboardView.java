@@ -2,6 +2,7 @@ package views;
 
 import constants.AppConstants;
 import components.*;
+import services.BaiduAIService;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -12,6 +13,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 
@@ -20,6 +22,10 @@ import java.awt.*;
  * 该视图包含顶部标题、主内容区（包含卡片面板、交易表格、周活动图表和支出统计图表）以及底部操作栏。
  */
 public class DashboardView extends BaseView {
+
+    private JTable transactionTable;
+    private DefaultTableModel tableModel;
+    private BaiduAIService aiService = new BaiduAIService();
 
     /**
      * 重写 getViewName 方法，返回该视图的名称。
@@ -257,75 +263,86 @@ public class DashboardView extends BaseView {
         // 定义表格的列名
         String[] columns = {"", "Date", "Description", "Amount"};
         // 定义表格的初始数据
-        Object[][] data = {
+        Object[][] initialData = {
             {new ImageIcon("path/to/card_icon.png"), "28 January 2021", "Deposit from my Card", "-$850"},
             {new ImageIcon("path/to/paypal_icon.png"), "25 January 2021", "Deposit Paypal", "+$2,500"},
-            {new ImageIcon("path/to/user_icon.png"), "21 January 2021", "Jemi Wilson", "+$5,400"} // 注意："Jemi" 可能是拼写错误
+            {new ImageIcon("path/to/user_icon.png"), "21 January 2021", "Jemi Wilson", "+$5,400"}
+        };
+        
+        // 创建表格模型
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // 使表格不可编辑
+            }
         };
 
-        // 创建表格并重写 prepareRenderer 方法，设置图标列居中，其他列左对齐
-        JTable table = new JTable(data, columns) {
-            /**
-             * 重写 prepareRenderer 方法，根据列索引设置单元格内容的对齐方式。
-             * 
-             * @param renderer 用于渲染单元格的渲染器
-             * @param row 单元格所在的行
-             * @param column 单元格所在的列
-             * @return 渲染后的组件
-             */
+        // 添加初始数据
+        for (Object[] row : initialData) {
+            tableModel.addRow(row);
+        }
+
+        // 创建表格并重写 prepareRenderer 方法
+        transactionTable = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (column == 0) {
-                    // 图标列居中对齐
-                    ((JLabel) component).setHorizontalAlignment(SwingConstants.CENTER); 
+                    ((JLabel) component).setHorizontalAlignment(SwingConstants.CENTER);
                 } else {
-                    // 其他列左对齐
-                    ((JLabel) component).setHorizontalAlignment(SwingConstants.LEFT); 
+                    ((JLabel) component).setHorizontalAlignment(SwingConstants.LEFT);
                 }
                 return component;
             }
         };
 
         // 设置表格的行高为 35 像素
-        table.setRowHeight(35); 
-        // 设置表格表头的字体为 Arial 加粗，字号 14
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14)); 
-        // 设置表格表头的首选大小为 100x35 像素
-        table.getTableHeader().setPreferredSize(new Dimension(100, 35)); 
+        transactionTable.setRowHeight(35);
+        // 设置表格表头的字体
+        transactionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        // 设置表格表头的首选大小
+        transactionTable.getTableHeader().setPreferredSize(new Dimension(100, 35));
 
         // 隐藏第一列标题
-        table.getColumnModel().getColumn(0).setHeaderValue("");
+        transactionTable.getColumnModel().getColumn(0).setHeaderValue("");
 
         // 设置各列宽度
-        table.getColumnModel().getColumn(0).setPreferredWidth(40); // 图标列
-        table.getColumnModel().getColumn(1).setPreferredWidth(100); // 日期列
-        table.getColumnModel().getColumn(2).setPreferredWidth(200); // 描述列
-        table.getColumnModel().getColumn(3).setPreferredWidth(100); // 金额列
+        transactionTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+        transactionTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+        transactionTable.getColumnModel().getColumn(2).setPreferredWidth(200);
+        transactionTable.getColumnModel().getColumn(3).setPreferredWidth(100);
 
         // 设置字体和颜色
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        // 图标列居中对齐
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); 
-        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        transactionTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
 
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        // 日期和描述列左对齐
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT); 
-        table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
-        table.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        transactionTable.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        transactionTable.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        // 金额列右对齐
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT); 
-        table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        transactionTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
 
-        // 设置滚动条策略，根据需要显示水平和垂直滚动条
-        JScrollPane scrollPane = new JScrollPane(table);
+        // 设置滚动条策略
+        JScrollPane scrollPane = new JScrollPane(transactionTable);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         return scrollPane;
+    }
+
+    private void addTransactionToTable(String date, String description, double amount, String type) {
+        // 根据交易类型选择图标
+        ImageIcon icon = new ImageIcon(type.equals("Income") ? "path/to/income_icon.png" : "path/to/expense_icon.png");
+        
+        // 格式化金额，如果是支出则添加负号
+        String formattedAmount = (type.equals("Expense") ? "-" : "+") + "$" + String.format("%.2f", amount);
+        
+        // 在表格末尾添加新行
+        tableModel.addRow(new Object[]{icon, date, description, formattedAmount});
     }
 
     /**
@@ -406,6 +423,90 @@ public class DashboardView extends BaseView {
         return panel;
     }
 
+    private String processWithAI(String text) {
+        String prompt = "请将以下交易信息转换为标准格式（日期|描述|金额|类型），" +
+                       "其中类型只能是Income或Expense，金额为正数，日期格式为dd/MM/yyyy。\n" +
+                       "原始文本：" + text + "\n" +
+                       "请只返回转换后的标准格式，不要包含其他内容。";
+        
+        String response = aiService.getAIResponse(prompt);
+        return response.trim();
+    }
+
+    private void importTransactionsFromFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Text Files", "txt"));
+        
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                java.io.File file = fileChooser.getSelectedFile();
+                java.util.Scanner scanner = new java.util.Scanner(file);
+                int successCount = 0;
+                int failCount = 0;
+                
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine().trim();
+                    if (!line.isEmpty()) {
+                        try {
+                            // 尝试直接解析标准格式
+                            String[] parts = line.split("\\|");
+                            if (parts.length == 4) {
+                                String date = parts[0].trim();
+                                String description = parts[1].trim();
+                                double amount = Double.parseDouble(parts[2].trim());
+                                String type = parts[3].trim();
+                                
+                                if (type.equals("Income") || type.equals("Expense")) {
+                                    addTransactionToTable(date, description, amount, type);
+                                    successCount++;
+                                    continue;
+                                }
+                            }
+                            
+                            // 如果不符合标准格式，使用AI处理
+                            String processedLine = processWithAI(line);
+                            System.out.println("Processed line: " + processedLine);
+                            parts = processedLine.split("\\|");
+                            
+                            if (parts.length == 4) {
+                                String date = parts[0].trim();
+                                String description = parts[1].trim();
+                                double amount = Double.parseDouble(parts[2].trim());
+                                String type = parts[3].trim();
+                                
+                                if (type.equals("Income") || type.equals("Expense")) {
+                                    addTransactionToTable(date, description, amount, type);
+                                    successCount++;
+                                } else {
+                                    failCount++;
+                                }
+                            } else {
+                                failCount++;
+                            }
+                        } catch (Exception e) {
+                            failCount++;
+                        }
+                    }
+                }
+                scanner.close();
+                
+                JOptionPane.showMessageDialog(this, 
+                    "File imported successfully!\n" +
+                    "Successfully imported: " + successCount + " transactions\n" +
+                    "Failed to import: " + failCount + " transactions",
+                    "Import Result",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error importing file: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     /**
      * 创建操作按钮，设置按钮的字体、背景颜色、字体颜色和内边距。
      * 
@@ -423,6 +524,38 @@ public class DashboardView extends BaseView {
         btn.setForeground(Color.WHITE); 
         // 设置按钮的内边距，上、左、下、右分别为 10、25、10、25 像素
         btn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25)); 
+
+        // 为Manual Add按钮添加事件处理程序
+        if (text.equals("Manual Add")) {
+            btn.addActionListener(e -> {
+                AddTransactionDialog dialog = new AddTransactionDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                dialog.setVisible(true);
+                
+                if (dialog.isConfirmed()) {
+                    // 获取用户输入的交易信息
+                    String date = dialog.getDate();
+                    String description = dialog.getDescription();
+                    double amount = dialog.getAmount();
+                    String type = dialog.getTransactionType();
+                    
+                    // 添加交易到表格
+                    addTransactionToTable(date, description, amount, type);
+                    
+                    // 显示成功消息
+                    JOptionPane.showMessageDialog(this, 
+                        "Transaction added successfully!\n" +
+                        "Date: " + date + "\n" +
+                        "Description: " + description + "\n" +
+                        "Amount: " + amount + "\n" +
+                        "Type: " + type,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+        } else if (text.equals("Import File")) {
+            btn.addActionListener(e -> importTransactionsFromFile());
+        }
+        
         return btn;
     }
 

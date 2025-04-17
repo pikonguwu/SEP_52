@@ -19,20 +19,27 @@ public class BaiduAIService {
     /**
      * 访问百度 API 的密钥，用于身份验证。
      */
-    private static final String API_KEY = "";
+    // private static final String API_KEY = "你的API_KEY";
+    private static final String API_KEY = "bce-v3/ALTAK-f0DY1rBSUkXedjpKEvu2Q/45823aa1593197b51a7120b90f62bfd64c0578a5";
+
     /**
      * 访问百度 API 的密钥，用于身份验证。
      * 注意：该密钥中的 "Kfeak" 可能是拼写错误，建议检查并修正。
      */
-    private static final String SECRET_KEY = "";
+    private static final String SECRET_KEY = "ff1790d72e274b04a184ec98982894c8";
+
+    // private static final String SECRET_KEY = "你的SECRET_KEY";
     /**
      * 用于获取访问令牌的 URL，通过 API 密钥和密钥来请求。
      */
+    
     private static final String ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + API_KEY + "&client_secret=" + SECRET_KEY;
     /**
      * 百度文心一言 API 的基础 URL，用于发送聊天请求。
      */
     private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-lite-8k";
+
+    // private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions";
 
     /**
      * 获取访问令牌的方法。
@@ -57,6 +64,11 @@ public class BaiduAIService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // 使用 Gson 将响应体解析为 Map
         Map<String, Object> result = new Gson().fromJson(response.body(), HashMap.class);
+        
+        if (result.containsKey("error")) {
+            throw new IOException("Failed to get access token: " + result.get("error_description"));
+        }
+        
         // 从结果中提取访问令牌并返回
         return (String) result.get("access_token");
     }
@@ -99,13 +111,19 @@ public class BaiduAIService {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            // 检查响应是否包含错误
+            Map<String, Object> responseMap = new Gson().fromJson(response.body(), HashMap.class);
+            if (responseMap.containsKey("error")) {
+                throw new IOException("API Error: " + responseMap.get("error"));
+            }
+
             // 返回响应体
             return response.body();
         } catch (IOException | InterruptedException e) {
             // 打印异常堆栈信息
             e.printStackTrace();
             // 返回错误信息
-            return "Error occurred while getting AI response.";
+            return "Error: " + e.getMessage();
         }
     }
 }
