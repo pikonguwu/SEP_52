@@ -1,18 +1,20 @@
-## Getting Started
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+# SEP_52
 
-## Folder Structure
+This is the repository of Group 52
 
-The workspace contains two folders by default, where:
+## The product backlog
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+The product backlog is made by Weijing He and Jiayue Ma.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## The prototype
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+The prototype is made by Zhimu Zhou and Chen Chen.
 
-## Dependency Management
+## Front-end interface and large model integration
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+The front-end interface and large model integration are completed by Weiguang Wang.
+
+## Page integration and Import funtion adding
+
+The login and register page writing and csv file supporting by Zecheng Zuo.
