@@ -19,12 +19,12 @@ public class BaiduAIService {
     /**
      * 访问百度 API 的密钥，用于身份验证。
      */
-    private static final String API_KEY = "";
+    private static final String API_KEY = "fsc3SLgibtm12hRyO6LYSiQc";
     /**
      * 访问百度 API 的密钥，用于身份验证。
      * 注意：该密钥中的 "Kfeak" 可能是拼写错误，建议检查并修正。
      */
-    private static final String SECRET_KEY = "";
+    private static final String SECRET_KEY = "yTZ5k2rdFsUjxIYniDjgKbH3ffaIoqOQ";
     /**
      * 用于获取访问令牌的 URL，通过 API 密钥和密钥来请求。
      */
@@ -33,6 +33,7 @@ public class BaiduAIService {
      * 百度文心一言 API 的基础 URL，用于发送聊天请求。
      */
     private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-lite-8k";
+    // private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/app-pU7SeP20";
 
     /**
      * 获取访问令牌的方法。
@@ -70,42 +71,34 @@ public class BaiduAIService {
      */
     public String getAIResponse(String message) {
         try {
-            // 获取访问令牌
             String accessToken = getAccessToken();
-            // 构建完整的 API 请求 URL
             String apiUrl = API_BASE_URL + "?access_token=" + accessToken;
-
-            // 构建消息列表
+    
             List<Map<String, String>> messages = new ArrayList<>();
             Map<String, String> userMessage = new HashMap<>();
             userMessage.put("role", "user");
             userMessage.put("content", message);
             messages.add(userMessage);
-
-            // 构建请求体
+    
             Map<String, Object> requestBodyMap = new HashMap<>();
             requestBodyMap.put("messages", messages);
-            // 使用 Gson 将请求体转换为 JSON 字符串
             String requestBody = new Gson().toJson(requestBodyMap);
-
-            // 创建 HTTP 请求
+    
             HttpRequest request = HttpRequest.newBuilder()
-                   .uri(URI.create(apiUrl))
-                   .header("Content-Type", "application/json")
-                   .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                   .build();
-
-            // 发送请求并获取响应
+                    .uri(URI.create(apiUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+    
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            // 返回响应体
-            return response.body();
+    
+            // 修复：正确解析JSON响应中的result字段
+            Map<String, Object> resultMap = new Gson().fromJson(response.body(), HashMap.class);
+            return (String) resultMap.get("result");
         } catch (IOException | InterruptedException e) {
-            // 打印异常堆栈信息
             e.printStackTrace();
-            // 返回错误信息
-            return "Error occurred while getting AI response.";
+            return "请求出现错误：" + e.getMessage();
         }
     }
 }
