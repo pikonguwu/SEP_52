@@ -6,6 +6,8 @@ import services.BaiduAIService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
 
 /**
  * BucksBrainAIChatView 是一个用于实现智能助手聊天界面的视图类。
@@ -43,6 +45,9 @@ public class BucksBrainAIChatView extends BaseView {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
+        // 设置背景颜色或渐变背景
+        setBackground(new Color(245, 245, 245));
+
         // 初始化聊天内容区域
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
@@ -50,13 +55,16 @@ public class BucksBrainAIChatView extends BaseView {
 
         // 初始化滚动面板
         scrollPane = new JScrollPane(chatPanel);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Chat Content"));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI()); // 自定义滚动条样式
 
         // 初始化输入面板
         JPanel inputPanel = new JPanel(new BorderLayout(10, 0));
         inputField = new JTextField();
-        inputField.setFont(AppConstants.BODY_FONT.deriveFont(14f));  // 设置字体以支持中文
+        inputField.setFont(AppConstants.BODY_FONT.deriveFont(14f));
+        inputField.setToolTipText("请输入消息..."); // 增加占位符提示
+        inputField.addActionListener(e -> sendButton.doClick()); // 支持按下 Enter 键发送消息
 
         sendButton = new JButton("发送");
         sendButton.setFont(AppConstants.BUTTON_FONT);
@@ -85,24 +93,34 @@ public class BucksBrainAIChatView extends BaseView {
                 return new Insets(8, 8, 8, 8);
             }
         };
-
+    
         JTextPane textPane = new JTextPane();
         textPane.setEditable(false);
         textPane.setContentType("text/html");
-        textPane.setText("<html><body style='width: 300px; padding: 5px;'>" + text + "</body></html>");
+        textPane.setText("<html><body style='width: auto; padding: 5px;'>" + text + "</body></html>");
         textPane.setFont(AppConstants.BODY_FONT.deriveFont(14f));
         textPane.setBackground(isUser ? new Color(220, 245, 255) : new Color(240, 240, 240));
-
-        // 添加圆角边框
+    
+        // 添加圆角边框和阴影效果
         textPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(isUser ? new Color(180, 220, 255) : new Color(220, 220, 220), 1),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
-
+        bubblePanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1)
+        ));
+    
+        // 添加时间戳
+        JLabel timestampLabel = new JLabel(new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
+        timestampLabel.setFont(AppConstants.BODY_FONT.deriveFont(10f));
+        timestampLabel.setForeground(Color.GRAY);
+    
         // 设置对齐方向
         bubblePanel.add(textPane, BorderLayout.CENTER);
+        bubblePanel.add(timestampLabel, BorderLayout.SOUTH);
         bubblePanel.setAlignmentX(isUser ? Component.LEFT_ALIGNMENT : Component.RIGHT_ALIGNMENT);
-
+    
         return bubblePanel;
     }
 
@@ -144,19 +162,26 @@ public class BucksBrainAIChatView extends BaseView {
     private void processAIMessage(String message) {
         new SwingWorker<Void, Void>() {
             String response;
-
+    
             @Override
             protected Void doInBackground() {
                 try {
+                    // 显示加载动画
+                    chatPanel.add(createMessageBubble("正在生成回复...", false));
+                    chatPanel.revalidate();
+                    scrollToBottom();
+    
                     response = baiduAIService.getAIResponse(message);
                 } catch (Exception ex) {
                     response = "请求出现错误：" + ex.getMessage();
                 }
                 return null;
             }
-
+    
             @Override
             protected void done() {
+                // 移除加载动画并显示实际回复
+                chatPanel.remove(chatPanel.getComponentCount() - 1);
                 chatPanel.add(createMessageBubble(response, false));
                 chatPanel.revalidate();
                 scrollToBottom();
