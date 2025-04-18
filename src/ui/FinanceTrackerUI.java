@@ -36,6 +36,7 @@ public class FinanceTrackerUI extends JFrame {
         mainContentPanel.add(new TransactionsView(), "Transactions");
         mainContentPanel.add(new InvestmentsView(), "Analysis");
         mainContentPanel.add(new SettingsView(), "Settings");
+        mainContentPanel.add(new BucksBrainAIChatView(),"BuckBrainAI Chat");
 
         // Add AccountPage and Credit Cards view placeholders
         mainContentPanel.add(new AccountsView(), "Accounts"); // Updated AccountPage integration
@@ -88,7 +89,7 @@ public class FinanceTrackerUI extends JFrame {
         navPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
 
         // Navigation options (buttons)
-        String[] navItems = { "Dashboard", "Transactions", "Accounts", "Analysis", "Credit Cards", "Settings" };
+        String[] navItems = { "Dashboard", "Transactions", "Accounts", "Analysis", "Credit Cards", "Settings","BuckBrainAI Chat" };
         for (String item : navItems) {
             JButton navButton = createNavButton(item);
             navPanel.add(navButton);

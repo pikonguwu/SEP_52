@@ -18,6 +18,7 @@ public class BucksBrainAIChatView extends BaseView {
     private BaiduAIService baiduAIService;  // 百度 AI 服务实例
     private JScrollPane scrollPane;  // 用于支持聊天内容滚动的滚动面板
 
+
     /**
      * 构造函数，初始化百度 AI 服务实例。
      */
@@ -141,14 +142,15 @@ public class BucksBrainAIChatView extends BaseView {
      *
      * @param message 用户消息
      */
-    private void processAIMessage(String message) {
+    public void processAIMessage(String message) {
         new SwingWorker<Void, Void>() {
             String response;
 
             @Override
-            protected Void doInBackground() {
+            public Void doInBackground() {
                 try {
                     response = baiduAIService.getAIResponse(message);
+
                 } catch (Exception ex) {
                     response = "请求出现错误：" + ex.getMessage();
                 }
@@ -156,12 +158,13 @@ public class BucksBrainAIChatView extends BaseView {
             }
 
             @Override
-            protected void done() {
+            public void done() {
                 chatPanel.add(createMessageBubble(response, false));
                 chatPanel.revalidate();
                 scrollToBottom();
             }
         }.execute();
+
     }
 
     /**

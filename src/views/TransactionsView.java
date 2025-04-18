@@ -20,6 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*; // 重复导入，可移除
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  * TransactionsView 类继承自 BaseView，用于展示交易视图界面。
  * 该界面包含标题、卡片面板、费用图表和交易表格，并且支持分页查看交易记录。
@@ -27,7 +30,7 @@ import java.awt.*; // 重复导入，可移除
 public class TransactionsView extends BaseView {
     /**
      * 获取视图的名称，用于标识该视图。
-     * 
+     *
      * @return 视图名称 "Transactions"
      */
     @Override
@@ -57,19 +60,19 @@ public class TransactionsView extends BaseView {
         // 创建主内容面板，使用 1 行 2 列的网格布局，组件间水平和垂直间距为 15 像素
         RoundedPanel gridPanel = new RoundedPanel(new GridLayout(1, 2, 15, 15));
         // 添加卡片面板并包装上标题
-        gridPanel.add(wrapComponent(createCardPanel(), "My Cards")); 
+        gridPanel.add(wrapComponent(createCardPanel(), "My Cards"));
         // 添加费用图表并包装上标题
         gridPanel.add(wrapComponent(createExpenseChart(), "My Expenses"));
         // 将主内容面板添加到面板的中心位置
-        add(gridPanel, BorderLayout.CENTER); 
+        add(gridPanel, BorderLayout.CENTER);
 
         // 将交易表格面板添加到面板的南部位置
-        add(createTransactionPanel(), BorderLayout.SOUTH); 
+        add(createTransactionPanel(), BorderLayout.SOUTH);
     }
 
     /**
      * 创建卡片面板，模拟银行卡界面，包含余额、卡号、持卡人信息和有效期信息。
-     * 
+     *
      * @return 包含银行卡信息的面板
      */
     private JPanel createCardPanel() {
@@ -77,7 +80,7 @@ public class TransactionsView extends BaseView {
         RoundedPanel panel = new RoundedPanel(new GridLayout()) {
             /**
              * 重写 paintComponent 方法，绘制纯蓝色的圆角矩形背景。
-             * 
+             *
              * @param g 用于绘制的 Graphics 对象
              */
             @Override
@@ -86,110 +89,110 @@ public class TransactionsView extends BaseView {
                 // 将 Graphics 对象转换为 Graphics2D 对象以使用更高级的绘图功能
                 Graphics2D g2d = (Graphics2D) g;
                 // 设置绘图颜色为深蓝色
-                g2d.setColor(new Color(40, 80, 150)); 
+                g2d.setColor(new Color(40, 80, 150));
                 // 绘制圆角矩形填充整个面板
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); 
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
         };
         // 设置卡片面板的内边距，上、左、下、右均为 25 像素
         panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         // 设置卡片面板的首选大小为 320x200 像素
-        panel.setPreferredSize(new Dimension(320, 200)); 
+        panel.setPreferredSize(new Dimension(320, 200));
 
         // 主内容容器，使用网格包布局实现精确布局，背景设置为透明
         JPanel content = new JPanel(new GridBagLayout()) {
             /**
              * 重写 isOpaque 方法，使面板背景透明。
-             * 
+             *
              * @return false，表示面板背景透明
              */
             @Override
             public boolean isOpaque() {
-                return false; 
+                return false;
             }
         };
         // 创建网格包约束对象
         GridBagConstraints gbc = new GridBagConstraints();
         // 设置组件间的内边距为 5 像素
-        gbc.insets = new Insets(5, 5, 5, 5); 
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         // 余额区域
         JPanel balancePanel = new JPanel(new BorderLayout());
         // 设置余额面板背景透明
-        balancePanel.setOpaque(false); 
+        balancePanel.setOpaque(false);
         JLabel balanceLabel = new JLabel("BALANCE");
         // 设置余额标签字体为 Arial 加粗，字号 12
-        balanceLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+        balanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
         // 设置余额标签字体颜色为浅灰色
-        balanceLabel.setForeground(new Color(180, 180, 220)); 
-        
+        balanceLabel.setForeground(new Color(180, 180, 220));
+
         JLabel amountLabel = new JLabel("$5,756");
         // 设置金额标签字体为 Arial 加粗，字号 24
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 24));
         // 设置金额标签字体颜色为白色
-        amountLabel.setForeground(Color.WHITE); 
-        
+        amountLabel.setForeground(Color.WHITE);
+
         // 将余额标签添加到余额面板的北部位置
-        balancePanel.add(balanceLabel, BorderLayout.NORTH); 
+        balancePanel.add(balanceLabel, BorderLayout.NORTH);
         // 将金额标签添加到余额面板的中心位置
-        balancePanel.add(amountLabel, BorderLayout.CENTER); 
+        balancePanel.add(amountLabel, BorderLayout.CENTER);
 
         // 卡号区域
         JPanel numberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         // 设置卡号面板背景透明
-        numberPanel.setOpaque(false); 
+        numberPanel.setOpaque(false);
         // 添加卡号分段标签
-        numberPanel.add(createCardSegment("3778", 22)); 
-        numberPanel.add(createCardSegment("****", 18)); 
-        numberPanel.add(createCardSegment("****", 18)); 
-        numberPanel.add(createCardSegment("1234", 22)); 
+        numberPanel.add(createCardSegment("3778", 22));
+        numberPanel.add(createCardSegment("****", 18));
+        numberPanel.add(createCardSegment("****", 18));
+        numberPanel.add(createCardSegment("1234", 22));
 
         // 底部信息区域
         JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
         // 设置底部信息面板背景透明
-        bottomPanel.setOpaque(false); 
+        bottomPanel.setOpaque(false);
 
         // 左侧持卡人信息
         JPanel holderPanel = new JPanel(new BorderLayout());
         // 设置持卡人信息面板背景透明
-        holderPanel.setOpaque(false); 
+        holderPanel.setOpaque(false);
         JLabel holderLabel = new JLabel("CARDHOLDER");
         // 设置持卡人标签字体为 Arial 加粗，字号 10
-        holderLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        holderLabel.setFont(new Font("Arial", Font.BOLD, 10));
         // 设置持卡人标签字体颜色为浅灰色
-        holderLabel.setForeground(new Color(180, 180, 220)); 
-        
+        holderLabel.setForeground(new Color(180, 180, 220));
+
         JLabel nameLabel = new JLabel("Eddy Cusuma"); // 注意："Cusuma" 可能是拼写错误
         // 设置持卡人姓名标签字体为 Arial 加粗，字号 14
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         // 设置持卡人姓名标签字体颜色为白色
-        nameLabel.setForeground(Color.WHITE); 
-        
+        nameLabel.setForeground(Color.WHITE);
+
         // 将持卡人标签添加到持卡人信息面板的北部位置
-        holderPanel.add(holderLabel, BorderLayout.NORTH); 
+        holderPanel.add(holderLabel, BorderLayout.NORTH);
         // 将持卡人姓名标签添加到持卡人信息面板的中心位置
-        holderPanel.add(nameLabel, BorderLayout.CENTER); 
+        holderPanel.add(nameLabel, BorderLayout.CENTER);
 
         // 右侧有效期信息
         JPanel validPanel = new JPanel(new BorderLayout());
         // 设置有效期信息面板背景透明
-        validPanel.setOpaque(false); 
+        validPanel.setOpaque(false);
         JLabel validLabel = new JLabel("VALID THRU");
         // 设置有效期标签字体为 Arial 加粗，字号 10
-        validLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        validLabel.setFont(new Font("Arial", Font.BOLD, 10));
         // 设置有效期标签字体颜色为浅灰色
-        validLabel.setForeground(new Color(180, 180, 220)); 
-        
+        validLabel.setForeground(new Color(180, 180, 220));
+
         JLabel dateLabel = new JLabel("12/22");
         // 设置有效期日期标签字体为 Arial 加粗，字号 14
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
         // 设置有效期日期标签字体颜色为白色
-        dateLabel.setForeground(Color.WHITE); 
-        
+        dateLabel.setForeground(Color.WHITE);
+
         // 将有效期标签添加到有效期信息面板的北部位置
-        validPanel.add(validLabel, BorderLayout.NORTH); 
+        validPanel.add(validLabel, BorderLayout.NORTH);
         // 将有效期日期标签添加到有效期信息面板的中心位置
-        validPanel.add(dateLabel, BorderLayout.CENTER); 
+        validPanel.add(dateLabel, BorderLayout.CENTER);
 
         // 布局组合
         // 设置网格包约束的 x 坐标为 0
@@ -199,7 +202,7 @@ public class TransactionsView extends BaseView {
         // 设置组件对齐方式为左上角对齐
         gbc.anchor = GridBagConstraints.NORTHWEST;
         // 将余额区域添加到内容面板
-        content.add(balancePanel, gbc); 
+        content.add(balancePanel, gbc);
 
         // 设置网格包约束的 y 坐标为 1
         gbc.gridy = 1;
@@ -208,12 +211,12 @@ public class TransactionsView extends BaseView {
         // 设置组件在水平方向上填充
         gbc.fill = GridBagConstraints.HORIZONTAL;
         // 将卡号区域添加到内容面板
-        content.add(numberPanel, gbc); 
+        content.add(numberPanel, gbc);
 
         // 将持卡人信息添加到底部信息面板
-        bottomPanel.add(holderPanel); 
+        bottomPanel.add(holderPanel);
         // 将有效期信息添加到底部信息面板
-        bottomPanel.add(validPanel); 
+        bottomPanel.add(validPanel);
 
         // 设置网格包约束的 y 坐标为 2
         gbc.gridy = 2;
@@ -222,34 +225,34 @@ public class TransactionsView extends BaseView {
         // 设置组件在水平和垂直方向上填充
         gbc.fill = GridBagConstraints.BOTH;
         // 将底部信息区域添加到内容面板
-        content.add(bottomPanel, gbc); 
+        content.add(bottomPanel, gbc);
 
         // 将内容面板添加到卡片面板的中心位置
-        panel.add(content, BorderLayout.CENTER); 
+        panel.add(content, BorderLayout.CENTER);
         return panel;
     }
 
     /**
      * 创建卡号分段组件，用于显示银行卡号的分段信息。
-     * 
-     * @param text 卡号分段的文本内容
+     *
+     * @param text     卡号分段的文本内容
      * @param fontSize 卡号分段文本的字体大小
      * @return 包含卡号分段信息的 JLabel 组件
      */
     private JLabel createCardSegment(String text, int fontSize) {
         JLabel segment = new JLabel(text);
         // 设置卡号分段标签字体为 Arial 加粗，指定字号
-        segment.setFont(new Font("Arial", Font.BOLD, fontSize)); 
+        segment.setFont(new Font("Arial", Font.BOLD, fontSize));
         // 设置卡号分段标签字体颜色为白色
-        segment.setForeground(Color.WHITE); 
+        segment.setForeground(Color.WHITE);
         // 设置卡号分段标签的左右内边距为 5 像素
-        segment.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5)); 
+        segment.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         return segment;
     }
 
     /**
      * 创建费用图表，显示每月的费用支出情况。
-     * 
+     *
      * @return 包含 3D 柱状图的图表面板
      */
     private ChartPanel createExpenseChart() {
@@ -261,7 +264,7 @@ public class TransactionsView extends BaseView {
         int[] expenses = {200, 150, 300, 250, 180};
         // 将每月的费用支出添加到数据集中
         for (int i = 0; i < months.length; i++) {
-            dataset.addValue(expenses[i], "Expenses", months[i]); 
+            dataset.addValue(expenses[i], "Expenses", months[i]);
         }
 
         // 创建 3D 柱状图
@@ -277,13 +280,13 @@ public class TransactionsView extends BaseView {
         );
 
         // 返回包含图表的图表面板
-        return new ChartPanel(chart); 
+        return new ChartPanel(chart);
     }
 
     /**
      * 包装组件，为组件添加标题边框并设置背景颜色。
-     * 
-     * @param comp 需要包装的组件
+     *
+     * @param comp  需要包装的组件
      * @param title 包装组件的标题
      * @return 包装后的面板
      */
@@ -291,17 +294,17 @@ public class TransactionsView extends BaseView {
         // 创建使用边界布局的面板
         JPanel wrapper = new JPanel(new BorderLayout());
         // 为面板设置标题边框
-        wrapper.setBorder(BorderFactory.createTitledBorder(title)); 
+        wrapper.setBorder(BorderFactory.createTitledBorder(title));
         // 设置面板的背景颜色为白色
-        wrapper.setBackground(Color.WHITE); 
+        wrapper.setBackground(Color.WHITE);
         // 将组件添加到面板的中心位置
-        wrapper.add(comp, BorderLayout.CENTER); 
+        wrapper.add(comp, BorderLayout.CENTER);
         return wrapper;
     }
 
     /**
      * 创建交易表格面板，包含标题、选项卡和分页控件。
-     * 
+     *
      * @return 包含交易表格和分页控件的面板
      */
     private JPanel createTransactionPanel() {
@@ -313,7 +316,7 @@ public class TransactionsView extends BaseView {
         // 设置标题字体为 Arial 加粗，字号 18
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         // 设置标题标签的上下内边距为 10 像素
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); 
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         // 将标题标签添加到主面板的北部位置
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
@@ -322,9 +325,9 @@ public class TransactionsView extends BaseView {
         // 添加“所有交易”选项卡，内容为交易表格
         tabbedPane.addTab("All Transactions", createTransactionTable());
         // 添加“收入”选项卡，暂未实现
-        tabbedPane.addTab("Income", new JPanel()); 
+        tabbedPane.addTab("Income", new JPanel());
         // 添加“支出”选项卡，暂未实现
-        tabbedPane.addTab("Expense", new JPanel()); 
+        tabbedPane.addTab("Expense", new JPanel());
         // 将选项卡面板添加到主面板的中心位置
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
@@ -334,11 +337,11 @@ public class TransactionsView extends BaseView {
         JButton nextButton = new JButton("Next>");
         JLabel pageLabel = new JLabel("1");
         // 将上一页按钮添加到分页面板
-        paginationPanel.add(prevButton); 
+        paginationPanel.add(prevButton);
         // 将页码标签添加到分页面板
-        paginationPanel.add(pageLabel); 
+        paginationPanel.add(pageLabel);
         // 将下一页按钮添加到分页面板
-        paginationPanel.add(nextButton); 
+        paginationPanel.add(nextButton);
         // 将分页面板添加到主面板的南部位置
         mainPanel.add(paginationPanel, BorderLayout.SOUTH);
 
@@ -346,7 +349,7 @@ public class TransactionsView extends BaseView {
         prevButton.addActionListener(new ActionListener() {
             /**
              * 上一页按钮点击事件处理方法，显示提示信息。
-             * 
+             *
              * @param e 动作事件对象
              */
             @Override
@@ -358,7 +361,7 @@ public class TransactionsView extends BaseView {
         nextButton.addActionListener(new ActionListener() {
             /**
              * 下一页按钮点击事件处理方法，显示提示信息。
-             * 
+             *
              * @param e 动作事件对象
              */
             @Override
@@ -376,7 +379,7 @@ public class TransactionsView extends BaseView {
 
     /**
      * 创建交易表格，显示交易记录，并将表格放入滚动面板。
-     * 
+     *
      * @return 包含交易表格的滚动面板
      */
     private JScrollPane createTransactionTable() {
@@ -391,6 +394,35 @@ public class TransactionsView extends BaseView {
                 {"Wilson", "901234", "Transfer", "3456******", "15 Jan, 03.29 PM", "-$1,050"},
                 {"Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840"}
         };
+
+        String filePath = "transactions.txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            // 写入列名
+            for (int i = 0; i < columnNames.length; i++) {
+                writer.write(columnNames[i]);
+                if (i < columnNames.length - 1) {
+                    writer.write("\t"); // 使用制表符分隔列
+                }
+            }
+            writer.newLine(); // 换行
+
+            // 写入数据
+            for (Object[] row : data) {
+                for (int i = 0; i < row.length; i++) {
+                    writer.write(row[i].toString());
+                    if (i < row.length - 1) {
+                        writer.write("\t"); // 使用制表符分隔列
+                    }
+                }
+                writer.newLine(); // 换行
+            }
+
+            System.out.println("数据已成功保存到文件：" + filePath);
+        } catch (IOException e) {
+            System.err.println("写入文件时发生错误：" + e.getMessage());
+        }
+
 
         // 创建表格模型
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
