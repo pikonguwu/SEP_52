@@ -31,17 +31,24 @@ public class FinanceTrackerUI extends JFrame {
 
         // Main Content Area with CardLayout to manage multiple views
         mainContentPanel = new RoundedPanel(new CardLayout());
-        // Add different views to the main content panel
-        mainContentPanel.add(new DashboardView(), "Dashboard");
-        mainContentPanel.add(new TransactionsView(), "Transactions");
+        
+        // 创建视图实例
+        DashboardView dashboardView = new DashboardView();
+        TransactionsView transactionsView = new TransactionsView();
+        AccountsView accountsView = new AccountsView();
+        
+        // 设置视图之间的引用关系
+        dashboardView.setTransactionsView(transactionsView);
+        dashboardView.setAccountsView(accountsView);
+        
+        // 添加不同视图到主内容面板
+        mainContentPanel.add(dashboardView, "Dashboard");
+        mainContentPanel.add(transactionsView, "Transactions");
         mainContentPanel.add(new InvestmentsView(), "Analysis");
         mainContentPanel.add(new SettingsView(), "Settings");
         mainContentPanel.add(new BucksBrainAIChatView(),"BuckBrainAI Chat");
-
-        // Add AccountPage and Credit Cards view placeholders
-        mainContentPanel.add(new AccountsView(), "Accounts"); // Updated AccountPage integration
-        mainContentPanel.add(new CreditCardsView(), "Credit Cards");// Placeholder for Credit Cards page
-        // mainContentPanel.add(new JPanel(), "Credit Cards");
+        mainContentPanel.add(accountsView, "Accounts");
+        mainContentPanel.add(new CreditCardsView(), "Credit Cards");
 
         add(mainContentPanel, BorderLayout.CENTER);
 

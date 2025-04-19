@@ -7,6 +7,7 @@ import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
@@ -23,6 +24,11 @@ public class AccountsView extends BaseView {
     public String getViewName() {
         return "Accounts";
     }
+
+    private JTable transactionTable;
+    private DefaultTableModel transactionTableModel;
+    private ChartPanel weeklyChartPanel;
+    private DefaultCategoryDataset weeklyDataset;
 
     /**
      * 初始化用户界面的方法，设置布局、添加标题、主内容区和底部操作栏。
@@ -313,18 +319,26 @@ public class AccountsView extends BaseView {
             {"25 Jan 2021", "Emily Wilson", "+$780", "Completed"}
         };
 
+        // 创建一个表格模型
+        transactionTableModel = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true; // 使表格不可编辑
+            }
+        };
+        
         // 创建一个表格，使用指定的列名和数据
-        JTable table = new JTable(data, columns);
+        transactionTable = new JTable(transactionTableModel);
         // 设置表格的行高为 35 像素
-        table.setRowHeight(35);
+        transactionTable.setRowHeight(35);
         // 设置表格表头的字体为 Arial 加粗，字号 14
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        transactionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         // 设置表格表头的首选大小为 100x35 像素
-        table.getTableHeader().setPreferredSize(new Dimension(100, 35));
+        transactionTable.getTableHeader().setPreferredSize(new Dimension(100, 35));
 
         // 状态列渲染
         // 为表格的状态列设置自定义渲染器
-        table.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+        transactionTable.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
             /**
              * 重写 getTableCellRendererComponent 方法，根据单元格的值设置不同的背景和前景颜色。
              * 
@@ -362,7 +376,7 @@ public class AccountsView extends BaseView {
         });
 
         // 将表格添加到滚动面板中并返回
-        return new JScrollPane(table);
+        return new JScrollPane(transactionTable);
     }
 
     /**
@@ -371,40 +385,30 @@ public class AccountsView extends BaseView {
      * @return 包含每周概览图表的面板
      */
     private ChartPanel createWeeklyChart() {
-        // 创建一个默认的分类数据集，用于存储图表数据
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        // 定义一周的日期缩写
-        String[] days = {"Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"};
-        // 定义每天的收入数据
-        int[] income = {0, 0, 560, 0, 0, 0, 0};
-        // 定义每天的支出数据
-        int[] expense = {420, 0, 0, 0, 0, 0, 0};
-
-        // 将收入和支出数据添加到数据集中
+        // 创建一个默认的分类数据集
+        weeklyDataset = new DefaultCategoryDataset();
+        // 定义一周的日期
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        // 定义每天的消费金额
+        int[] amounts = {650, 820, 720, 930, 1050, 1350, 980};
+        
+        // 将每天的消费金额添加到数据集中
         for (int i = 0; i < days.length; i++) {
-            dataset.addValue(income[i], "Income", days[i]);
-            dataset.addValue(expense[i], "Expense", days[i]);
+            weeklyDataset.addValue(amounts[i], "Spending", days[i]); 
         }
-
-        // 创建一个柱状图，使用指定的标题、坐标轴标签和数据集
+        
+        // 创建柱状图
         JFreeChart chart = ChartFactory.createBarChart(
-            "", "Day", "Amount ($)", dataset, 
-            PlotOrientation.VERTICAL, true, true, false
+            "", "", "Amount ($)", 
+            weeklyDataset,
+            PlotOrientation.VERTICAL,
+            true, true, false
         );
-
         // 设置图表的背景颜色为白色
-        chart.setBackgroundPaint(Color.WHITE);
-        // 获取图表的分类绘图区域
-        CategoryPlot plot = chart.getCategoryPlot();
-        // 设置绘图区域的背景颜色为白色
-        plot.setBackgroundPaint(Color.WHITE);
-        // 设置收入数据系列的颜色为绿色
-        plot.getRenderer().setSeriesPaint(0, new Color(50, 205, 50));  // Income
-        // 设置支出数据系列的颜色为红色
-        plot.getRenderer().setSeriesPaint(1, new Color(220, 20, 60));   // Expense
-
-        // 将图表添加到图表面板中并返回
-        return new ChartPanel(chart);
+        chart.setBackgroundPaint(Color.WHITE); 
+        // 返回包含图表的图表面板
+        weeklyChartPanel = new ChartPanel(chart);
+        return weeklyChartPanel; 
     }
 
     /**
@@ -459,5 +463,71 @@ public class AccountsView extends BaseView {
         // 将指定组件添加到包装面板的中心位置
         wrapper.add(comp, BorderLayout.CENTER);
         return wrapper;
+    }
+
+    /**
+     * 添加交易记录到账户视图
+     * 
+     * @param date 交易日期
+     * @param description 交易描述
+     * @param amount 交易金额
+     * @param type 交易类型
+     */
+    public void addTransaction(String date, String description, String amount, String type) {
+        // 确定交易状态
+        String status = "Completed";
+        
+        // 添加新行到表格
+        Object[] rowData = {date, description, amount, status};
+        transactionTableModel.addRow(rowData);
+        
+        // 更新账户摘要和图表
+        updateAccountSummary();
+        updateWeeklyChart();
+    }
+    
+    /**
+     * 更新交易记录
+     * 
+     * @param date 交易日期
+     * @param description 交易描述
+     * @param amount 交易金额
+     * @param type 交易类型
+     */
+    public void updateTransaction(String date, String description, String amount, String type) {
+        // 在表格中查找匹配的行
+        for (int i = 0; i < transactionTableModel.getRowCount(); i++) {
+            String rowDate = (String) transactionTableModel.getValueAt(i, 0);
+            String rowDescription = (String) transactionTableModel.getValueAt(i, 1);
+            
+            if (rowDate.equals(date) && rowDescription.equals(description)) {
+                // 更新匹配的行
+                transactionTableModel.setValueAt(date, i, 0);
+                transactionTableModel.setValueAt(description, i, 1);
+                transactionTableModel.setValueAt(amount, i, 2);
+                // 状态保持不变
+                break;
+            }
+        }
+        
+        // 更新账户摘要和图表
+        updateAccountSummary();
+        updateWeeklyChart();
+    }
+    
+    /**
+     * 更新账户摘要信息
+     */
+    private void updateAccountSummary() {
+        // 这里可以实现更新账户摘要的逻辑
+        // 例如，计算总余额、月收入和月支出等
+    }
+    
+    /**
+     * 更新每周概览图表
+     */
+    private void updateWeeklyChart() {
+        // 这里可以实现更新每周概览图表的逻辑
+        // 例如，根据最新的交易数据更新图表
     }
 }

@@ -3,6 +3,7 @@ package views;
 import constants.AppConstants;
 import components.*;
 import services.BaiduAIService;
+import com.google.gson.*;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -26,6 +27,8 @@ public class DashboardView extends BaseView {
     private JTable transactionTable;
     private DefaultTableModel tableModel;
     private BaiduAIService aiService = new BaiduAIService();
+    private TransactionsView transactionsView;
+    private AccountsView accountsView;
 
     /**
      * 重写 getViewName 方法，返回该视图的名称。
@@ -326,23 +329,135 @@ public class DashboardView extends BaseView {
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         transactionTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
 
+        // 创建修改按钮
+        JButton editButton = new JButton("modify");
+        editButton.setFont(new Font("Arial", Font.BOLD, 12));
+        editButton.setBackground(AppConstants.PRIMARY_COLOR);
+        editButton.setForeground(Color.WHITE);
+        editButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        
+        // 添加修改按钮的点击事件
+        editButton.addActionListener(e -> {
+            int selectedRow = transactionTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                // 获取选中的行数据
+                String date = (String) tableModel.getValueAt(selectedRow, 1);
+                String description = (String) tableModel.getValueAt(selectedRow, 2);
+                String amount = (String) tableModel.getValueAt(selectedRow, 3);
+                
+                // 判断交易类型
+                String type = amount.startsWith("-") ? "Expense" : "Income";
+                
+                // 创建编辑对话框
+                EditTransactionDialog dialog = new EditTransactionDialog(
+                    (Frame) SwingUtilities.getWindowAncestor(this),
+                    date,
+                    description,
+                    amount.replace("$", "").replace("+", "").replace("-", ""),
+                    type
+                );
+                
+                dialog.setVisible(true);
+                
+                if (dialog.isConfirmed()) {
+                    // 获取修改后的数据
+                    String newDate = dialog.getDate();
+                    String newDescription = dialog.getDescription();
+                    String newAmount = dialog.getAmount();
+                    String newType = dialog.getTransactionType();
+                    
+                    // 更新表格数据
+                    updateTransactionInTable(selectedRow, newDate, newDescription, newAmount, newType);
+                    
+                    // 同步到TransactionsView
+                    if (transactionsView != null) {
+                        // 先删除旧数据
+                        transactionsView.removeTransaction(date, description, amount, type);
+                        // 添加新数据
+                        transactionsView.addTransaction(newDate, newDescription, 
+                            (newType.equals("Expense") ? "-" : "+") + "$" + newAmount, newType);
+                    }
+                    
+                    // 显示成功消息
+                    JOptionPane.showMessageDialog(this, 
+                        "The transaction information has been successfully modified!",
+                        "Modification successful",
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                // 如果没有选中行，显示提示消息
+                JOptionPane.showMessageDialog(this, 
+                    "Please select the transaction record that you want to modify first!",
+                    "Hint",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        
+        // 创建按钮面板
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(editButton);
+        
+        // 创建包含表格和按钮的面板
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(transactionTable, BorderLayout.CENTER);
+        tablePanel.add(buttonPanel, BorderLayout.SOUTH);
+
         // 设置滚动条策略
-        JScrollPane scrollPane = new JScrollPane(transactionTable);
+        // JScrollPane scrollPane = new JScrollPane(transactionTable);
+        JScrollPane scrollPane = new JScrollPane(tablePanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         return scrollPane;
     }
-
-    private void addTransactionToTable(String date, String description, double amount, String type) {
+    
+    /**
+     * 更新表格中的交易信息
+     * 
+     * @param row 要更新的行索引
+     * @param date 新的日期
+     * @param description 新的描述
+     * @param amount 新的金额
+     * @param type 新的交易类型
+     */
+    private void updateTransactionInTable(int row, String date, String description, String amount, String type) {
         // 根据交易类型选择图标
         ImageIcon icon = new ImageIcon(type.equals("Income") ? "path/to/income_icon.png" : "path/to/expense_icon.png");
         
         // 格式化金额，如果是支出则添加负号
-        String formattedAmount = (type.equals("Expense") ? "-" : "+") + "$" + String.format("%.2f", amount);
+        String formattedAmount = (type.equals("Expense") ? "-" : "+") + "$" + amount;
+        
+        // 更新表格数据
+        tableModel.setValueAt(icon, row, 0);
+        tableModel.setValueAt(date, row, 1);
+        tableModel.setValueAt(description, row, 2);
+        tableModel.setValueAt(formattedAmount, row, 3);
+        
+        // 同步更新AccountsView
+        if (accountsView != null) {
+            accountsView.updateTransaction(date, description, formattedAmount, type);
+        }
+    }
+
+    private void addTransactionToTable(String date, String description, String amount, String type) {
+        // 根据交易类型选择图标
+        ImageIcon icon = new ImageIcon(type.equals("Income") ? "path/to/income_icon.png" : "path/to/expense_icon.png");
+        
+        // 格式化金额，如果是支出则添加负号
+        String formattedAmount = (type.equals("Expense") ? "-" : "+") + String.format("%s", amount);
         
         // 在表格末尾添加新行
         tableModel.addRow(new Object[]{icon, date, description, formattedAmount});
+
+        // 同时更新TransactionsView
+        if (transactionsView != null) {
+            transactionsView.addTransaction(date, description, formattedAmount, type);
+        }
+        
+        // 同时更新AccountsView
+        if (accountsView != null) {
+            accountsView.addTransaction(date, description, formattedAmount, type);
+        }
     }
 
     /**
@@ -424,13 +539,31 @@ public class DashboardView extends BaseView {
     }
 
     private String processWithAI(String text) {
-        String prompt = "请将以下交易信息转换为标准格式（日期|描述|金额|类型），" +
-                       "其中类型只能是Income或Expense，金额为正数，日期格式为dd/MM/yyyy。\n" +
-                       "原始文本：" + text + "\n" +
-                       "请只返回转换后的标准格式，不要包含其他内容。";
-        
+        String prompt = "Please convert the following transaction information into the standard format (Date|Description|Amount|Type), " +
+                       "where Type can only be Income or Expense, the amount should be positive, and the date format should be dd/MM/yyyy.\n" +
+                       "Original text:" + text + "\n" +
+                       "Your response will only return the final result in standard format without any other contents. For example: 08/07/2025 | Rent Payment | 1,000 yuan | Expense.";
+        // System.out.println(text);
         String response = aiService.getAIResponse(prompt);
-        return response.trim();
+        System.out.println("Raw AI response: " + response);
+        
+        // 从JSON响应中提取result字段
+        try {
+            com.google.gson.JsonObject jsonResponse = new com.google.gson.JsonParser().parse(response).getAsJsonObject();
+            String result = jsonResponse.get("result").getAsString();
+            
+            // 提取第一行交易信息（假设每行只处理一条交易）
+            String[] lines = result.split("\n");
+            for (String line : lines) {
+                if (line.contains("|")) {
+                    return line.trim();
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error parsing AI response: " + e.getMessage());
+        }
+        
+        return text; // 如果解析失败，返回原始文本
     }
 
     private void importTransactionsFromFile() {
@@ -458,7 +591,7 @@ public class DashboardView extends BaseView {
                                 String type = parts[3].trim();
                                 
                                 if (type.equals("Income") || type.equals("Expense")) {
-                                    addTransactionToTable(date, description, amount, type);
+                                    addTransactionToTable(date, description, String.valueOf(amount), type);
                                     successCount++;
                                     continue;
                                 }
@@ -468,14 +601,14 @@ public class DashboardView extends BaseView {
                             String processedLine = processWithAI(line);
                             System.out.println("Processed line: " + processedLine);
                             parts = processedLine.split("\\|");
-                            
+                            // System.out.print(parts.length);
                             if (parts.length == 4) {
                                 String date = parts[0].trim();
                                 String description = parts[1].trim();
-                                double amount = Double.parseDouble(parts[2].trim());
+                                String amount = parts[2].trim();
                                 String type = parts[3].trim();
                                 
-                                if (type.equals("Income") || type.equals("Expense")) {
+                                if (type!="") {
                                     addTransactionToTable(date, description, amount, type);
                                     successCount++;
                                 } else {
@@ -485,6 +618,7 @@ public class DashboardView extends BaseView {
                                 failCount++;
                             }
                         } catch (Exception e) {
+                            System.out.println(e);
                             failCount++;
                         }
                     }
@@ -539,7 +673,7 @@ public class DashboardView extends BaseView {
                     String type = dialog.getTransactionType();
                     
                     // 添加交易到表格
-                    addTransactionToTable(date, description, amount, type);
+                    addTransactionToTable(date, description, String.valueOf(amount), type);
                     
                     // 显示成功消息
                     JOptionPane.showMessageDialog(this, 
@@ -576,5 +710,13 @@ public class DashboardView extends BaseView {
         // 将组件添加到面板的中心位置
         wrapper.add(comp, BorderLayout.CENTER); 
         return wrapper;
+    }
+
+    public void setTransactionsView(TransactionsView view) {
+        this.transactionsView = view;
+    }
+    
+    public void setAccountsView(AccountsView view) {
+        this.accountsView = view;
     }
 }

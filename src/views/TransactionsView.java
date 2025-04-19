@@ -38,6 +38,13 @@ public class TransactionsView extends BaseView {
         return "Transactions";
     }
 
+    private JTable transactionTable;
+    private DefaultTableModel tableModel;
+    private JTable incomeTable;
+    private JTable expenseTable;
+    private DefaultTableModel incomeTableModel;
+    private DefaultTableModel expenseTableModel;
+
     /**
      * 初始化用户界面，设置布局、添加标题、卡片面板、费用图表和交易表格。
      */
@@ -66,8 +73,161 @@ public class TransactionsView extends BaseView {
         // 将主内容面板添加到面板的中心位置
         add(gridPanel, BorderLayout.CENTER);
 
+        // 初始化表格模型
+        initializeTableModels();
+
         // 将交易表格面板添加到面板的南部位置
         add(createTransactionPanel(), BorderLayout.SOUTH);
+    }
+
+    /**
+     * 初始化所有表格模型
+     */
+    private void initializeTableModels() {
+        // 定义表格的列名
+        String[] columnNames = {"Description", "Transaction ID", "Type", "Card", "Date", "Amount"};
+        
+        // 创建主表格模型
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true;
+            }
+        };
+
+        // 创建收入表格模型
+        incomeTableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true;
+            }
+        };
+
+        // 创建支出表格模型
+        expenseTableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return true;
+            }
+        };
+
+        // 创建表格
+        transactionTable = new JTable(tableModel);
+        incomeTable = new JTable(incomeTableModel);
+        expenseTable = new JTable(expenseTableModel);
+
+        // 设置表格样式
+        transactionTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        transactionTable.setRowHeight(25);
+        transactionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+
+        incomeTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        incomeTable.setRowHeight(25);
+        incomeTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+
+        expenseTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        expenseTable.setRowHeight(25);
+        expenseTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+
+        Object[][] data = {
+            {"Spotify Subscription", "123456", "Shopping", "1234******", "28 Jan, 12.30 AM", "-$2,500"},
+            {"Freepik Sales", "789012", "Transfer", "5678******", "25 Jan, 10.40 PM", "+$750"},
+            {"Mobile Service", "345678", "Service", "9012******", "20 Jan, 10.40 PM", "-$150"},
+            {"Wilson", "901234", "Transfer", "3456******", "15 Jan, 03.29 PM", "-$1,050"},
+            {"Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840"}
+        };
+        
+        // 将初始数据添加到相应的表格中
+        for (Object[] row : data) {
+            // 添加到主表格
+            tableModel.addRow(row);
+            
+            // 根据金额判断类型并添加到相应表格
+            String amount = (String) row[5]; // 金额在第6列
+            if (amount.startsWith("-")) {
+                expenseTableModel.addRow(row);
+            } else {
+                incomeTableModel.addRow(row);
+            }
+        }
+    }
+
+    /**
+     * 创建交易表格面板，包含标题、选项卡和分页控件。
+     *
+     * @return 包含交易表格和分页控件的面板
+     */
+    private JPanel createTransactionPanel() {
+        // 创建主面板，使用边界布局
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        // 顶部：标题
+        JLabel titleLabel = new JLabel("Recent Transactions", SwingConstants.CENTER);
+        // 设置标题字体为 Arial 加粗，字号 18
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        // 设置标题标签的上下内边距为 10 像素
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        // 将标题标签添加到主面板的北部位置
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // 中部：选项卡和交易表格
+        JTabbedPane tabbedPane = new JTabbedPane();
+        
+        // 添加"所有交易"选项卡
+        tabbedPane.addTab("All Transactions", new JScrollPane(transactionTable));
+        
+        // 添加"收入"选项卡
+        tabbedPane.addTab("Income", new JScrollPane(incomeTable));
+        
+        // 添加"支出"选项卡
+        tabbedPane.addTab("Expense", new JScrollPane(expenseTable));
+        
+        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+
+        // 底部：分页控件
+        JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton prevButton = new JButton("<Previous");
+        JButton nextButton = new JButton("Next>");
+        JLabel pageLabel = new JLabel("1");
+        // 将上一页按钮添加到分页面板
+        paginationPanel.add(prevButton);
+        // 将页码标签添加到分页面板
+        paginationPanel.add(pageLabel);
+        // 将下一页按钮添加到分页面板
+        paginationPanel.add(nextButton);
+        // 将分页面板添加到主面板的南部位置
+        mainPanel.add(paginationPanel, BorderLayout.SOUTH);
+
+        // 分页按钮事件
+        prevButton.addActionListener(new ActionListener() {
+            /**
+             * 上一页按钮点击事件处理方法，显示提示信息。
+             *
+             * @param e 动作事件对象
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 上一页逻辑
+                JOptionPane.showMessageDialog(null, "上一页");
+            }
+        });
+        nextButton.addActionListener(new ActionListener() {
+            /**
+             * 下一页按钮点击事件处理方法，显示提示信息。
+             *
+             * @param e 动作事件对象
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 下一页逻辑
+                JOptionPane.showMessageDialog(null, "下一页");
+            }
+        });
+
+        // 设置主面板的首选大小为 800x350 像素
+        mainPanel.setPreferredSize(new Dimension(800, 350));
+
+        return mainPanel;
     }
 
     /**
@@ -302,142 +462,66 @@ public class TransactionsView extends BaseView {
         return wrapper;
     }
 
-    /**
-     * 创建交易表格面板，包含标题、选项卡和分页控件。
-     *
-     * @return 包含交易表格和分页控件的面板
-     */
-    private JPanel createTransactionPanel() {
-        // 创建主面板，使用边界布局
-        JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // 顶部：标题
-        JLabel titleLabel = new JLabel("Recent Transactions", SwingConstants.CENTER);
-        // 设置标题字体为 Arial 加粗，字号 18
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        // 设置标题标签的上下内边距为 10 像素
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        // 将标题标签添加到主面板的北部位置
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+    public void addTransaction(String date, String description, String amount, String type) {
+        // 生成随机交易ID
+        String transactionId = String.format("%06d", (int)(Math.random() * 1000000));
+        // 生成随机卡号
+        String cardNumber = String.format("%04d******", (int)(Math.random() * 10000));
 
-        // 中部：选项卡和交易表格
-        JTabbedPane tabbedPane = new JTabbedPane();
-        // 添加“所有交易”选项卡，内容为交易表格
-        tabbedPane.addTab("All Transactions", createTransactionTable());
-        // 添加“收入”选项卡，暂未实现
-        tabbedPane.addTab("Income", new JPanel());
-        // 添加“支出”选项卡，暂未实现
-        tabbedPane.addTab("Expense", new JPanel());
-        // 将选项卡面板添加到主面板的中心位置
-        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+        // 根据金额判断交易类型
+        String actualType = amount.startsWith("-") ? "Expense" : "Income";
 
-        // 底部：分页控件
-        JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton prevButton = new JButton("<Previous");
-        JButton nextButton = new JButton("Next>");
-        JLabel pageLabel = new JLabel("1");
-        // 将上一页按钮添加到分页面板
-        paginationPanel.add(prevButton);
-        // 将页码标签添加到分页面板
-        paginationPanel.add(pageLabel);
-        // 将下一页按钮添加到分页面板
-        paginationPanel.add(nextButton);
-        // 将分页面板添加到主面板的南部位置
-        mainPanel.add(paginationPanel, BorderLayout.SOUTH);
-
-        // 分页按钮事件
-        prevButton.addActionListener(new ActionListener() {
-            /**
-             * 上一页按钮点击事件处理方法，显示提示信息。
-             *
-             * @param e 动作事件对象
-             */
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 上一页逻辑
-                JOptionPane.showMessageDialog(null, "上一页");
-            }
-        });
-        nextButton.addActionListener(new ActionListener() {
-            /**
-             * 下一页按钮点击事件处理方法，显示提示信息。
-             *
-             * @param e 动作事件对象
-             */
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 下一页逻辑
-                JOptionPane.showMessageDialog(null, "下一页");
-            }
-        });
-
-        // 设置主面板的首选大小为 800x350 像素
-        mainPanel.setPreferredSize(new Dimension(800, 350));
-
-        return mainPanel;
-    }
-
-    /**
-     * 创建交易表格，显示交易记录，并将表格放入滚动面板。
-     *
-     * @return 包含交易表格的滚动面板
-     */
-    private JScrollPane createTransactionTable() {
-        // 定义表格的列名
-        String[] columnNames = {"Description", "Transaction ID", "Type", "Card", "Date", "Amount"};
-
-        // 定义表格的初始数据
-        Object[][] data = {
-                {"Spotify Subscription", "123456", "Shopping", "1234******", "28 Jan, 12.30 AM", "-$2,500"},
-                {"Freepik Sales", "789012", "Transfer", "5678******", "25 Jan, 10.40 PM", "+$750"}, // 注意："Freepik" 可能是拼写错误
-                {"Mobile Service", "345678", "Service", "9012******", "20 Jan, 10.40 PM", "-$150"},
-                {"Wilson", "901234", "Transfer", "3456******", "15 Jan, 03.29 PM", "-$1,050"},
-                {"Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840"}
+        // 添加新行到表格
+        Object[] rowData = {
+            description,
+            transactionId,
+            type,
+            cardNumber,
+            date,
+            amount
         };
 
-        String filePath = "transactions.txt";
+        tableModel.addRow(rowData);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            // 写入列名
-            for (int i = 0; i < columnNames.length; i++) {
-                writer.write(columnNames[i]);
-                if (i < columnNames.length - 1) {
-                    writer.write("\t"); // 使用制表符分隔列
-                }
-            }
-            writer.newLine(); // 换行
-
-            // 写入数据
-            for (Object[] row : data) {
-                for (int i = 0; i < row.length; i++) {
-                    writer.write(row[i].toString());
-                    if (i < row.length - 1) {
-                        writer.write("\t"); // 使用制表符分隔列
-                    }
-                }
-                writer.newLine(); // 换行
-            }
-
-            System.out.println("数据已成功保存到文件：" + filePath);
-        } catch (IOException e) {
-            System.err.println("写入文件时发生错误：" + e.getMessage());
+        // 根据实际类型添加到相应的表格
+        if (actualType.equals("Income")) {
+            incomeTableModel.addRow(rowData);
+        } else {
+            expenseTableModel.addRow(rowData);
         }
-
-
-        // 创建表格模型
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        // 创建表格并使用上述模型
-        JTable table = new JTable(model);
-
-        // 设置表格样式
-        // 设置表格字体为 Arial 普通样式，字号 14
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        // 设置表格行高为 25 像素
-        table.setRowHeight(25);
-        // 设置表格表头字体为 Arial 加粗，字号 14
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-
-        // 将表格放入滚动面板
-        return new JScrollPane(table);
+    }
+    
+    /**
+     * 删除交易记录
+     * 
+     * @param date 交易日期
+     * @param description 交易描述
+     * @param amount 交易金额
+     * @param type 交易类型
+     */
+    public void removeTransaction(String date, String description, String amount, String type) {
+        // 在主表格中查找并删除匹配的行
+        for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
+            if (tableModel.getValueAt(i, 0).equals(description) && 
+                tableModel.getValueAt(i, 4).equals(date) && 
+                tableModel.getValueAt(i, 5).equals(amount)) {
+                tableModel.removeRow(i);
+                break;
+            }
+        }
+        
+        // 根据交易类型在相应的表格中查找并删除匹配的行
+        String actualType = amount.startsWith("-") ? "Expense" : "Income";
+        DefaultTableModel targetModel = actualType.equals("Income") ? incomeTableModel : expenseTableModel;
+        
+        for (int i = targetModel.getRowCount() - 1; i >= 0; i--) {
+            if (targetModel.getValueAt(i, 0).equals(description) && 
+                targetModel.getValueAt(i, 4).equals(date) && 
+                targetModel.getValueAt(i, 5).equals(amount)) {
+                targetModel.removeRow(i);
+                break;
+            }
+        }
     }
 }
