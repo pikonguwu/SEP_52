@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * AccountsView 类继承自 BaseView，用于展示账户相关信息的视图界面。
@@ -134,6 +136,9 @@ public class AccountsView extends BaseView {
      * @return 包含银行卡信息的面板
      */
     private JPanel createMyCard() {
+
+        JPanel masterPanel = new JPanel(new BorderLayout());
+        masterPanel.setOpaque(false);
         // 创建一个圆角面板，重写 paintComponent 方法以绘制圆角背景
         RoundedPanel panel = new RoundedPanel(new BorderLayout()) {
             /**
@@ -157,6 +162,57 @@ public class AccountsView extends BaseView {
         panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         // 设置面板的首选大小为 320x200 像素
         panel.setPreferredSize(new Dimension(320, 200));
+
+        // 创建顶部面板，包含标题和See All按钮
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+
+        
+        // 创建See All按钮
+        JButton seeAllButton = new JButton("See All");
+        seeAllButton.setFont(new Font("Arial", Font.BOLD, 12));
+        seeAllButton.setBackground(AppConstants.PRIMARY_COLOR);
+        seeAllButton.setForeground(Color.WHITE);
+        seeAllButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        seeAllButton.setFocusPainted(false);
+        
+        // 添加See All按钮的点击事件
+        seeAllButton.addActionListener(e -> {
+            // 获取主窗口
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if (window instanceof JFrame) {
+                JFrame frame = (JFrame) window;
+                // 获取主内容面板
+                Container contentPane = frame.getContentPane();
+                // 查找CardLayout
+                for (Component c : contentPane.getComponents()) {
+                    if (c instanceof JPanel && ((JPanel) c).getLayout() instanceof CardLayout) {
+                        CardLayout cardLayout = (CardLayout) ((JPanel) c).getLayout();
+                        // 切换到Transactions视图
+                        cardLayout.show((JPanel) c, "Transactions");
+                        
+                        // 更新侧边栏的选中状态
+                        for (Component sidebarComp : contentPane.getComponents()) {
+                            if (sidebarComp instanceof JPanel && sidebarComp.getName() != null && sidebarComp.getName().equals("sidebar")) {
+                                JPanel sidebar = (JPanel) sidebarComp;
+                                for (Component navComp : sidebar.getComponents()) {
+                                    if (navComp instanceof JButton && ((JButton) navComp).getText().equals("Transactions")) {
+                                        ui.FinanceTrackerUI ui = (ui.FinanceTrackerUI) frame;
+                                        ui.updateNavSelection((JButton) navComp);
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        
+        // 将按钮添加到顶部面板的右侧
+        topPanel.add(seeAllButton, BorderLayout.EAST);
 
         // 卡片内容布局
         // 创建一个使用网格袋布局的面板，用于放置卡片内容
@@ -280,9 +336,11 @@ public class AccountsView extends BaseView {
         // 将底部信息面板添加到内容面板
         content.add(bottomPanel, gbc);
 
-        // 将内容面板添加到卡片面板的中心位置
+        // 将顶部面板和内容面板添加到主面板
+        masterPanel.add(topPanel, BorderLayout.NORTH);
         panel.add(content, BorderLayout.CENTER);
-        return panel;
+        masterPanel.add(panel, BorderLayout.CENTER);
+        return masterPanel;
     }
 
     /**

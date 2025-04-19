@@ -94,6 +94,7 @@ public class FinanceTrackerUI extends JFrame {
         navPanel.setPreferredSize(new Dimension(220, 0));
         navPanel.setBackground(AppConstants.BACKGROUND_COLOR);
         navPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+        navPanel.setName("sidebar");  // 设置侧边栏面板的名称
 
         // Navigation options (buttons)
         String[] navItems = { "Dashboard", "Transactions", "Accounts", "Analysis", "Credit Cards", "Settings","BuckBrainAI Chat" };
@@ -173,16 +174,19 @@ public class FinanceTrackerUI extends JFrame {
         return null;
     }
 
-    // Update the highlight for the selected navigation button
-    private void updateNavSelection(JButton selectedButton) {
-        if (selectedButton == null)
-            return;
+    // 更新导航按钮的选中状态
+    public void updateNavSelection(JButton selectedButton) {
+        // 如果之前有选中的按钮，重置其颜色
         if (currentNavButton != null) {
             currentNavButton.setBackground(Color.WHITE);
             currentNavButton.setForeground(Color.BLACK);
         }
+        
+        // 更新新选中按钮的颜色
         selectedButton.setBackground(AppConstants.PRIMARY_COLOR);
         selectedButton.setForeground(Color.WHITE);
+        
+        // 保存当前选中的按钮
         currentNavButton = selectedButton;
     }
 }
