@@ -7,4 +7,4 @@ The prototype is made by Zhimu Zhou and Chen Chen.
 ## Front-end interface and large model integration
 The front-end interface and large model integration are completed by Weiguang Wang.
 ## AI generated report and transaction records
-AI generated report function and transaction record export function are completed by Chen Chen
+AI generated report function AI chat history and transaction record export function are completed by Chen Chen
