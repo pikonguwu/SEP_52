@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import services.BaiduAIService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 /**
  * 投资分析服务类，负责生成投资分析报告
  */
@@ -42,25 +44,58 @@ public class InvestmentAnalysisService {
      * 模拟调用大模型API分析投资数据
      * @return 分析报告
      */
-        private String analyzeInvestments() throws IOException {
-            // 1. 准备要分析的数据
-            String investmentData = prepareInvestmentData();
-            BaiduAIService baiduAIService=new BaiduAIService();
+    private String analyzeInvestments() throws IOException {
+        // 1. 准备要分析的数据
+        String investmentData = prepareInvestmentData();
+        BaiduAIService baiduAIService = new BaiduAIService();
 
-            // 2. 调用大模型API
-            String prompt = "以下是一些交易记录,帮我进行分析并给出建议:\n\n"+investmentData ;
-            System.out.println(prompt);
+        // 2. 调用大模型API
+        String prompt = "以下是一些交易记录，请用清晰易读的格式帮我进行分析并给出建议。"
+                + "请按照以下格式输出：\n"
+                + "1. 每笔交易单独列出，包含交易名称和金额\n"
+                + "2. 分析部分简明扼要\n"
+                + "3. 建议部分使用项目符号列出\n"
+                + "4. 最后给出总体建议\n\n"
+                + "交易记录如下：\n\n" + investmentData;
 
-            String response;
-            try {
-                response = baiduAIService.getAIResponse(prompt);
-            } catch (Exception ex) {
-                response = "请求出现错误：" + ex.getMessage();
+        System.out.println("发送给AI的提示词：\n" + prompt);
+
+        try {
+            String response = baiduAIService.getAIResponse(prompt);
+            // 提取并格式化结果
+            return formatAIResponse(response);
+        } catch (Exception ex) {
+            return "请求出现错误：" + ex.getMessage();
+        }
+    }
+
+    private String formatAIResponse(String jsonResponse) {
+        try {
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            String result = jsonObject.get("result").getAsString();
+
+            StringBuilder formatted = new StringBuilder();
+            formatted.append("================ 交易分析报告 ================\n\n");
+
+            String[] sections = result.split("\n\n");
+            for (String section : sections) {
+                if (section.startsWith("总体建议：")) {
+                    formatted.append("\n===== 总体建议 =====\n");
+                    formatted.append(section.substring(5).replace("\n", "\n• "));
+                } else if (section.matches("\\d+\\.\\s.+")) {
+                    formatted.append(section.replaceFirst("(\\d+\\.)", "===== 交易$1 =====\n"))
+                            .append("\n");
+                } else {
+                    formatted.append(section).append("\n");
+                }
             }
 
-
-            return response;
+            formatted.append("\n================ 报告结束 ================");
+            return formatted.toString();
+        } catch (Exception e) {
+            return "原始响应：\n" + jsonResponse;
         }
+    }
 
         private String prepareInvestmentData() throws IOException {
             // 从文件中读取投资数据

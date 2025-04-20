@@ -19,6 +19,6 @@ The front-end interface and large model integration are completed by Weiguang Wa
 
 The login and register page writing and csv file supporting by Zecheng Zuo.
 
-## AI generated report and transaction records
+## AI generated report , AI chat history and transaction records
 
-AI generated report function and transaction record export function are completed by Chen Chen
+AI generated report function , AI chat history and transaction record export function are completed by Chen Chen
