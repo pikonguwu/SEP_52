@@ -18,3 +18,6 @@ The login and register page writing and CSV file support are completed by Zechen
 
 ## Interface visualization synchronization
 The interface visualization synchronization is completed by Weiguang Wang.
+
+## function: Mulple cards, data visualization, data sync, AI classification
+Made by Zhimu Zhou
