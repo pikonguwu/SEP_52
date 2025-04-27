@@ -7,6 +7,7 @@ E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\ui\Registr
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\Controller\TransactionController.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\SettingsView.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\EditTransactionDialog.java
+E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\CurrencySettingViewPanel.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\DashboardView.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\BaseView.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\services\TransactionManager.java
@@ -19,6 +20,7 @@ E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\Tran
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\Analysis\InvestmentAnalysisService.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\constants\AppConstants.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\ui\DataEntryPage.java
+E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\services\CurrencyConverterService.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\views\AccountsView.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\components\RoundedPanel.java
 E:\study\SEcoursework\SEP_52\BuckBrain_synchronized-new\src\main\java\services\BaiduAIService.java
