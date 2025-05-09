@@ -27,6 +27,8 @@ views\DashboardView$2.class
 views\CreditCardsView$ButtonEditor.class
 services\TransactionDataService.class
 views\SettingsView.class
+views\PrivacySettingsPanel$1.class
+views\PrivacySettingsPanel.class
 ui\RegistrationPage$1.class
 views\AccountsView$3.class
 ui\DataEntryPage$1.class
@@ -53,6 +55,7 @@ views\TransactionsView.class
 views\AccountsView$1.class
 views\CurrencySettingViewPanel$ConvertListener.class
 ui\LoginPage.class
+services\SecurityService.class
 views\BucksBrainAIChatView$2.class
 views\TransactionsView$3.class
 views\DashboardView$4.class

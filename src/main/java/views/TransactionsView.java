@@ -49,8 +49,6 @@ public class TransactionsView extends BaseView {
     private JFreeChart expenseChart;
     private ChartPanel expenseChartPanel;
 
-    private boolean privacyEnabled = false; // 新增隐私模式开关
-
     /**
      * 构造函数
      */
@@ -76,19 +74,7 @@ public class TransactionsView extends BaseView {
         // 设置标题标签的底部内边距为 15 像素
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         // 将标题标签添加到面板的北部位置
-        // add(titleLabel, BorderLayout.NORTH);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(titleLabel, BorderLayout.WEST);
-
-        JCheckBox privacyCheckBox = new JCheckBox("隐私模式");
-        privacyCheckBox.addActionListener(e -> {
-            privacyEnabled = privacyCheckBox.isSelected();
-            refreshTransactionTables();
-        });
-        topPanel.add(privacyCheckBox, BorderLayout.EAST);
-
-        add(topPanel, BorderLayout.NORTH);
+        add(titleLabel, BorderLayout.NORTH);
 
         // 创建主内容面板，使用 1 行 2 列的网格布局，组件间水平和垂直间距为 15 像素
         RoundedPanel gridPanel = new RoundedPanel(new GridLayout(1, 2, 15, 15));
@@ -207,30 +193,6 @@ public class TransactionsView extends BaseView {
                 incomeTableModel.addRow(row);
             }
         }
-    }
-
-    // 切换隐私模式后刷新三张表格金额显示
-    private void refreshTransactionTables() {
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String originalAmount = (String) tableModel.getValueAt(i, 5);
-            tableModel.setValueAt(formatAmount(originalAmount), i, 5);
-        }
-        for (int i = 0; i < incomeTableModel.getRowCount(); i++) {
-            String originalAmount = (String) incomeTableModel.getValueAt(i, 5);
-            incomeTableModel.setValueAt(formatAmount(originalAmount), i, 5);
-        }
-        for (int i = 0; i < expenseTableModel.getRowCount(); i++) {
-            String originalAmount = (String) expenseTableModel.getValueAt(i, 5);
-            expenseTableModel.setValueAt(formatAmount(originalAmount), i, 5);
-        }
-    }
-
-    // 用来在开启隐私时把金额替换成****
-    private String formatAmount(String amount) {
-        if (privacyEnabled) {
-            return "****";
-        }
-        return amount;
     }
 
     /**

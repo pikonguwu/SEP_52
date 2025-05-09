@@ -4,6 +4,7 @@ import components.RoundedButton;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import views.PrivacySettingsPanel;
 import java.awt.geom.RoundRectangle2D;
 
 /**
@@ -58,9 +59,9 @@ public class SettingsView extends BaseView {
     }
 
     // public SettingsView() {
-    //     // 在构造函数中初始化 tabFont
-    //     tabFont = createBaseFont();
-    //     initUI();
+    // // 在构造函数中初始化 tabFont
+    // tabFont = createBaseFont();
+    // initUI();
     // }
 
     /**
@@ -114,7 +115,7 @@ public class SettingsView extends BaseView {
         navPanel.setBackground(secondaryColor);
 
         // 定义导航按钮的文本
-        String[] tabs = {"Profile", "Preferences", "Security"};
+        String[] tabs = { "Profile", "Preferences", "Security" };
         tabButtons = new RoundedButton[tabs.length];
 
         // 创建并添加导航按钮
@@ -139,17 +140,15 @@ public class SettingsView extends BaseView {
         RoundedButton button = new RoundedButton(text);
 
         // 添加字体空指针保护
-        Font buttonFont = tabFont != null ?
-                tabFont.deriveFont(Font.BOLD, 14f) :
-                new Font(Font.SANS_SERIF, Font.BOLD, 14);
+        Font buttonFont = tabFont != null ? tabFont.deriveFont(Font.BOLD, 14f)
+                : new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
         button.setFont(buttonFont);
         button.setBackground(Color.WHITE);
         button.setForeground(textColor);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 2, 0, Color.WHITE),
-                BorderFactory.createEmptyBorder(8, 20, 8, 20)
-        ));
+                BorderFactory.createEmptyBorder(8, 20, 8, 20)));
         button.setFocusPainted(false);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -166,8 +165,7 @@ public class SettingsView extends BaseView {
                     button.setBackground(secondaryColor);
                     button.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createMatteBorder(0, 0, 2, 0, primaryColor),
-                            BorderFactory.createEmptyBorder(8, 20, 8, 20)
-                    ));
+                            BorderFactory.createEmptyBorder(8, 20, 8, 20)));
                 }
             }
 
@@ -182,8 +180,7 @@ public class SettingsView extends BaseView {
                     button.setBackground(Color.WHITE);
                     button.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createMatteBorder(0, 0, 2, 0, Color.WHITE),
-                            BorderFactory.createEmptyBorder(8, 20, 8, 20)
-                    ));
+                            BorderFactory.createEmptyBorder(8, 20, 8, 20)));
                 }
             }
         });
@@ -236,15 +233,13 @@ public class SettingsView extends BaseView {
                 btn.setForeground(Color.WHITE);
                 btn.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0, 0, 2, 0, primaryColor),
-                        BorderFactory.createEmptyBorder(8, 20, 8, 20)
-                ));
+                        BorderFactory.createEmptyBorder(8, 20, 8, 20)));
             } else {
                 btn.setBackground(Color.WHITE);
                 btn.setForeground(textColor);
                 btn.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0, 0, 2, 0, Color.WHITE),
-                        BorderFactory.createEmptyBorder(8, 20, 8, 20)
-                ));
+                        BorderFactory.createEmptyBorder(8, 20, 8, 20)));
             }
             btn.repaint();
         }
@@ -269,15 +264,14 @@ public class SettingsView extends BaseView {
         ContentPanel panel = new ContentPanel();
         panel.add(createAvatarSection(), BorderLayout.WEST);
         panel.add(createFormSection(
-                new String[][]{
-                        {"Full Name", "Charlene Reed"},
-                        {"Username", "charlene_reed"},
-                        {"Email", "charlene@example.com"},
-                        {"Birth Date", "1990-01-25"},
-                        {"Location", "San Jose, CA"},
-                        {"Postal Code", "95128"}
-                }
-        ), BorderLayout.CENTER);
+                new String[][] {
+                        { "Full Name", "Charlene Reed" },
+                        { "Username", "charlene_reed" },
+                        { "Email", "charlene@example.com" },
+                        { "Birth Date", "1990-01-25" },
+                        { "Location", "San Jose, CA" },
+                        { "Postal Code", "95128" }
+                }), BorderLayout.CENTER);
         panel.add(panel.createActionButton("Save Profile"), BorderLayout.SOUTH);
         return panel;
     }
@@ -290,14 +284,13 @@ public class SettingsView extends BaseView {
     private JPanel buildPreferencesPanel() {
         ContentPanel panel = new ContentPanel();
         panel.add(createFormSection(
-                new String[][]{
-                        {"Currency", "USD"},
-                        {"Timezone", "GMT-08:00"},
-                        {"Notifications", "Enabled"},
-                        {"Budget Limit", "$1,500"}
+                new String[][] {
+                        { "Currency", "USD" },
+                        { "Timezone", "GMT-08:00" },
+                        { "Notifications", "Enabled" },
+                        { "Budget Limit", "$1,500" }
                 },
-                new int[]{0, 1}
-        ), BorderLayout.CENTER);
+                new int[] { 0, 1 }), BorderLayout.CENTER);
         panel.add(panel.createActionButton("Save Settings"), BorderLayout.SOUTH);
         return panel;
     }
@@ -310,12 +303,11 @@ public class SettingsView extends BaseView {
     private JPanel buildSecurityPanel() {
         ContentPanel panel = new ContentPanel();
         panel.add(createSecurityItems(
-                new String[][]{
-                        {"Password", "Updated 3 days ago"},
-                        {"2FA", "Not enabled"},
-                        {"Security Questions", "3 configured"}
-                }
-        ), BorderLayout.CENTER);
+                new String[][] {
+                        { "Password", "Updated 3 days ago" },
+                        { "2FA", "Not enabled" },
+                        { "Security Questions", "3 configured" }
+                }), BorderLayout.CENTER);
         return panel;
     }
 
@@ -343,9 +335,8 @@ public class SettingsView extends BaseView {
             RoundedButton btn = new RoundedButton(text);
 
             // 按钮字体保护
-            Font buttonFont = tabFont != null ?
-                    tabFont.deriveFont(Font.BOLD, 14f) :
-                    new Font(Font.SANS_SERIF, Font.BOLD, 14);
+            Font buttonFont = tabFont != null ? tabFont.deriveFont(Font.BOLD, 14f)
+                    : new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
             btn.setFont(buttonFont);
             btn.setBackground(primaryColor);
@@ -413,8 +404,7 @@ public class SettingsView extends BaseView {
                 RoundRectangle2D clip = new RoundRectangle2D.Float(
                         (getWidth() - diameter) / 2f,
                         (getHeight() - diameter) / 2f,
-                        diameter, diameter, diameter, diameter
-                );
+                        diameter, diameter, diameter, diameter);
 
                 g2.setClip(clip);
                 g2.drawImage(new ImageIcon("avatar.jpg").getImage(),
@@ -432,7 +422,7 @@ public class SettingsView extends BaseView {
     /**
      * 创建表单区域，根据传入的字段和下拉框索引创建标签、输入框和下拉框。
      * 
-     * @param fields 表单字段数组，每个元素包含标签和初始值。
+     * @param fields          表单字段数组，每个元素包含标签和初始值。
      * @param dropdownIndices 下拉框所在的索引数组。
      * @return 包装在滚动面板中的表单区域。
      */
@@ -498,9 +488,8 @@ public class SettingsView extends BaseView {
      */
     private JLabel createFieldLabel(String text) {
         JLabel label = new JLabel(text);
-        Font labelFont = tabFont != null ?
-                tabFont.deriveFont(Font.BOLD, 14f) :
-                new Font(Font.SANS_SERIF, Font.BOLD, 14);
+        Font labelFont = tabFont != null ? tabFont.deriveFont(Font.BOLD, 14f)
+                : new Font(Font.SANS_SERIF, Font.BOLD, 14);
         label.setFont(labelFont);
         label.setForeground(textColor);
         return label;
@@ -518,8 +507,7 @@ public class SettingsView extends BaseView {
         field.setFont(fieldFont);
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         field.setForeground(textColor);
         return field;
     }
@@ -537,8 +525,7 @@ public class SettingsView extends BaseView {
         combo.setBackground(Color.WHITE);
         combo.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
         combo.setForeground(textColor);
         return combo;
     }
@@ -547,12 +534,13 @@ public class SettingsView extends BaseView {
      * 工具方法，检查数组中是否包含指定的索引。
      * 
      * @param indices 索引数组。
-     * @param target 要检查的目标索引。
+     * @param target  要检查的目标索引。
      * @return 如果包含返回 true，否则返回 false。
      */
     private boolean containsIndex(int[] indices, int target) {
         for (int i : indices) {
-            if (i == target) return true;
+            if (i == target)
+                return true;
         }
         return false;
     }
