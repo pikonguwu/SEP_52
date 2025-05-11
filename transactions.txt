@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 Description	Transaction ID	Type	Card	Date	Amount
 Spotify Subscription	123456	Shopping	1234******	28 Jan, 12.30 AM	-$2,500
 Freepik Sales	789012	Transfer	5678******	25 Jan, 10.40 PM	+$750
 Mobile Service	345678	Service	9012******	20 Jan, 10.40 PM	-$150
 Wilson	901234	Transfer	3456******	15 Jan, 03.29 PM	-$1,050
 Emily	567890	Transfer	7890******	14 Jan, 10.40 PM	+$840
+=======
+Description	Transaction ID	Type	Card	Date	Amount
+Spotify Subscription	123456	Shopping	1234******	28 Jan, 12.30 AM	-$2,500
+Freepik Sales	789012	Transfer	5678******	25 Jan, 10.40 PM	+$750
+Mobile Service	345678	Service	9012******	20 Jan, 10.40 PM	-$150
+Wilson	901234	Transfer	3456******	15 Jan, 03.29 PM	-$1,050
+Emily	567890	Transfer	7890******	14 Jan, 10.40 PM	+$840
+>>>>>>> origin/mjy
