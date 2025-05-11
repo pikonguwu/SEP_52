@@ -6,58 +6,51 @@ import services.BaiduAIService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BucksBrainAIChatView 是一个用于实现智能助手聊天界面的视图类。
  * 用户可以输入消息，系统会调用百度 AI 服务生成回复，并以消息气泡的形式展示在界面上。
  */
 public class BucksBrainAIChatView extends BaseView {
-    private JPanel chatPanel;  // 用于显示聊天内容的面板
-    private JTextField inputField;  // 用户输入消息的文本框
-    private JButton sendButton;  // 发送消息的按钮
-    private BaiduAIService baiduAIService;  // 百度 AI 服务实例
-    private JScrollPane scrollPane;  // 用于支持聊天内容滚动的滚动面板
+    private JPanel chatPanel;
+    private JTextField inputField;
+    private JButton sendButton;
+    private BaiduAIService baiduAIService;
+    private JScrollPane scrollPane;
+    private final List<String> conversationHistory = new ArrayList<>();
+    private static final String HISTORY_FILE = "conversation_history.txt";
+    private static final String USER_PREFIX = "[用户]: ";
+    private static final String AI_PREFIX = "[AI]: ";
 
-
-    /**
-     * 构造函数，初始化百度 AI 服务实例。
-     */
     public BucksBrainAIChatView() {
-        baiduAIService = new BaiduAIService();
+        this.baiduAIService = new BaiduAIService();
+        loadAndDisplayHistory(); // 整合加载和显示
     }
 
-    /**
-     * 获取当前视图的名称。
-     *
-     * @return 视图名称
-     */
     @Override
     public String getViewName() {
         return "Bucks Brain";
     }
-
-    /**
-     * 初始化用户界面，包括聊天内容区域、输入面板和发送按钮。
-     */
     @Override
     protected void initUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        // 初始化聊天内容区域
+        // 初始化UI组件
         chatPanel = new JPanel();
         chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
         chatPanel.setBackground(Color.WHITE);
 
-        // 初始化滚动面板
         scrollPane = new JScrollPane(chatPanel);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Chat Content"));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        // 初始化输入面板
         JPanel inputPanel = new JPanel(new BorderLayout(10, 0));
         inputField = new JTextField();
-        inputField.setFont(AppConstants.BODY_FONT.deriveFont(14f));  // 设置字体以支持中文
+        inputField.setFont(AppConstants.BODY_FONT.deriveFont(14f));
 
         sendButton = new JButton("发送");
         sendButton.setFont(AppConstants.BUTTON_FONT);
@@ -66,10 +59,71 @@ public class BucksBrainAIChatView extends BaseView {
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
 
-        // 将组件添加到主界面
         add(createHeader("Bucks Brain - 智能助手"), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
+    }
+
+
+    private void saveConversationHistory() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(HISTORY_FILE))) {
+            synchronized (conversationHistory) {
+                for (String message : conversationHistory) {
+                    writer.write(message);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("保存对话历史失败: " + e.getMessage());
+        }
+    }
+
+
+    /**
+     * 显示历史对话记录
+     */
+    private void loadAndDisplayHistory() {
+        File file = new File(HISTORY_FILE);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(HISTORY_FILE))) {
+                synchronized (conversationHistory) {
+                    conversationHistory.clear();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (!line.trim().isEmpty()) {
+                            conversationHistory.add(line);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("加载对话历史失败: " + e.getMessage());
+            }
+        }
+
+        // 显示历史记录
+        SwingUtilities.invokeLater(() -> {
+            synchronized (conversationHistory) {
+                chatPanel.removeAll();
+                for (String message : conversationHistory) {
+                    boolean isUser = message.startsWith(USER_PREFIX);
+                    String content = isUser ? message.substring(USER_PREFIX.length())
+                            : message.substring(AI_PREFIX.length());
+                    chatPanel.add(createMessageBubble(content, isUser));
+                }
+                chatPanel.revalidate();
+                scrollToBottom();
+            }
+        });
+    }
+
+
+    private void addUserMessage(String message) {
+        String formattedMessage = USER_PREFIX + message;
+        chatPanel.add(createMessageBubble(message, true));
+        conversationHistory.add(formattedMessage);
+        saveConversationHistory();
+        chatPanel.revalidate();
+        scrollToBottom();
     }
 
     /**
@@ -127,17 +181,6 @@ public class BucksBrainAIChatView extends BaseView {
     }
 
     /**
-     * 将用户消息添加到聊天面板中。
-     *
-     * @param message 用户消息
-     */
-    private void addUserMessage(String message) {
-        chatPanel.add(createMessageBubble(message, true));
-        chatPanel.revalidate();
-        scrollToBottom();
-    }
-
-    /**
      * 处理 AI 消息，调用百度 AI 服务生成回复并添加到聊天面板中。
      *
      * @param message 用户消息
@@ -149,8 +192,9 @@ public class BucksBrainAIChatView extends BaseView {
             @Override
             public Void doInBackground() {
                 try {
-                    response = baiduAIService.getAIResponse(message);
-
+                    String rawResponse = baiduAIService.getAIResponse(message);
+                    // 解析JSON并提取需要的内容
+                    response = formatAIResponse(rawResponse);
                 } catch (Exception ex) {
                     response = "请求出现错误：" + ex.getMessage();
                 }
@@ -159,13 +203,41 @@ public class BucksBrainAIChatView extends BaseView {
 
             @Override
             public void done() {
+                String formattedResponse = AI_PREFIX + response;
                 chatPanel.add(createMessageBubble(response, false));
+                conversationHistory.add(formattedResponse);
+                saveConversationHistory();
                 chatPanel.revalidate();
                 scrollToBottom();
             }
         }.execute();
-
     }
+
+    /**
+     * 格式化AI返回的JSON响应
+     * @param rawResponse 原始JSON响应
+     * @return 格式化后的纯文本内容
+     */
+    private String formatAIResponse(String rawResponse) {
+        try {
+            // 简单提取result字段内容
+            int start = rawResponse.indexOf("\"result\":\"") + 10;
+            int end = rawResponse.indexOf("\",\"is_truncated\"");
+            if (start > 0 && end > start) {
+                String result = rawResponse.substring(start, end);
+                // 处理转义字符
+                result = result.replace("\\n", "<br>")
+                        .replace("\\\"", "\"")
+                        .replace("\\t", "    ");
+                // 保留原有的加粗标记
+                return result;
+            }
+            return "无法解析AI响应: " + rawResponse;
+        } catch (Exception e) {
+            return "解析AI响应时出错: " + e.getMessage() + "\n原始响应:\n" + rawResponse;
+        }
+    }
+
 
     /**
      * 自动滚动聊天面板到底部。
