@@ -23,6 +23,7 @@ views\TransactionsView$4.class
 constants\AppConstants.class
 services\TransactionManager.class
 ui\RegistrationPage$BackgroundPanel.class
+ui\AddCardDialog.class
 views\DashboardView$2.class
 views\CreditCardsView$ButtonEditor.class
 services\TransactionDataService.class
