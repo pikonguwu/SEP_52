@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="BuckBrainAI">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/BuckBrainAI.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

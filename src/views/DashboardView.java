@@ -3,13 +3,15 @@ package views;
 import constants.AppConstants;
 import components.*;
 import services.BaiduAIService;
+import services.TransactionDataService;
 import com.google.gson.*;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.w3c.dom.events.MouseEvent; // 此导入未使用，建议移除
-import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,6 +19,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 定义 DashboardView 类，继承自 BaseView，用于展示仪表盘视图。
@@ -29,6 +33,22 @@ public class DashboardView extends BaseView {
     private BaiduAIService aiService = new BaiduAIService();
     private TransactionsView transactionsView;
     private AccountsView accountsView;
+    
+    // 添加数据服务和图表相关字段
+    private TransactionDataService dataService;
+    private JFreeChart weeklyChart;
+    private JFreeChart expenseChart;
+    private ChartPanel weeklyChartPanel;
+    private ChartPanel expenseChartPanel;
+
+    /**
+     * 构造函数
+     */
+    public DashboardView() {
+        // 初始化数据服务 - 确保在构造函数中就初始化
+        dataService = new TransactionDataService();
+        // 注意：父类的构造函数会调用initUI()，所以在此之前必须初始化dataService
+    }
 
     /**
      * 重写 getViewName 方法，返回该视图的名称。
@@ -75,6 +95,17 @@ public class DashboardView extends BaseView {
 
         // 创建底部操作栏并添加到面板的南部位置
         add(createActionPanel(), BorderLayout.SOUTH); 
+        
+        // 在所有UI组件创建完毕后，加载初始交易数据
+        // 确保dataService已初始化
+        if (dataService != null) {
+            loadInitialTransactions();
+        } else {
+            System.err.println("Warning: dataService is null, cannot load initial transactions");
+            // 在这里重新初始化为安全措施
+            dataService = new TransactionDataService();
+            loadInitialTransactions();
+        }
     }
 
     /**
@@ -83,131 +114,159 @@ public class DashboardView extends BaseView {
      * @return 包含银行卡信息的面板
      */
     private JPanel createCardPanel() {
-        // 创建一个面板来容纳两张卡片，改为1行2列的布局
-        JPanel cardsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
-        cardsPanel.setOpaque(false);
-        
-        // 添加第一张卡片（原有的蓝色卡片）
-        cardsPanel.add(createCard(new Color(40, 80, 150), "$5,756", "Eddy Cusuma", "12/22", "3778", "****", "****", "1234"));
-        
-        // 添加第二张卡片（新的紫色卡片）
-        // cardsPanel.add(createCard(new Color(80, 40, 150), "$3,245", "Eddy Cusuma", "10/25", "4521", "****", "****", "5678"));
-        
-        return cardsPanel;
-    }
-
-    /**
-     * 创建单个银行卡界面。
-     * 
-     * @param backgroundColor 卡片背景颜色
-     * @param balance 余额
-     * @param cardholder 持卡人姓名
-     * @param validThru 有效期
-     * @param cardNumber1 卡号第一段
-     * @param cardNumber2 卡号第二段
-     * @param cardNumber3 卡号第三段
-     * @param cardNumber4 卡号第四段
-     * @return 包含银行卡信息的面板
-     */
-    private JPanel createCard(Color backgroundColor, String balance, String cardholder, String validThru,
-                            String cardNumber1, String cardNumber2, String cardNumber3, String cardNumber4) {
-        // 创建带圆角的卡片容器
+        // 创建带圆角的卡片容器，重写 paintComponent 方法绘制蓝色背景
         RoundedPanel panel = new RoundedPanel(new BorderLayout()) {
+            /**
+             * 重写 paintComponent 方法，绘制纯蓝色的圆角矩形背景。
+             * 
+             * @param g 用于绘制的 Graphics 对象
+             */
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                // 将 Graphics 对象转换为 Graphics2D 对象以使用更高级的绘图功能
                 Graphics2D g2d = (Graphics2D) g;
-                g2d.setColor(backgroundColor);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                // 设置绘图颜色为深蓝色
+                g2d.setColor(new Color(40, 80, 150)); 
+                // 绘制圆角矩形填充整个面板
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); 
             }
         };
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        panel.setPreferredSize(new Dimension(320, 100));
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        // 设置卡片面板的首选大小为 320x200 像素
+        panel.setPreferredSize(new Dimension(320, 200)); 
 
-        // 主内容容器
+        // 主内容容器，使用网格包布局实现精确布局，背景设置为透明
         JPanel content = new JPanel(new GridBagLayout()) {
+            /**
+             * 重写 isOpaque 方法，使面板背景透明。
+             * 
+             * @return false，表示面板背景透明
+             */
             @Override
             public boolean isOpaque() {
-                return false;
+                return false; 
             }
         };
+        // 创建网格包约束对象
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // 设置组件间的内边距为 5 像素
+        gbc.insets = new Insets(5, 5, 5, 5); 
 
         // 余额区域（左上）
         JPanel balancePanel = new JPanel(new BorderLayout());
-        balancePanel.setOpaque(false);
+        // 设置余额面板背景透明
+        balancePanel.setOpaque(false); 
         JLabel balanceLabel = new JLabel("BALANCE");
-        balanceLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        balanceLabel.setForeground(new Color(180, 180, 220));
+        // 设置余额标签字体为 Arial 加粗，字号 12
+        balanceLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+        // 设置余额标签字体颜色为浅灰色
+        balanceLabel.setForeground(new Color(180, 180, 220)); 
         
-        JLabel amountLabel = new JLabel(balance);
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        amountLabel.setForeground(Color.WHITE);
+        JLabel amountLabel = new JLabel("$5,756");
+        // 设置金额标签字体为 Arial 加粗，字号 24
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
+        // 设置金额标签字体颜色为白色
+        amountLabel.setForeground(Color.WHITE); 
         
-        balancePanel.add(balanceLabel, BorderLayout.NORTH);
-        balancePanel.add(amountLabel, BorderLayout.CENTER);
+        // 将余额标签添加到余额面板的北部位置
+        balancePanel.add(balanceLabel, BorderLayout.NORTH); 
+        // 将金额标签添加到余额面板的中心位置
+        balancePanel.add(amountLabel, BorderLayout.CENTER); 
 
         // 卡号区域（中间偏上）
         JPanel numberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        numberPanel.setOpaque(false);
-        numberPanel.add(createCardSegment(cardNumber1, 22));
-        numberPanel.add(createCardSegment(cardNumber2, 18));
-        numberPanel.add(createCardSegment(cardNumber3, 18));
-        numberPanel.add(createCardSegment(cardNumber4, 22));
+        // 设置卡号面板背景透明
+        numberPanel.setOpaque(false); 
+        // 添加卡号分段标签
+        numberPanel.add(createCardSegment("3778", 22)); 
+        numberPanel.add(createCardSegment("****", 18)); 
+        numberPanel.add(createCardSegment("****", 18)); 
+        numberPanel.add(createCardSegment("1234", 22)); 
 
         // 底部信息区域
         JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
-        bottomPanel.setOpaque(false);
+        // 设置底部信息面板背景透明
+        bottomPanel.setOpaque(false); 
         
         // 左侧持卡人信息
         JPanel holderPanel = new JPanel(new BorderLayout());
-        holderPanel.setOpaque(false);
+        // 设置持卡人信息面板背景透明
+        holderPanel.setOpaque(false); 
         JLabel holderLabel = new JLabel("CARDHOLDER");
-        holderLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        holderLabel.setForeground(new Color(180, 180, 220));
+        // 设置持卡人标签字体为 Arial 加粗，字号 10
+        holderLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        // 设置持卡人标签字体颜色为浅灰色
+        holderLabel.setForeground(new Color(180, 180, 220)); 
         
-        JLabel nameLabel = new JLabel(cardholder);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        nameLabel.setForeground(Color.WHITE);
+        JLabel nameLabel = new JLabel("Eddy Cusuma");
+        // 设置持卡人姓名标签字体为 Arial 加粗，字号 14
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        // 设置持卡人姓名标签字体颜色为白色
+        nameLabel.setForeground(Color.WHITE); 
         
-        holderPanel.add(holderLabel, BorderLayout.NORTH);
-        holderPanel.add(nameLabel, BorderLayout.CENTER);
+        // 将持卡人标签添加到持卡人信息面板的北部位置
+        holderPanel.add(holderLabel, BorderLayout.NORTH); 
+        // 将持卡人姓名标签添加到持卡人信息面板的中心位置
+        holderPanel.add(nameLabel, BorderLayout.CENTER); 
 
         // 右侧有效期信息
         JPanel validPanel = new JPanel(new BorderLayout());
-        validPanel.setOpaque(false);
+        // 设置有效期信息面板背景透明
+        validPanel.setOpaque(false); 
         JLabel validLabel = new JLabel("VALID THRU");
-        validLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        validLabel.setForeground(new Color(180, 180, 220));
+        // 设置有效期标签字体为 Arial 加粗，字号 10
+        validLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        // 设置有效期标签字体颜色为浅灰色
+        validLabel.setForeground(new Color(180, 180, 220)); 
         
-        JLabel dateLabel = new JLabel(validThru);
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        dateLabel.setForeground(Color.WHITE);
+        JLabel dateLabel = new JLabel("12/22");
+        // 设置有效期日期标签字体为 Arial 加粗，字号 14
+        dateLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        // 设置有效期日期标签字体颜色为白色
+        dateLabel.setForeground(Color.WHITE); 
         
-        validPanel.add(validLabel, BorderLayout.NORTH);
-        validPanel.add(dateLabel, BorderLayout.CENTER);
+        // 将有效期标签添加到有效期信息面板的北部位置
+        validPanel.add(validLabel, BorderLayout.NORTH); 
+        // 将有效期日期标签添加到有效期信息面板的中心位置
+        validPanel.add(dateLabel, BorderLayout.CENTER); 
 
         // 布局组合
+        // 设置网格包约束的 x 坐标为 0
         gbc.gridx = 0;
+        // 设置网格包约束的 y 坐标为 0
         gbc.gridy = 0;
+        // 设置组件对齐方式为左上角对齐
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        content.add(balancePanel, gbc);
+        // 将余额区域添加到内容面板
+        content.add(balancePanel, gbc); 
 
+        // 设置网格包约束的 y 坐标为 1
         gbc.gridy = 1;
+        // 设置组件在水平方向上的权重为 1.0
         gbc.weightx = 1.0;
+        // 设置组件在水平方向上填充
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        content.add(numberPanel, gbc);
+        // 将卡号区域添加到内容面板
+        content.add(numberPanel, gbc); 
 
-        bottomPanel.add(holderPanel);
-        bottomPanel.add(validPanel);
+        // 将持卡人信息添加到底部信息面板
+        bottomPanel.add(holderPanel); 
+        // 将有效期信息添加到底部信息面板
+        bottomPanel.add(validPanel); 
 
+        // 设置网格包约束的 y 坐标为 2
         gbc.gridy = 2;
+        // 设置组件在垂直方向上的权重为 1.0
         gbc.weighty = 1.0;
+        // 设置组件在水平和垂直方向上填充
         gbc.fill = GridBagConstraints.BOTH;
-        content.add(bottomPanel, gbc);
+        // 将底部信息区域添加到内容面板
+        content.add(bottomPanel, gbc); 
 
-        panel.add(content, BorderLayout.CENTER);
+        // 将内容面板添加到卡片面板的中心位置
+        panel.add(content, BorderLayout.CENTER); 
         return panel;
     }
     
@@ -308,8 +367,8 @@ public class DashboardView extends BaseView {
         editButton.setForeground(Color.WHITE);
         editButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         
-        // 添加修改按钮的点击事件
-        editButton.addActionListener(e -> {
+        // 添加修改按钮的点击事件，修复未使用的lambda参数
+        editButton.addActionListener(_e -> {
             int selectedRow = transactionTable.getSelectedRow();
             if (selectedRow >= 0) {
                 // 获取选中的行数据
@@ -375,7 +434,6 @@ public class DashboardView extends BaseView {
         tablePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // 设置滚动条策略
-        // JScrollPane scrollPane = new JScrollPane(transactionTable);
         JScrollPane scrollPane = new JScrollPane(tablePanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -405,6 +463,12 @@ public class DashboardView extends BaseView {
         tableModel.setValueAt(description, row, 2);
         tableModel.setValueAt(formattedAmount, row, 3);
         
+        // 更新数据服务中的交易数据
+        dataService.updateTransaction(row, date, description, amount, type);
+        
+        // 更新图表
+        updateCharts();
+        
         // 同步更新AccountsView
         if (accountsView != null) {
             accountsView.updateTransaction(date, description, formattedAmount, type);
@@ -420,6 +484,12 @@ public class DashboardView extends BaseView {
         
         // 在表格末尾添加新行
         tableModel.addRow(new Object[]{icon, date, description, formattedAmount});
+        
+        // 添加到数据服务
+        dataService.addTransaction(date, description, amount, type);
+        
+        // 更新图表
+        updateCharts();
 
         // 同时更新TransactionsView
         if (transactionsView != null) {
@@ -440,27 +510,38 @@ public class DashboardView extends BaseView {
     private ChartPanel createWeeklyChart() {
         // 创建默认的分类数据集
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        // 定义一周的日期
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        // 定义每天的消费金额
-        int[] amounts = {650, 820, 720, 930, 1050, 1350, 980};
         
-        // 将每天的消费金额添加到数据集中
-        for (int i = 0; i < days.length; i++) {
-            dataset.addValue(amounts[i], "Spending", days[i]); 
+        // 初始化为空数据集，稍后会更新
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        for (String day : days) {
+            dataset.addValue(0, "Spending", day);
         }
         
-        // 创建柱状图
-        JFreeChart chart = ChartFactory.createBarChart(
+        weeklyChart = ChartFactory.createBarChart(
             "", "", "Amount ($)", 
             dataset,
             PlotOrientation.VERTICAL,
             true, true, false
         );
-        // 设置图表的背景颜色为白色
-        chart.setBackgroundPaint(Color.WHITE); 
-        // 返回包含图表的图表面板
-        return new ChartPanel(chart); 
+        
+        // 设置图表样式
+        CategoryPlot plot = weeklyChart.getCategoryPlot();
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(40, 80, 150));
+        
+        // 设置轴的样式
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setTickLabelsVisible(true);
+        domainAxis.setTickMarksVisible(true);
+        
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        
+        weeklyChart.setBackgroundPaint(Color.WHITE);
+        
+        weeklyChartPanel = new ChartPanel(weeklyChart);
+        weeklyChartPanel.setPreferredSize(new Dimension(400, 300));
+        return weeklyChartPanel;
     }
 
     /**
@@ -471,23 +552,90 @@ public class DashboardView extends BaseView {
     private ChartPanel createExpenseChart() {
         // 创建默认的饼图数据集
         DefaultPieDataset dataset = new DefaultPieDataset();
-        // 添加住房支出数据
-        dataset.setValue("Housing", 35); 
-        // 添加食品支出数据
-        dataset.setValue("Food", 25); 
-        // 添加交通支出数据
-        dataset.setValue("Transport", 15); 
-        // 添加娱乐支出数据
-        dataset.setValue("Entertainment", 10); 
-        // 添加储蓄支出数据
-        dataset.setValue("Savings", 15); 
         
-        // 创建饼图
-        JFreeChart chart = ChartFactory.createPieChart("", dataset, true, true, false);
-        // 设置图表的背景颜色为白色
-        chart.setBackgroundPaint(Color.WHITE); 
-        // 返回包含图表的图表面板
-        return new ChartPanel(chart); 
+        // 初始化为空数据集，稍后会更新
+        dataset.setValue("No Data", 100);
+        
+        expenseChart = ChartFactory.createPieChart("", dataset, true, true, false);
+        
+        // 设置饼图样式
+        PiePlot plot = (PiePlot) expenseChart.getPlot();
+        plot.setLabelFont(new Font("Arial", Font.PLAIN, 12));
+        plot.setLabelBackgroundPaint(new Color(255, 255, 255, 200));
+        
+        // 为No Data设置颜色（按索引设置，因为现在只有一个数据点）
+        plot.setSectionPaint(0, new Color(200, 200, 200));
+        
+        expenseChart.setBackgroundPaint(Color.WHITE);
+        
+        expenseChartPanel = new ChartPanel(expenseChart);
+        expenseChartPanel.setPreferredSize(new Dimension(400, 300));
+        return expenseChartPanel;
+    }
+    
+    /**
+     * 更新图表
+     */
+    public void updateCharts() {
+        updateWeeklyChart();
+        updateExpenseChart();
+    }
+    
+    /**
+     * 更新周活动图表
+     */
+    private void updateWeeklyChart() {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Map<String, Double> weeklyData = dataService.getWeeklySpending();
+        
+        for (Map.Entry<String, Double> entry : weeklyData.entrySet()) {
+            dataset.addValue(entry.getValue(), "Spending", entry.getKey());
+        }
+        
+        weeklyChart.getCategoryPlot().setDataset(dataset);
+    }
+    
+    /**
+     * 更新支出统计图表
+     */
+    private void updateExpenseChart() {
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        Map<String, Double> categoryData = dataService.getExpenseCategories();
+        
+        // 将数据添加到饼图数据集
+        for (Map.Entry<String, Double> entry : categoryData.entrySet()) {
+            dataset.setValue(entry.getKey(), entry.getValue());
+        }
+        
+        // 如果没有数据，添加默认分类
+        if (categoryData.isEmpty()) {
+            dataset.setValue("No Data", 100);
+        }
+        
+        // 设置饼图数据集
+        PiePlot plot = (PiePlot) expenseChart.getPlot();
+        plot.setDataset(dataset);
+        
+        // 创建颜色分配映射
+        Map<String, Color> colorMap = new HashMap<>();
+        colorMap.put("Housing", new Color(51, 102, 204));
+        colorMap.put("Food", new Color(76, 153, 0));
+        colorMap.put("Transport", new Color(255, 153, 0));
+        colorMap.put("Entertainment", new Color(153, 0, 153));
+        colorMap.put("Savings", new Color(0, 153, 204));
+        colorMap.put("Others", new Color(153, 153, 153));
+        colorMap.put("No Data", new Color(200, 200, 200));
+        
+        // 遍历数据集的键，设置相应的颜色
+        int index = 0;
+        for (Object key : dataset.getKeys()) {
+            String category = key.toString();
+            Color color = colorMap.getOrDefault(category, new Color(100, 100, 150));
+            
+            // 使用索引而不是字符串键来设置颜色
+            plot.setSectionPaint(index, color);
+            index++;
+        }
     }
 
     /**
@@ -519,9 +667,11 @@ public class DashboardView extends BaseView {
         String response = aiService.getAIResponse(prompt);
         System.out.println("Raw AI response: " + response);
         
-        // 从JSON响应中提取result字段
+        // 从JSON响应中提取result字段，使用非废弃的方法
         try {
-            com.google.gson.JsonObject jsonResponse = new com.google.gson.JsonParser().parse(response).getAsJsonObject();
+            // 使用JsonParser.parseString替代废弃的new JsonParser().parse
+            JsonElement jsonElement = JsonParser.parseString(response);
+            JsonObject jsonResponse = jsonElement.getAsJsonObject();
             String result = jsonResponse.get("result").getAsString();
             
             // 提取第一行交易信息（假设每行只处理一条交易）
@@ -597,6 +747,9 @@ public class DashboardView extends BaseView {
                 }
                 scanner.close();
                 
+                // 更新图表
+                updateCharts();
+                
                 JOptionPane.showMessageDialog(this, 
                     "File imported successfully!\n" +
                     "Successfully imported: " + successCount + " transactions\n" +
@@ -631,9 +784,9 @@ public class DashboardView extends BaseView {
         // 设置按钮的内边距，上、左、下、右分别为 10、25、10、25 像素
         btn.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25)); 
 
-        // 为Manual Add按钮添加事件处理程序
+        // 为Manual Add按钮添加事件处理程序，修复未使用的lambda参数
         if (text.equals("Manual Add")) {
-            btn.addActionListener(e -> {
+            btn.addActionListener(_e -> {
                 AddTransactionDialog dialog = new AddTransactionDialog((Frame) SwingUtilities.getWindowAncestor(this));
                 dialog.setVisible(true);
                 
@@ -659,7 +812,7 @@ public class DashboardView extends BaseView {
                 }
             });
         } else if (text.equals("Import File")) {
-            btn.addActionListener(e -> importTransactionsFromFile());
+            btn.addActionListener(_e -> importTransactionsFromFile());
         }
         
         return btn;
@@ -679,75 +832,50 @@ public class DashboardView extends BaseView {
         wrapper.setBorder(BorderFactory.createTitledBorder(title)); 
         // 设置面板的背景颜色为白色
         wrapper.setBackground(Color.WHITE); 
-        
-        // 如果是"My Cards"部分，添加"See All"按钮
-        if (title.equals("My Cards")) {
-            // 创建顶部面板，包含标题和"See All"按钮
-            JPanel topPanel = new JPanel(new BorderLayout());
-            topPanel.setOpaque(false);
-            
-            // 创建"See All"按钮
-            JButton seeAllButton = new JButton("See All");
-            seeAllButton.setFont(new Font("Arial", Font.BOLD, 12));
-            seeAllButton.setBackground(AppConstants.PRIMARY_COLOR);
-            seeAllButton.setForeground(Color.WHITE);
-            // seeAllButton.setBorderPainted(false);
-            seeAllButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            // seeAllButton.setContentAreaFilled(false);
-            seeAllButton.setFocusPainted(false);
-            
-            // 添加按钮点击事件，跳转到Transactions界面
-            seeAllButton.addActionListener(e -> {
-                // 获取主窗口
-                Window window = SwingUtilities.getWindowAncestor(this);
-                if (window instanceof JFrame) {
-                    JFrame frame = (JFrame) window;
-                    // 获取主内容面板
-                    Container contentPane = frame.getContentPane();
-                    // 查找CardLayout
-                    for (Component c : contentPane.getComponents()) {
-                        if (c instanceof JPanel && ((JPanel) c).getLayout() instanceof CardLayout) {
-                            CardLayout cardLayout = (CardLayout) ((JPanel) c).getLayout();
-                            // 切换到Transactions视图
-                            cardLayout.show((JPanel) c, "Transactions");
-                            
-                            // 更新侧边栏的选中状态
-                            for (Component sidebarComp : contentPane.getComponents()) {
-                                if (sidebarComp instanceof JPanel && sidebarComp.getName() != null && sidebarComp.getName().equals("sidebar")) {
-                                    JPanel sidebar = (JPanel) sidebarComp;
-                                    for (Component navComp : sidebar.getComponents()) {
-                                        if (navComp instanceof JButton && ((JButton) navComp).getText().equals("Transactions")) {
-                                            ui.FinanceTrackerUI ui = (ui.FinanceTrackerUI) frame;
-                                            ui.updateNavSelection((JButton) navComp);
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            });
-            
-            // 将按钮添加到顶部面板的右侧
-            topPanel.add(seeAllButton, BorderLayout.EAST);
-            
-            // 将顶部面板添加到包装面板的北部
-            wrapper.add(topPanel, BorderLayout.NORTH);
-        }
-        
         // 将组件添加到面板的中心位置
         wrapper.add(comp, BorderLayout.CENTER); 
         return wrapper;
     }
 
+    /**
+     * 设置TransactionsView引用，用于同步数据
+     */
     public void setTransactionsView(TransactionsView view) {
         this.transactionsView = view;
     }
     
+    /**
+     * 设置AccountsView引用，用于同步数据
+     */
     public void setAccountsView(AccountsView view) {
         this.accountsView = view;
+    }
+    
+    /**
+     * 从表格加载初始交易数据到数据服务
+     */
+    private void loadInitialTransactions() {
+        try {
+            // 从表格中获取已有的交易数据
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String date = (String) tableModel.getValueAt(i, 1);
+                String description = (String) tableModel.getValueAt(i, 2);
+                String amount = (String) tableModel.getValueAt(i, 3);
+                String type = amount.startsWith("-") ? "Expense" : "Income";
+                
+                // 清理金额字符串
+                String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
+                
+                // 添加到数据服务
+                dataService.addTransaction(date, description, cleanAmount, type);
+            }
+            
+            // 首次更新图表
+            updateCharts();
+        } catch (Exception e) {
+            // 添加异常处理以便更好地诊断问题
+            System.err.println("Error in loadInitialTransactions: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

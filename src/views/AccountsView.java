@@ -2,6 +2,7 @@ package views;
 
 import components.*;
 import constants.AppConstants;
+import services.TransactionDataService;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -9,8 +10,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Map;
 
 /**
  * AccountsView 类继承自 BaseView，用于展示账户相关信息的视图界面。
@@ -31,6 +31,23 @@ public class AccountsView extends BaseView {
     private DefaultTableModel transactionTableModel;
     private ChartPanel weeklyChartPanel;
     private DefaultCategoryDataset weeklyDataset;
+    
+    // 添加数据服务和图表相关字段
+    private TransactionDataService dataService;
+    private JFreeChart weeklyChart;
+    
+    // 余额和收支视图元素
+    private JLabel balanceAmountLabel;
+    private JLabel incomeAmountLabel;
+    private JLabel expenseAmountLabel;
+
+    /**
+     * 构造函数
+     */
+    public AccountsView() {
+        // 初始化数据服务
+        dataService = new TransactionDataService();
+    }
 
     /**
      * 初始化用户界面的方法，设置布局、添加标题、主内容区和底部操作栏。
@@ -69,6 +86,39 @@ public class AccountsView extends BaseView {
         // 底部操作栏
         // 将底部操作面板添加到面板的南部位置
         add(createActionPanel(), BorderLayout.SOUTH);
+        
+        // 在所有UI组件创建完毕后，加载初始交易数据
+        loadInitialTransactions();
+    }
+
+    /**
+     * 加载初始交易数据到数据服务
+     */
+    private void loadInitialTransactions() {
+        try {
+            // 从表格中获取已有的交易数据
+            for (int i = 0; i < transactionTableModel.getRowCount(); i++) {
+                String date = (String) transactionTableModel.getValueAt(i, 0);
+                String description = (String) transactionTableModel.getValueAt(i, 1);
+                String amount = (String) transactionTableModel.getValueAt(i, 2);
+                String status = (String) transactionTableModel.getValueAt(i, 3); // 忽略状态
+                String type = amount.startsWith("-") ? "Expense" : "Income";
+                
+                // 清理金额字符串
+                String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
+                
+                // 添加到数据服务
+                dataService.addTransaction(date, description, cleanAmount, type);
+            }
+            
+            // 首次更新图表和摘要
+            updateWeeklyChart();
+            updateAccountSummary();
+        } catch (Exception e) {
+            // 添加异常处理以便更好地诊断问题
+            System.err.println("Error in loadInitialTransactions: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -82,12 +132,20 @@ public class AccountsView extends BaseView {
         // 设置面板背景透明
         panel.setOpaque(false);
 
-        // 添加我的余额摘要卡片
-        panel.add(createSummaryCard("My Balance", "$12,750", new Color(40, 80, 150)));
-        // 添加月收入摘要卡片
-        panel.add(createSummaryCard("Monthly Income", "$560", new Color(60, 120, 60)));
-        // 添加月支出摘要卡片
-        panel.add(createSummaryCard("Monthly Expense", "$346", new Color(150, 60, 60)));
+        // 创建余额摘要卡片并保存标签引用
+        JPanel balanceCard = createSummaryCard("My Balance", "$12,750", new Color(40, 80, 150));
+        balanceAmountLabel = (JLabel) ((BorderLayout)balanceCard.getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        panel.add(balanceCard);
+        
+        // 创建收入摘要卡片并保存标签引用
+        JPanel incomeCard = createSummaryCard("Monthly Income", "$560", new Color(60, 120, 60));
+        incomeAmountLabel = (JLabel) ((BorderLayout)incomeCard.getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        panel.add(incomeCard);
+        
+        // 创建支出摘要卡片并保存标签引用
+        JPanel expenseCard = createSummaryCard("Monthly Expense", "$346", new Color(150, 60, 60));
+        expenseAmountLabel = (JLabel) ((BorderLayout)expenseCard.getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        panel.add(expenseCard);
 
         return panel;
     }
@@ -136,9 +194,6 @@ public class AccountsView extends BaseView {
      * @return 包含银行卡信息的面板
      */
     private JPanel createMyCard() {
-
-        JPanel masterPanel = new JPanel(new BorderLayout());
-        masterPanel.setOpaque(false);
         // 创建一个圆角面板，重写 paintComponent 方法以绘制圆角背景
         RoundedPanel panel = new RoundedPanel(new BorderLayout()) {
             /**
@@ -162,57 +217,6 @@ public class AccountsView extends BaseView {
         panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         // 设置面板的首选大小为 320x200 像素
         panel.setPreferredSize(new Dimension(320, 200));
-
-        // 创建顶部面板，包含标题和See All按钮
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setOpaque(false);
-
-        
-        // 创建See All按钮
-        JButton seeAllButton = new JButton("See All");
-        seeAllButton.setFont(new Font("Arial", Font.BOLD, 12));
-        seeAllButton.setBackground(AppConstants.PRIMARY_COLOR);
-        seeAllButton.setForeground(Color.WHITE);
-        seeAllButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        seeAllButton.setFocusPainted(false);
-        
-        // 添加See All按钮的点击事件
-        seeAllButton.addActionListener(e -> {
-            // 获取主窗口
-            Window window = SwingUtilities.getWindowAncestor(this);
-            if (window instanceof JFrame) {
-                JFrame frame = (JFrame) window;
-                // 获取主内容面板
-                Container contentPane = frame.getContentPane();
-                // 查找CardLayout
-                for (Component c : contentPane.getComponents()) {
-                    if (c instanceof JPanel && ((JPanel) c).getLayout() instanceof CardLayout) {
-                        CardLayout cardLayout = (CardLayout) ((JPanel) c).getLayout();
-                        // 切换到Transactions视图
-                        cardLayout.show((JPanel) c, "Transactions");
-                        
-                        // 更新侧边栏的选中状态
-                        for (Component sidebarComp : contentPane.getComponents()) {
-                            if (sidebarComp instanceof JPanel && sidebarComp.getName() != null && sidebarComp.getName().equals("sidebar")) {
-                                JPanel sidebar = (JPanel) sidebarComp;
-                                for (Component navComp : sidebar.getComponents()) {
-                                    if (navComp instanceof JButton && ((JButton) navComp).getText().equals("Transactions")) {
-                                        ui.FinanceTrackerUI ui = (ui.FinanceTrackerUI) frame;
-                                        ui.updateNavSelection((JButton) navComp);
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-        
-        // 将按钮添加到顶部面板的右侧
-        topPanel.add(seeAllButton, BorderLayout.EAST);
 
         // 卡片内容布局
         // 创建一个使用网格袋布局的面板，用于放置卡片内容
@@ -336,11 +340,9 @@ public class AccountsView extends BaseView {
         // 将底部信息面板添加到内容面板
         content.add(bottomPanel, gbc);
 
-        // 将顶部面板和内容面板添加到主面板
-        masterPanel.add(topPanel, BorderLayout.NORTH);
+        // 将内容面板添加到卡片面板的中心位置
         panel.add(content, BorderLayout.CENTER);
-        masterPanel.add(panel, BorderLayout.CENTER);
-        return masterPanel;
+        return panel;
     }
 
     /**
@@ -447,26 +449,50 @@ public class AccountsView extends BaseView {
         weeklyDataset = new DefaultCategoryDataset();
         // 定义一周的日期
         String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        // 定义每天的消费金额
-        int[] amounts = {650, 820, 720, 930, 1050, 1350, 980};
-        
-        // 将每天的消费金额添加到数据集中
-        for (int i = 0; i < days.length; i++) {
-            weeklyDataset.addValue(amounts[i], "Spending", days[i]); 
+        // 设置初始值为0
+        for (String day : days) {
+            weeklyDataset.addValue(0, "Spending", day); 
         }
         
         // 创建柱状图
-        JFreeChart chart = ChartFactory.createBarChart(
+        weeklyChart = ChartFactory.createBarChart(
             "", "", "Amount ($)", 
             weeklyDataset,
             PlotOrientation.VERTICAL,
             true, true, false
         );
         // 设置图表的背景颜色为白色
-        chart.setBackgroundPaint(Color.WHITE); 
+        weeklyChart.setBackgroundPaint(Color.WHITE);
+        
         // 返回包含图表的图表面板
-        weeklyChartPanel = new ChartPanel(chart);
+        weeklyChartPanel = new ChartPanel(weeklyChart);
         return weeklyChartPanel; 
+    }
+    
+    /**
+     * 更新每周概览图表
+     */
+    private void updateWeeklyChart() {
+        try {
+            if (dataService != null && weeklyChart != null) {
+                // 获取每周消费数据
+                Map<String, Double> weeklyData = dataService.getWeeklySpending();
+                
+                // 创建新数据集
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+                
+                // 添加数据
+                for (Map.Entry<String, Double> entry : weeklyData.entrySet()) {
+                    dataset.addValue(entry.getValue(), "Spending", entry.getKey());
+                }
+                
+                // 更新图表数据集
+                weeklyChart.getCategoryPlot().setDataset(dataset);
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating weekly chart: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -532,16 +558,25 @@ public class AccountsView extends BaseView {
      * @param type 交易类型
      */
     public void addTransaction(String date, String description, String amount, String type) {
-        // 确定交易状态
-        String status = "Completed";
-        
-        // 添加新行到表格
-        Object[] rowData = {date, description, amount, status};
-        transactionTableModel.addRow(rowData);
-        
-        // 更新账户摘要和图表
-        updateAccountSummary();
-        updateWeeklyChart();
+        try {
+            // 确定交易状态
+            String status = "Completed";
+            
+            // 添加新行到表格
+            Object[] rowData = {date, description, amount, status};
+            transactionTableModel.addRow(rowData);
+            
+            // 添加到数据服务
+            String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
+            dataService.addTransaction(date, description, cleanAmount, type);
+            
+            // 更新账户摘要和图表
+            updateAccountSummary();
+            updateWeeklyChart();
+        } catch (Exception e) {
+            System.err.println("Error adding transaction: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -553,39 +588,65 @@ public class AccountsView extends BaseView {
      * @param type 交易类型
      */
     public void updateTransaction(String date, String description, String amount, String type) {
-        // 在表格中查找匹配的行
-        for (int i = 0; i < transactionTableModel.getRowCount(); i++) {
-            String rowDate = (String) transactionTableModel.getValueAt(i, 0);
-            String rowDescription = (String) transactionTableModel.getValueAt(i, 1);
-            
-            if (rowDate.equals(date) && rowDescription.equals(description)) {
-                // 更新匹配的行
-                transactionTableModel.setValueAt(date, i, 0);
-                transactionTableModel.setValueAt(description, i, 1);
-                transactionTableModel.setValueAt(amount, i, 2);
-                // 状态保持不变
-                break;
+        try {
+            // 在表格中查找匹配的行
+            for (int i = 0; i < transactionTableModel.getRowCount(); i++) {
+                String rowDate = (String) transactionTableModel.getValueAt(i, 0);
+                String rowDescription = (String) transactionTableModel.getValueAt(i, 1);
+                
+                if (rowDate.equals(date) && rowDescription.equals(description)) {
+                    // 更新匹配的行
+                    transactionTableModel.setValueAt(date, i, 0);
+                    transactionTableModel.setValueAt(description, i, 1);
+                    transactionTableModel.setValueAt(amount, i, 2);
+                    // 状态保持不变
+                    break;
+                }
             }
+            
+            // 更新账户摘要和图表
+            updateAccountSummary();
+            updateWeeklyChart();
+        } catch (Exception e) {
+            System.err.println("Error updating transaction: " + e.getMessage());
+            e.printStackTrace();
         }
-        
-        // 更新账户摘要和图表
-        updateAccountSummary();
-        updateWeeklyChart();
     }
     
     /**
      * 更新账户摘要信息
      */
     private void updateAccountSummary() {
-        // 这里可以实现更新账户摘要的逻辑
-        // 例如，计算总余额、月收入和月支出等
-    }
-    
-    /**
-     * 更新每周概览图表
-     */
-    private void updateWeeklyChart() {
-        // 这里可以实现更新每周概览图表的逻辑
-        // 例如，根据最新的交易数据更新图表
+        try {
+            if (dataService != null) {
+                // 计算总余额
+                double totalBalance = 0;
+                double totalIncome = 0;
+                double totalExpense = 0;
+                
+                // 获取所有交易
+                for (Map<String, Object> transaction : dataService.getTransactions()) {
+                    double amount = (Double) transaction.get("amount");
+                    String type = (String) transaction.get("type");
+                    
+                    // 根据类型更新对应的总额
+                    if ("Income".equals(type)) {
+                        totalIncome += amount;
+                        totalBalance += amount;
+                    } else { // Expense
+                        totalExpense += amount;
+                        totalBalance -= amount;
+                    }
+                }
+                
+                // 更新UI组件
+                balanceAmountLabel.setText(String.format("$%.2f", totalBalance));
+                incomeAmountLabel.setText(String.format("$%.2f", totalIncome));
+                expenseAmountLabel.setText(String.format("$%.2f", totalExpense));
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating account summary: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
