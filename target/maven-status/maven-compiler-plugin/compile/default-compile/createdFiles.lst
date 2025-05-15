@@ -2,6 +2,7 @@ views\CreditCardsView$1.class
 views\BucksBrainAIChatView.class
 views\AccountsView$2.class
 views\AccountsView.class
+components\RoundedButton$1.class
 services\TransactionManager$TransactionListener.class
 ui\RegistrationPage$2.class
 ui\DataEntryPage$BackgroundPanel.class
