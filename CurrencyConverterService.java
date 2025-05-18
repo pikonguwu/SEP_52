@@ -10,6 +10,7 @@ public class CurrencyConverterService {
         exchangeRates.put("USD", 1.0); // 基准为 USD
         exchangeRates.put("CNY", 7.2);
         exchangeRates.put("EUR", 0.9);
+        exchangeRates.put("HKD", 7.8); // ✅ 新增港币汇率
     }
 
     public static double convert(double amount, String fromCurrency, String toCurrency) {
@@ -28,6 +29,8 @@ public class CurrencyConverterService {
                 return "¥" + String.format("%.2f", amount);
             case "EUR":
                 return "€" + String.format("%.2f", amount);
+            case "HKD":
+                return "HK$" + String.format("%.2f", amount); // ✅ 新增港币格式化
             default:
                 return amount + " " + currency;
         }

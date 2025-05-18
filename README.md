@@ -21,3 +21,9 @@ The interface visualization synchronization is completed by Weiguang Wang.
 
 ## function: Mulple cards, data visualization, data sync, AI classification
 Made by Zhimu Zhou
+
+## Currency setting and Data protection 
+Made by Weijin He
+
+## Beautify the displayed page
+Uniform font is changed by Weijin He, backgroud colour and button size is changed by Jiayue Ma.

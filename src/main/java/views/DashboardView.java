@@ -130,8 +130,22 @@ public class DashboardView extends BaseView {
         scrollPane.getViewport().setOpaque(false);
         
         // 创建主面板
-        RoundedPanel mainPanel = new RoundedPanel(new BorderLayout(0, 0));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        RoundedPanel mainPanel = new RoundedPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // 将 Graphics 对象转换为 Graphics2D 对象以使用更高级的绘图功能
+                Graphics2D g2d = (Graphics2D) g;
+                // 设置绘图颜色为深蓝色
+                g2d.setColor(new Color(40, 80, 150)); 
+                // 绘制圆角矩形填充整个面板
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); 
+            }
+        };
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        mainpanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        // 设置卡片面板的首选大小为 320x200 像素
+        mainpanel.setPreferredSize(new Dimension(320, 200)); 
         
         // 添加默认卡片
         RoundedPanel defaultCard = createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
@@ -257,9 +271,10 @@ public class DashboardView extends BaseView {
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
         };
-        card.setPreferredSize(new Dimension(320, 200));
-        card.setMaximumSize(new Dimension(320, 200));
-        card.setMinimumSize(new Dimension(320, 200));
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        // 设置卡片面板的首选大小为 320x200 像素
+        panel.setPreferredSize(new Dimension(320, 200)); 
         
         // 主内容容器
         JPanel content = new JPanel(new GridBagLayout()) {
