@@ -5,6 +5,8 @@
 package components;
 
 import javax.swing.JButton;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -17,7 +19,9 @@ public class RoundedButton extends JButton {
     /**
      * 圆角半径，默认值为20像素。可以通过 {@link #setCornerRadius(int)} 方法进行修改。
      */
-    private int cornerRadius = 20;
+    private int cornerRadius = 45;// 默认更大圆角
+    private boolean hovered = false;
+    private final Color hoverColor = new Color(72, 201, 107);
 
     /**
      * 构造函数，初始化按钮。
@@ -26,9 +30,25 @@ public class RoundedButton extends JButton {
      */
     public RoundedButton(String text) {
         super(text); // 调用父类构造函数，设置按钮文本
-        setContentAreaFilled(false);  // 取消默认的背景填充
-        setFocusPainted(false);       // 取消焦点状态下的边框绘制
-        setBorderPainted(false);      // 取消默认的边框绘制
+        setContentAreaFilled(false); // 取消默认的背景填充
+        setFocusPainted(false); // 取消焦点状态下的边框绘制
+        setBorderPainted(false); // 取消默认的边框绘制
+        setFont(new Font("Segoe UI", Font.BOLD, 14)); // 统一字体
+
+        // 添加鼠标悬停监听
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                hovered = true;
+                repaint();
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                hovered = false;
+                repaint();
+            }
+        });
     }
 
     /**

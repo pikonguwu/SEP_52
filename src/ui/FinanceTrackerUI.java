@@ -20,6 +20,7 @@ public class FinanceTrackerUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Using BorderLayout with spacing for layout of elements
         setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(new Color(240, 255, 250)); // 整体窗口背景：淡绿
 
         // Create Top Bar Panel
         JPanel topBarPanel = createTopBarPanel();
@@ -31,24 +32,25 @@ public class FinanceTrackerUI extends JFrame {
 
         // Main Content Area with CardLayout to manage multiple views
         mainContentPanel = new RoundedPanel(new CardLayout());
-        
+
         // 创建视图实例
         DashboardView dashboardView = new DashboardView();
         TransactionsView transactionsView = new TransactionsView();
         AccountsView accountsView = new AccountsView();
-        
+
         // 设置视图之间的引用关系
         dashboardView.setTransactionsView(transactionsView);
         dashboardView.setAccountsView(accountsView);
-        
+
         // 添加不同视图到主内容面板
         mainContentPanel.add(dashboardView, "Dashboard");
         mainContentPanel.add(transactionsView, "Transactions");
         mainContentPanel.add(new InvestmentsView(), "Analysis");
         mainContentPanel.add(new SettingsView(), "Settings");
-        mainContentPanel.add(new BucksBrainAIChatView(),"BuckBrainAI Chat");
+        mainContentPanel.add(new BucksBrainAIChatView(), "BuckBrainAI Chat");
         mainContentPanel.add(accountsView, "Accounts");
         mainContentPanel.add(new CreditCardsView(), "Credit Cards");
+        mainContentPanel.add(new CurrencySettingViewPanel(), "Currency Converter");
 
         add(mainContentPanel, BorderLayout.CENTER);
 
@@ -59,7 +61,9 @@ public class FinanceTrackerUI extends JFrame {
     // Create the top bar panel with title and user section
     private JPanel createTopBarPanel() {
         RoundedPanel topBar = new RoundedPanel(new BorderLayout());
-        topBar.setBackground(AppConstants.BACKGROUND_COLOR);
+        // topBar.setBackground(AppConstants.BACKGROUND_COLOR);
+        topBar.setBackground(new Color(245, 255, 250)); // 顶部栏背景：更亮绿
+
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         // Left section with BuckBrainAI title
@@ -92,11 +96,13 @@ public class FinanceTrackerUI extends JFrame {
     private JPanel createSideBarPanel() {
         RoundedPanel navPanel = new RoundedPanel(new GridLayout(7, 1, 0, 10));
         navPanel.setPreferredSize(new Dimension(220, 0));
-        navPanel.setBackground(AppConstants.BACKGROUND_COLOR);
+        // navPanel.setBackground(AppConstants.BACKGROUND_COLOR);
+        navPanel.setBackground(new Color(235, 255, 240)); // 侧边栏背景：柔和绿
         navPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
 
         // Navigation options (buttons)
-        String[] navItems = { "Dashboard", "Transactions", "Accounts", "Analysis", "Credit Cards", "Settings","BuckBrainAI Chat" };
+        String[] navItems = { "Dashboard", "Transactions", "Accounts", "Analysis", "Credit Cards", "Settings",
+                "BuckBrainAI Chat", "Currency Converter" };
         for (String item : navItems) {
             JButton navButton = createNavButton(item);
             navPanel.add(navButton);

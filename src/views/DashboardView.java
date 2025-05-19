@@ -12,6 +12,7 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import ui.AddCardDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -21,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 定义 DashboardView 类，继承自 BaseView，用于展示仪表盘视图。
@@ -40,7 +42,7 @@ public class DashboardView extends BaseView {
     private JFreeChart expenseChart;
     private ChartPanel weeklyChartPanel;
     private ChartPanel expenseChartPanel;
-
+    private Random random = new Random();
     /**
      * 构造函数
      */
@@ -114,13 +116,21 @@ public class DashboardView extends BaseView {
      * @return 包含银行卡信息的面板
      */
     private JPanel createCardPanel() {
-        // 创建带圆角的卡片容器，重写 paintComponent 方法绘制蓝色背景
-        RoundedPanel panel = new RoundedPanel(new BorderLayout()) {
-            /**
-             * 重写 paintComponent 方法，绘制纯蓝色的圆角矩形背景。
-             * 
-             * @param g 用于绘制的 Graphics 对象
-             */
+        // 创建卡片容器面板，使用水平滚动布局
+        JPanel cardsContainer = new JPanel();
+        cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.X_AXIS));
+        cardsContainer.setOpaque(false);
+        
+        // 创建滚动面板
+        JScrollPane scrollPane = new JScrollPane(cardsContainer);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        // 创建主面板
+        RoundedPanel mainPanel = new RoundedPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -133,11 +143,140 @@ public class DashboardView extends BaseView {
             }
         };
         // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        mainpanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        // 设置卡片面板的首选大小为 320x200 像素
+        mainpanel.setPreferredSize(new Dimension(320, 200)); 
+        
+        // 添加默认卡片
+        RoundedPanel defaultCard = createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
+        
+        // 创建添加按钮
+        RoundedButton addCardButton = new RoundedButton("+ Add Card");
+        addCardButton.setFont(new Font("Arial", Font.BOLD, 12));
+        addCardButton.setBackground(new Color(255, 255, 255, 50));
+        addCardButton.setForeground(Color.WHITE);
+        addCardButton.setBorderPainted(false);
+        addCardButton.setFocusPainted(false);
+        addCardButton.setContentAreaFilled(false);
+        addCardButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // 创建按钮容器面板，用于定位按钮
+        JPanel buttonContainer = new JPanel(null); // 使用绝对布局
+        buttonContainer.setOpaque(false);
+        buttonContainer.setPreferredSize(defaultCard.getPreferredSize());
+        addCardButton.setBounds(
+            defaultCard.getPreferredSize().width - 100, // 右边距
+            10, // 上边距
+            100, // 按钮宽度
+            30  // 按钮高度
+        );
+        buttonContainer.add(addCardButton);
+        
+        // 创建卡片和按钮的叠加面板
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(defaultCard.getPreferredSize());
+        layeredPane.add(defaultCard, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(buttonContainer, JLayeredPane.PALETTE_LAYER);
+        
+        // 设置卡片和按钮容器的位置
+        defaultCard.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
+        buttonContainer.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
+        
+        addCardButton.addActionListener(e -> {
+            AddCardDialog dialog = new AddCardDialog((Frame) SwingUtilities.getWindowAncestor(this));
+            dialog.setVisible(true);
+            
+            if (dialog.isConfirmed()) {
+                // 获取新卡片信息
+                String cardNumber = dialog.getCardNumber();
+                String cardholderName = dialog.getCardholderName();
+                String expiryDate = dialog.getExpiryDate();
+                double balance = dialog.getBalance();
+                
+                // 创建新卡片
+                RoundedPanel newCard = createCard(cardNumber, cardholderName, expiryDate, balance);
+                
+                // 创建新卡片的按钮容器
+                JPanel newButtonContainer = new JPanel(null);
+                newButtonContainer.setOpaque(false);
+                newButtonContainer.setPreferredSize(newCard.getPreferredSize());
+                
+                // 复制添加按钮到新卡片
+                RoundedButton newAddButton = new RoundedButton("+ Add Card");
+                newAddButton.setFont(addCardButton.getFont());
+                newAddButton.setBackground(addCardButton.getBackground());
+                newAddButton.setForeground(addCardButton.getForeground());
+                newAddButton.setBorderPainted(false);
+                newAddButton.setFocusPainted(false);
+                newAddButton.setContentAreaFilled(false);
+                newAddButton.setBackground(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+                newAddButton.setBorder(addCardButton.getBorder());
+                newAddButton.setBounds(
+                    newCard.getPreferredSize().width - 100,
+                    10,
+                    90,
+                    30
+                );
+                newButtonContainer.add(newAddButton);
+                
+                // 创建新卡片的叠加面板
+                JLayeredPane newLayeredPane = new JLayeredPane();
+                newLayeredPane.setPreferredSize(newCard.getPreferredSize());
+                newLayeredPane.add(newCard, JLayeredPane.DEFAULT_LAYER);
+                newLayeredPane.add(newButtonContainer, JLayeredPane.PALETTE_LAYER);
+                
+                // 设置新卡片和按钮容器的位置
+                newCard.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
+                newButtonContainer.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
+                
+                // 添加新卡片到容器
+                cardsContainer.add(newLayeredPane);
+                cardsContainer.add(Box.createHorizontalStrut(15)); // 添加卡片间距
+                
+                // 刷新容器
+                cardsContainer.revalidate();
+                cardsContainer.repaint();
+                
+                // 滚动到新添加的卡片
+                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
+                
+                // 显示成功消息
+                JOptionPane.showMessageDialog(this,
+                    "Card added successfully!\n" +
+                    "Card Number: " + maskCardNumber(cardNumber) + "\n" +
+                    "Cardholder: " + cardholderName + "\n" +
+                    "Expiry Date: " + expiryDate + "\n" +
+                    "Balance: $" + String.format("%.2f", balance),
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
+        // 添加默认卡片到容器
+        cardsContainer.add(layeredPane);
+        
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        return mainPanel;
+    }
+    
+    // 创建单个卡片
+    private RoundedPanel createCard(String cardNumber, String cardholderName, String expiryDate, double balance) {
+        // 创建带圆角的卡片容器
+        RoundedPanel card = new RoundedPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setColor(new Color(40, 80, 150));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            }
+        };
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
         panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
         // 设置卡片面板的首选大小为 320x200 像素
         panel.setPreferredSize(new Dimension(320, 200)); 
-
-        // 主内容容器，使用网格包布局实现精确布局，背景设置为透明
+        
+        // 主内容容器
         JPanel content = new JPanel(new GridBagLayout()) {
             /**
              * 重写 isOpaque 方法，使面板背景透明。
@@ -146,7 +285,7 @@ public class DashboardView extends BaseView {
              */
             @Override
             public boolean isOpaque() {
-                return false; 
+                return false;
             }
         };
         // 创建网格包约束对象
@@ -177,13 +316,11 @@ public class DashboardView extends BaseView {
 
         // 卡号区域（中间偏上）
         JPanel numberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        // 设置卡号面板背景透明
-        numberPanel.setOpaque(false); 
-        // 添加卡号分段标签
-        numberPanel.add(createCardSegment("3778", 22)); 
-        numberPanel.add(createCardSegment("****", 18)); 
-        numberPanel.add(createCardSegment("****", 18)); 
-        numberPanel.add(createCardSegment("1234", 22)); 
+        numberPanel.setOpaque(false);
+        String[] segments = cardNumber.split(" ");
+        for (String segment : segments) {
+            numberPanel.add(createCardSegment(segment, segment.length() == 4 ? 22 : 18));
+        }
 
         // 底部信息区域
         JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
@@ -265,11 +402,10 @@ public class DashboardView extends BaseView {
         // 将底部信息区域添加到内容面板
         content.add(bottomPanel, gbc); 
 
-        // 将内容面板添加到卡片面板的中心位置
-        panel.add(content, BorderLayout.CENTER); 
-        return panel;
+        card.add(content, BorderLayout.CENTER);
+        return card;
     }
-    
+
     /**
      * 创建卡号分段组件，用于显示银行卡号的分段信息。
      * 
@@ -877,5 +1013,45 @@ public class DashboardView extends BaseView {
             System.err.println("Error in loadInitialTransactions: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // 更新卡片显示
+    private void updateCardDisplay(RoundedPanel panel, String cardNumber, String cardholderName, String expiryDate, double balance) {
+        // 获取内容面板
+        JPanel content = (JPanel) panel.getComponent(1);
+        
+        // 更新余额
+        JPanel balancePanel = (JPanel) content.getComponent(0);
+        JLabel amountLabel = (JLabel) balancePanel.getComponent(1);
+        amountLabel.setText(String.format("$%.2f", balance));
+        
+        // 更新卡号
+        JPanel numberPanel = (JPanel) content.getComponent(1);
+        numberPanel.removeAll();
+        String maskedNumber = maskCardNumber(cardNumber);
+        String[] segments = maskedNumber.split(" ");
+        for (String segment : segments) {
+            numberPanel.add(createCardSegment(segment, segment.length() == 4 ? 22 : 18));
+        }
+        
+        // 更新持卡人信息
+        JPanel bottomPanel = (JPanel) content.getComponent(2);
+        JPanel holderPanel = (JPanel) bottomPanel.getComponent(0);
+        JLabel nameLabel = (JLabel) holderPanel.getComponent(1);
+        nameLabel.setText(cardholderName);
+        
+        // 更新有效期
+        JPanel validPanel = (JPanel) bottomPanel.getComponent(1);
+        JLabel dateLabel = (JLabel) validPanel.getComponent(1);
+        dateLabel.setText(expiryDate);
+        
+        // 刷新面板
+        panel.revalidate();
+        panel.repaint();
+    }
+    
+    // 掩码卡号
+    private String maskCardNumber(String cardNumber) {
+        return cardNumber.substring(0, 4) + " **** **** " + cardNumber.substring(12);
     }
 }

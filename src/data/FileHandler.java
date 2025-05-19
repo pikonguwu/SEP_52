@@ -1,6 +1,7 @@
 package data;
 
 import Entity.Transaction;
+import services.SecurityService; //新加的
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,6 +13,10 @@ public class FileHandler {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
+                String decrypted = SecurityService.decrypt(line);
+                if (decrypted == null)
+                    continue;//
+
                 String[] data = line.split(",");
                 if (data.length == 3) {
                     String description = data[0];
@@ -29,6 +34,10 @@ public class FileHandler {
     public void saveTransactions(List<Transaction> transactions, String filePath) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             for (Transaction transaction : transactions) {
+                String plain = transaction.getDescription() + "," + transaction.getAmount() + ","
+                        + transaction.getCategory();//
+                String encrypted = SecurityService.encrypt(plain);//
+
                 bw.write(
                         transaction.getDescription() + "," + transaction.getAmount() + "," + transaction.getCategory());
                 bw.newLine();

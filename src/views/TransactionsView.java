@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.Map;
+
 /**
  * TransactionsView 类继承自 BaseView，用于展示交易视图界面。
  * 该界面包含标题、卡片面板、费用图表和交易表格，并且支持分页查看交易记录。
@@ -42,7 +43,7 @@ public class TransactionsView extends BaseView {
     private JTable expenseTable;
     private DefaultTableModel incomeTableModel;
     private DefaultTableModel expenseTableModel;
-    
+
     // 添加数据服务和图表相关字段
     private TransactionDataService dataService;
     private JFreeChart expenseChart;
@@ -89,7 +90,7 @@ public class TransactionsView extends BaseView {
 
         // 将交易表格面板添加到面板的南部位置
         add(createTransactionPanel(), BorderLayout.SOUTH);
-        
+
         // 加载初始交易数据到数据服务
         loadInitialTransactions();
     }
@@ -105,14 +106,14 @@ public class TransactionsView extends BaseView {
                 String date = (String) tableModel.getValueAt(i, 4);
                 String amount = (String) tableModel.getValueAt(i, 5);
                 String type = amount.startsWith("-") ? "Expense" : "Income";
-                
+
                 // 清理金额字符串
                 String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
-                
+
                 // 添加到数据服务
                 dataService.addTransaction(date, description, cleanAmount, type);
             }
-            
+
             // 首次更新图表
             updateExpenseChart();
         } catch (Exception e) {
@@ -127,8 +128,8 @@ public class TransactionsView extends BaseView {
      */
     private void initializeTableModels() {
         // 定义表格的列名
-        String[] columnNames = {"Description", "Transaction ID", "Type", "Card", "Date", "Amount"};
-        
+        String[] columnNames = { "Description", "Transaction ID", "Type", "Card", "Date", "Amount" };
+
         // 创建主表格模型
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -172,18 +173,18 @@ public class TransactionsView extends BaseView {
         expenseTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
         Object[][] data = {
-            {"Spotify Subscription", "123456", "Shopping", "1234******", "28 Jan, 12.30 AM", "-$2,500"},
-            {"Freepik Sales", "789012", "Transfer", "5678******", "25 Jan, 10.40 PM", "+$750"},
-            {"Mobile Service", "345678", "Service", "9012******", "20 Jan, 10.40 PM", "-$150"},
-            {"Wilson", "901234", "Transfer", "3456******", "15 Jan, 03.29 PM", "-$1,050"},
-            {"Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840"}
+                { "Spotify Subscription", "123456", "Shopping", "1234******", "28 Jan, 12.30 AM", "-$2,500" },
+                { "Freepik Sales", "789012", "Transfer", "5678******", "25 Jan, 10.40 PM", "+$750" },
+                { "Mobile Service", "345678", "Service", "9012******", "20 Jan, 10.40 PM", "-$150" },
+                { "Wilson", "901234", "Transfer", "3456******", "15 Jan, 03.29 PM", "-$1,050" },
+                { "Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840" }
         };
-        
+
         // 将初始数据添加到相应的表格中
         for (Object[] row : data) {
             // 添加到主表格
             tableModel.addRow(row);
-            
+
             // 根据金额判断类型并添加到相应表格
             String amount = (String) row[5]; // 金额在第6列
             if (amount.startsWith("-")) {
@@ -214,16 +215,16 @@ public class TransactionsView extends BaseView {
 
         // 中部：选项卡和交易表格
         JTabbedPane tabbedPane = new JTabbedPane();
-        
+
         // 添加"所有交易"选项卡
         tabbedPane.addTab("All Transactions", new JScrollPane(transactionTable));
-        
+
         // 添加"收入"选项卡
         tabbedPane.addTab("Income", new JScrollPane(incomeTable));
-        
+
         // 添加"支出"选项卡
         tabbedPane.addTab("Expense", new JScrollPane(expenseTable));
-        
+
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
         // 底部：分页控件
@@ -444,9 +445,9 @@ public class TransactionsView extends BaseView {
     private ChartPanel createExpenseChart() {
         // 创建默认的分类数据集
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
+
         // 初始化为空数据集，稍后会在updateExpenseChart中更新
-        String[] categories = {"Housing", "Food", "Transport", "Entertainment", "Savings", "Others"};
+        String[] categories = { "Housing", "Food", "Transport", "Entertainment", "Savings", "Others" };
         for (String category : categories) {
             dataset.addValue(0, "Expenses", category);
         }
@@ -462,17 +463,17 @@ public class TransactionsView extends BaseView {
                 true, // 是否生成工具提示
                 false // 是否生成网址链接
         );
-        
+
         // 自定义图表样式
         expenseChart.setBackgroundPaint(Color.WHITE);
-        
+
         // 创建图表面板
         expenseChartPanel = new ChartPanel(expenseChart);
         expenseChartPanel.setPreferredSize(new Dimension(400, 300));
-        
+
         return expenseChartPanel;
     }
-    
+
     /**
      * 更新费用图表
      */
@@ -481,20 +482,20 @@ public class TransactionsView extends BaseView {
             if (dataService != null && expenseChart != null) {
                 // 获取各类支出数据
                 Map<String, Double> categoryData = dataService.getExpenseCategories();
-                
+
                 // 创建新的数据集
                 DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-                
+
                 // 添加数据
                 for (Map.Entry<String, Double> entry : categoryData.entrySet()) {
                     dataset.addValue(entry.getValue(), "Expenses", entry.getKey());
                 }
-                
+
                 // 如果没有数据，添加默认分类
                 if (categoryData.isEmpty()) {
                     dataset.addValue(0, "Expenses", "No Data");
                 }
-                
+
                 // 更新图表数据集
                 expenseChart.getCategoryPlot().setDataset(dataset);
             }
@@ -526,29 +527,29 @@ public class TransactionsView extends BaseView {
     /**
      * 添加交易记录
      * 
-     * @param date 交易日期
+     * @param date        交易日期
      * @param description 交易描述
-     * @param amount 交易金额
-     * @param type 交易类型
+     * @param amount      交易金额
+     * @param type        交易类型
      */
     public void addTransaction(String date, String description, String amount, String type) {
         try {
             // 生成随机交易ID
-            String transactionId = String.format("%06d", (int)(Math.random() * 1000000));
+            String transactionId = String.format("%06d", (int) (Math.random() * 1000000));
             // 生成随机卡号
-            String cardNumber = String.format("%04d******", (int)(Math.random() * 10000));
+            String cardNumber = String.format("%04d******", (int) (Math.random() * 10000));
 
             // 根据金额判断交易类型
             String actualType = amount.startsWith("-") ? "Expense" : "Income";
 
             // 添加新行到表格
             Object[] rowData = {
-                description,
-                transactionId,
-                type,
-                cardNumber,
-                date,
-                amount
+                    description,
+                    transactionId,
+                    type,
+                    cardNumber,
+                    date,
+                    amount
             };
 
             tableModel.addRow(rowData);
@@ -563,7 +564,7 @@ public class TransactionsView extends BaseView {
             // 添加到数据服务
             String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
             dataService.addTransaction(date, description, cleanAmount, type);
-            
+
             // 更新图表
             updateExpenseChart();
         } catch (Exception e) {
@@ -571,44 +572,44 @@ public class TransactionsView extends BaseView {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 删除交易记录
      * 
-     * @param date 交易日期
+     * @param date        交易日期
      * @param description 交易描述
-     * @param amount 交易金额
-     * @param type 交易类型
+     * @param amount      交易金额
+     * @param type        交易类型
      */
     public void removeTransaction(String date, String description, String amount, String type) {
         try {
             // 在主表格中查找并删除匹配的行
             for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
-                if (tableModel.getValueAt(i, 0).equals(description) && 
-                    tableModel.getValueAt(i, 4).equals(date) && 
-                    tableModel.getValueAt(i, 5).equals(amount)) {
+                if (tableModel.getValueAt(i, 0).equals(description) &&
+                        tableModel.getValueAt(i, 4).equals(date) &&
+                        tableModel.getValueAt(i, 5).equals(amount)) {
                     tableModel.removeRow(i);
                     break;
                 }
             }
-            
+
             // 根据交易类型在相应的表格中查找并删除匹配的行
             String actualType = amount.startsWith("-") ? "Expense" : "Income";
             DefaultTableModel targetModel = actualType.equals("Income") ? incomeTableModel : expenseTableModel;
-            
+
             for (int i = targetModel.getRowCount() - 1; i >= 0; i--) {
-                if (targetModel.getValueAt(i, 0).equals(description) && 
-                    targetModel.getValueAt(i, 4).equals(date) && 
-                    targetModel.getValueAt(i, 5).equals(amount)) {
+                if (targetModel.getValueAt(i, 0).equals(description) &&
+                        targetModel.getValueAt(i, 4).equals(date) &&
+                        targetModel.getValueAt(i, 5).equals(amount)) {
                     targetModel.removeRow(i);
                     break;
                 }
             }
-            
+
             // 此处应该更新数据服务中的数据
             // 但TransactionDataService当前不支持删除单个交易
             // 因此需要重新构建所有交易数据
-            
+
             // 更新图表
             updateExpenseChart();
         } catch (Exception e) {
