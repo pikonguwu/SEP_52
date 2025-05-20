@@ -27,3 +27,6 @@ Made by Weijin He
 
 ## Beautify the displayed page
 Uniform font is changed by Weijin He, backgroud colour and button size is changed by Jiayue Ma.
+
+## Junit test of function
+Maded by Jiayue Ma and Weijin He.
