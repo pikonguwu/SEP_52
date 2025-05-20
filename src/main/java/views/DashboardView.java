@@ -143,9 +143,9 @@ public class DashboardView extends BaseView {
             }
         };
         // 设置卡片面板的内边距，上、左、下、右均为 25 像素
-        mainpanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
         // 设置卡片面板的首选大小为 320x200 像素
-        mainpanel.setPreferredSize(new Dimension(320, 200)); 
+        mainPanel.setPreferredSize(new Dimension(320, 200)); 
         
         // 添加默认卡片
         RoundedPanel defaultCard = createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
@@ -272,9 +272,9 @@ public class DashboardView extends BaseView {
             }
         };
         // 设置卡片面板的内边距，上、左、下、右均为 25 像素
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        card.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
         // 设置卡片面板的首选大小为 320x200 像素
-        panel.setPreferredSize(new Dimension(320, 200)); 
+        card.setPreferredSize(new Dimension(320, 200)); 
         
         // 主内容容器
         JPanel content = new JPanel(new GridBagLayout()) {
@@ -803,9 +803,9 @@ public class DashboardView extends BaseView {
         String response = aiService.getAIResponse(prompt);
         System.out.println("Raw AI response: " + response);
         
-        // 从JSON响应中提取result字段，使用非废弃的方法
+        // 从JSON响应中提取result字段，使用新的 JsonParser.parseString 方法
         try {
-            // 使用JsonParser.parseString替代废弃的new JsonParser().parse
+            // 使用新的 JsonParser.parseString 方法
             JsonElement jsonElement = JsonParser.parseString(response);
             JsonObject jsonResponse = jsonElement.getAsJsonObject();
             String result = jsonResponse.get("result").getAsString();

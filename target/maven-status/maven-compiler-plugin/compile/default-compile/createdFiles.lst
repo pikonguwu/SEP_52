@@ -34,6 +34,7 @@ views\PrivacySettingsPanel.class
 ui\RegistrationPage$1.class
 views\AccountsView$3.class
 ui\DataEntryPage$1.class
+services\BaiduAIService$2.class
 ui\LoginPage$2.class
 views\BucksBrainAIChatView$1.class
 Controller\TransactionController.class
@@ -50,6 +51,7 @@ views\SettingsView$1.class
 views\TransactionsView$2.class
 views\EditTransactionDialog.class
 services\CurrencyConverterService.class
+services\BaiduAIService$1.class
 views\CurrencySettingViewPanel.class
 views\TransactionsView$1.class
 ui\DataEntryPage$2.class
