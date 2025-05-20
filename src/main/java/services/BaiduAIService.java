@@ -63,7 +63,7 @@ public class BaiduAIService {
         // 发送请求并获取响应
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // 使用 Gson 将响应体解析为 Map
-        Map<String, Object> result = new Gson().fromJson(response.body(), HashMap.class);
+        Map<String, Object> result = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
 
         if (result.containsKey("error")) {
             throw new IOException("Failed to get access token: " + result.get("error_description"));
@@ -88,14 +88,14 @@ public class BaiduAIService {
             String apiUrl = API_BASE_URL + "?access_token=" + accessToken;
 
             // 构建消息列表
-            List<Map<String, String>> messages = new ArrayList<>();
-            Map<String, String> userMessage = new HashMap<>();
+            List<Map<String, String>> messages = new ArrayList<Map<String, String>>();
+            Map<String, String> userMessage = new HashMap<String, String>();
             userMessage.put("role", "user");
             userMessage.put("content", message);
             messages.add(userMessage);
 
             // 构建请求体
-            Map<String, Object> requestBodyMap = new HashMap<>();
+            Map<String, Object> requestBodyMap = new HashMap<String, Object>();
             requestBodyMap.put("messages", messages);
             // 使用 Gson 将请求体转换为 JSON 字符串
             String requestBody = new Gson().toJson(requestBodyMap);
@@ -112,7 +112,7 @@ public class BaiduAIService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // 检查响应是否包含错误
-            Map<String, Object> responseMap = new Gson().fromJson(response.body(), HashMap.class);
+            Map<String, Object> responseMap = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
             if (responseMap.containsKey("error")) {
                 throw new IOException("API Error: " + responseMap.get("error"));
             }
