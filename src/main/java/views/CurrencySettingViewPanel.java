@@ -30,7 +30,7 @@ public class CurrencySettingViewPanel extends JPanel {
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
         formPanel.setBackground(Color.WHITE);
 
-        String[] currencies = { "CNY", "USD", "EUR" };
+        String[] currencies = { "CNY", "USD", "EUR", "HKD" };
 
         // From Currency
         JLabel fromLabel = new JLabel("From Currency:");

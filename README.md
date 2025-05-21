@@ -23,7 +23,10 @@ The interface visualization synchronization is completed by Weiguang Wang.
 Made by Zhimu Zhou
 
 ## Currency setting and Data protection 
-Made by Weijin He
+Currency is made by Weijin He,data protection is made by Jiayue Ma.
 
 ## Beautify the displayed page
 Uniform font is changed by Weijin He, backgroud colour and button size is changed by Jiayue Ma.
+
+## Junit test of function
+Maded by Jiayue Ma and Weijin He.
