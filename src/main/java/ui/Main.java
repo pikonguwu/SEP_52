@@ -7,7 +7,7 @@ import java.util.Enumeration;
 public class Main {
     public static void main(String[] args) {
         // 设置全局字体为 Segoe UI
-        setUIFont(new Font("Segoe UI", Font.PLAIN, 14));
+        setUIFont(new Font("Microsoft YaHei", Font.PLAIN, 14));
 
         // 启动登录页面（放在 UI 线程中更安全）
         SwingUtilities.invokeLater(() -> new LoginPage());
