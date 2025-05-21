@@ -94,7 +94,7 @@ public class FinanceTrackerUI extends JFrame {
 
     // Create the left sidebar panel with navigation buttons
     private JPanel createSideBarPanel() {
-        RoundedPanel navPanel = new RoundedPanel(new GridLayout(7, 1, 0, 10));
+        RoundedPanel navPanel = new RoundedPanel(new GridLayout(8, 1, 0, 10));
         navPanel.setPreferredSize(new Dimension(220, 0));
         // navPanel.setBackground(AppConstants.BACKGROUND_COLOR);
         navPanel.setBackground(new Color(235, 255, 240)); // 侧边栏背景：柔和绿
