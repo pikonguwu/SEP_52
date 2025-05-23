@@ -6,6 +6,8 @@ import services.TransactionDataService;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.category.DefaultCategoryDataset;
+import ui.AddCardDialog;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -194,155 +196,318 @@ public class AccountsView extends BaseView {
      * @return 包含银行卡信息的面板
      */
     private JPanel createMyCard() {
-        // 创建一个圆角面板，重写 paintComponent 方法以绘制圆角背景
-        RoundedPanel panel = new RoundedPanel(new BorderLayout()) {
-            /**
-             * 重写 paintComponent 方法，绘制卡片的圆角背景。
-             * 
-             * @param g 用于绘制的 Graphics 对象
-             */
+        // 创建卡片容器面板，使用水平滚动布局
+        JPanel cardsContainer = new JPanel();
+        cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.X_AXIS));
+        cardsContainer.setOpaque(false);
+        
+        // 创建滚动面板
+        JScrollPane scrollPane = new JScrollPane(cardsContainer);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        // 创建主面板
+        RoundedPanel mainPanel = new RoundedPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
-                // 调用父类的 paintComponent 方法
                 super.paintComponent(g);
-                // 将 Graphics 对象转换为 Graphics2D 对象，以便使用更高级的绘图功能
+                // 将 Graphics 对象转换为 Graphics2D 对象以使用更高级的绘图功能
                 Graphics2D g2d = (Graphics2D) g;
-                // 设置绘图颜色为指定的蓝色
+                // 设置绘图颜色为深蓝色
+                g2d.setColor(new Color(40, 80, 150)); 
+                // 绘制圆角矩形填充整个面板
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); 
+            }
+        };
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        // 设置卡片面板的首选大小为 320x200 像素
+        mainPanel.setPreferredSize(new Dimension(320, 200));
+
+        // 创建默认卡片
+        RoundedPanel defaultCard = createCard();
+        
+        // 创建添加按钮
+        RoundedButton addCardButton = new RoundedButton("+ Add Card");
+        addCardButton.setFont(new Font("Arial", Font.BOLD, 12));
+        addCardButton.setBackground(new Color(255, 255, 255, 50));
+        addCardButton.setForeground(Color.WHITE);
+        addCardButton.setBorderPainted(false);
+        addCardButton.setFocusPainted(false);
+        addCardButton.setContentAreaFilled(false);
+        addCardButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // 创建按钮容器面板，用于定位按钮
+        JPanel buttonContainer = new JPanel(null); // 使用绝对布局
+        buttonContainer.setOpaque(false);
+        buttonContainer.setPreferredSize(defaultCard.getPreferredSize());
+        addCardButton.setBounds(
+            defaultCard.getPreferredSize().width - 100, // 右边距
+            10, // 上边距
+            100, // 按钮宽度
+            30  // 按钮高度
+        );
+        buttonContainer.add(addCardButton);
+        
+        // 创建卡片和按钮的叠加面板
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(defaultCard.getPreferredSize());
+        layeredPane.add(defaultCard, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(buttonContainer, JLayeredPane.PALETTE_LAYER);
+        
+        // 设置卡片和按钮容器的位置
+        defaultCard.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
+        buttonContainer.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
+        
+        // 添加按钮事件
+        addCardButton.addActionListener(e -> {
+            AddCardDialog dialog = new AddCardDialog((Frame) SwingUtilities.getWindowAncestor(this));
+            dialog.setVisible(true);
+            
+            if (dialog.isConfirmed()) {
+                // 获取新卡片信息
+                String cardNumber = dialog.getCardNumber();
+                String cardholderName = dialog.getCardholderName();
+                String expiryDate = dialog.getExpiryDate();
+                double balance = dialog.getBalance();
+                
+                // 创建新卡片
+                RoundedPanel newCard = createCard(cardNumber, cardholderName, expiryDate, balance);
+                
+                // 创建新卡片的按钮容器
+                JPanel newButtonContainer = new JPanel(null);
+                newButtonContainer.setOpaque(false);
+                newButtonContainer.setPreferredSize(newCard.getPreferredSize());
+                
+                // 复制添加按钮到新卡片
+                RoundedButton newAddButton = new RoundedButton("+ Add Card");
+                newAddButton.setFont(addCardButton.getFont());
+                newAddButton.setBackground(addCardButton.getBackground());
+                newAddButton.setForeground(addCardButton.getForeground());
+                newAddButton.setBorderPainted(false);
+                newAddButton.setFocusPainted(false);
+                newAddButton.setContentAreaFilled(false);
+                newAddButton.setBorder(addCardButton.getBorder());
+                newAddButton.setBounds(
+                    newCard.getPreferredSize().width - 100,
+                    10,
+                    90,
+                    30
+                );
+                newButtonContainer.add(newAddButton);
+                
+                // 创建新卡片的叠加面板
+                JLayeredPane newLayeredPane = new JLayeredPane();
+                newLayeredPane.setPreferredSize(newCard.getPreferredSize());
+                newLayeredPane.add(newCard, JLayeredPane.DEFAULT_LAYER);
+                newLayeredPane.add(newButtonContainer, JLayeredPane.PALETTE_LAYER);
+                
+                // 设置新卡片和按钮容器的位置
+                newCard.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
+                newButtonContainer.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
+                
+                // 添加新卡片到容器
+                cardsContainer.add(newLayeredPane);
+                cardsContainer.add(Box.createHorizontalStrut(15)); // 添加卡片间距
+                
+                // 刷新容器
+                cardsContainer.revalidate();
+                cardsContainer.repaint();
+                
+                // 滚动到新添加的卡片
+                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
+                
+                // 显示成功消息
+                JOptionPane.showMessageDialog(this,
+                    "卡片添加成功！\n" +
+                    "卡号: " + maskCardNumber(cardNumber) + "\n" +
+                    "持卡人: " + cardholderName + "\n" +
+                    "有效期: " + expiryDate + "\n" +
+                    "余额: $" + String.format("%.2f", balance),
+                    "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
+        // 添加默认卡片到容器
+        cardsContainer.add(layeredPane);
+        
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        return mainPanel;
+    }
+    
+    // 创建单个卡片 - 无参默认版本
+    private RoundedPanel createCard() {
+        return createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
+    }
+    
+    // 创建单个卡片 - 带参数版本
+    private RoundedPanel createCard(String cardNumber, String cardholderName, String expiryDate, double balance) {
+        // 创建带圆角的卡片容器
+        RoundedPanel card = new RoundedPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
                 g2d.setColor(new Color(40, 80, 150));
-                // 绘制圆角矩形作为卡片背景
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
         };
-        // 设置面板的内边距，上、左、下、右均为 25 像素
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-        // 设置面板的首选大小为 320x200 像素
-        panel.setPreferredSize(new Dimension(320, 200));
-
-        // 卡片内容布局
-        // 创建一个使用网格袋布局的面板，用于放置卡片内容
-        JPanel content = new JPanel(new GridBagLayout());
-        // 设置面板背景透明
-        content.setOpaque(false);
-        // 创建网格袋约束对象
+        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        card.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        // 设置卡片面板的首选大小为 320x200 像素
+        card.setPreferredSize(new Dimension(320, 200)); 
+        
+        // 主内容容器
+        JPanel content = new JPanel(new GridBagLayout()) {
+            /**
+             * 重写 isOpaque 方法，使面板背景透明。
+             */
+            @Override
+            public boolean isOpaque() {
+                return false;
+            }
+        };
+        // 创建网格包约束对象
         GridBagConstraints gbc = new GridBagConstraints();
-        // 设置组件之间的间距为 5 像素
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // 设置组件间的内边距为 5 像素
+        gbc.insets = new Insets(5, 5, 5, 5); 
 
-        // 余额部分
-        // 创建一个使用边界布局的面板，用于放置余额信息
+        // 余额区域
         JPanel balancePanel = new JPanel(new BorderLayout());
-        // 设置面板背景透明
-        balancePanel.setOpaque(false);
-        // 创建余额标题标签
+        // 设置余额面板背景透明
+        balancePanel.setOpaque(false); 
         JLabel balanceLabel = new JLabel("BALANCE");
-        // 设置余额标题标签的字体为 Arial 加粗，字号 12
-        balanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        // 设置余额标题标签的文字颜色为指定的灰色
-        balanceLabel.setForeground(new Color(180, 180, 220));
-        // 创建余额金额标签
-        JLabel amountLabel = new JLabel("$5,756");
-        // 设置余额金额标签的字体为 Arial 加粗，字号 24
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        // 设置余额金额标签的文字颜色为白色
-        amountLabel.setForeground(Color.WHITE);
-        // 将余额标题标签添加到余额面板的北部位置
-        balancePanel.add(balanceLabel, BorderLayout.NORTH);
-        // 将余额金额标签添加到余额面板的中心位置
-        balancePanel.add(amountLabel, BorderLayout.CENTER);
+        // 设置余额标签字体为 Arial 加粗，字号 12
+        balanceLabel.setFont(new Font("Arial", Font.BOLD, 12)); 
+        // 设置余额标签字体颜色为浅灰色
+        balanceLabel.setForeground(new Color(180, 180, 220)); 
+        
+        JLabel amountLabel = new JLabel(String.format("$%.2f", balance));
+        // 设置金额标签字体为 Arial 加粗，字号 24
+        amountLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
+        // 设置金额标签字体颜色为白色
+        amountLabel.setForeground(Color.WHITE); 
+        
+        // 将余额标签添加到余额面板的北部位置
+        balancePanel.add(balanceLabel, BorderLayout.NORTH); 
+        // 将金额标签添加到余额面板的中心位置
+        balancePanel.add(amountLabel, BorderLayout.CENTER); 
 
-        // 卡号部分
-        // 创建一个使用左对齐流式布局的面板，用于放置卡号分段标签
+        // 卡号区域
         JPanel numberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        // 设置面板背景透明
         numberPanel.setOpaque(false);
-        // 添加卡号分段标签
-        numberPanel.add(createCardSegment("3778", 22));
-        numberPanel.add(createCardSegment("****", 18));
-        numberPanel.add(createCardSegment("****", 18));
-        numberPanel.add(createCardSegment("1234", 22));
+        String[] segments = cardNumber.split(" ");
+        if (segments.length == 1) {
+            // 如果没有空格分隔，则按照每4位分隔
+            numberPanel.add(createCardSegment(cardNumber.substring(0, 4), 22));
+            numberPanel.add(createCardSegment("****", 18));
+            numberPanel.add(createCardSegment("****", 18));
+            numberPanel.add(createCardSegment(cardNumber.substring(cardNumber.length() - 4), 22));
+        } else {
+            for (String segment : segments) {
+                numberPanel.add(createCardSegment(segment, segment.length() == 4 ? 22 : 18));
+            }
+        }
 
-        // 底部信息
-        // 创建一个使用 1x2 网格布局的面板，用于放置持卡人信息和有效期信息
+        // 底部信息区域
         JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
-        // 设置面板背景透明
-        bottomPanel.setOpaque(false);
-
-        // 持卡人信息
-        // 创建一个使用边界布局的面板，用于放置持卡人信息
+        // 设置底部信息面板背景透明
+        bottomPanel.setOpaque(false); 
+        
+        // 左侧持卡人信息
         JPanel holderPanel = new JPanel(new BorderLayout());
-        // 设置面板背景透明
-        holderPanel.setOpaque(false);
-        // 创建持卡人标题标签
+        // 设置持卡人信息面板背景透明
+        holderPanel.setOpaque(false); 
         JLabel holderLabel = new JLabel("CARD HOLDER");
-        // 设置持卡人标题标签的字体为 Arial 加粗，字号 10
-        holderLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        // 设置持卡人标题标签的文字颜色为指定的灰色
-        holderLabel.setForeground(new Color(180, 180, 220));
-        // 创建持卡人姓名标签
-        JLabel nameLabel = new JLabel("Eddy Cusuma");
-        // 设置持卡人姓名标签的字体为 Arial 加粗，字号 14
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        // 设置持卡人姓名标签的文字颜色为白色
-        nameLabel.setForeground(Color.WHITE);
-        // 将持卡人标题标签添加到持卡人面板的北部位置
-        holderPanel.add(holderLabel, BorderLayout.NORTH);
-        // 将持卡人姓名标签添加到持卡人面板的中心位置
-        holderPanel.add(nameLabel, BorderLayout.CENTER);
+        // 设置持卡人标签字体为 Arial 加粗，字号 10
+        holderLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        // 设置持卡人标签字体颜色为浅灰色
+        holderLabel.setForeground(new Color(180, 180, 220)); 
+        
+        JLabel nameLabel = new JLabel(cardholderName);
+        // 设置持卡人姓名标签字体为 Arial 加粗，字号 14
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        // 设置持卡人姓名标签字体颜色为白色
+        nameLabel.setForeground(Color.WHITE); 
+        
+        // 将持卡人标签添加到持卡人信息面板的北部位置
+        holderPanel.add(holderLabel, BorderLayout.NORTH); 
+        // 将持卡人姓名标签添加到持卡人信息面板的中心位置
+        holderPanel.add(nameLabel, BorderLayout.CENTER); 
 
-        // 有效期信息
-        // 创建一个使用边界布局的面板，用于放置有效期信息
+        // 右侧有效期信息
         JPanel validPanel = new JPanel(new BorderLayout());
-        // 设置面板背景透明
-        validPanel.setOpaque(false);
-        // 创建有效期标题标签
+        // 设置有效期信息面板背景透明
+        validPanel.setOpaque(false); 
         JLabel validLabel = new JLabel("VALID THRU");
-        // 设置有效期标题标签的字体为 Arial 加粗，字号 10
-        validLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        // 设置有效期标题标签的文字颜色为指定的灰色
-        validLabel.setForeground(new Color(180, 180, 220));
-        // 创建有效期日期标签
-        JLabel dateLabel = new JLabel("12/22");
-        // 设置有效期日期标签的字体为 Arial 加粗，字号 14
-        dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        // 设置有效期日期标签的文字颜色为白色
-        dateLabel.setForeground(Color.WHITE);
-        // 将有效期标题标签添加到有效期面板的北部位置
-        validPanel.add(validLabel, BorderLayout.NORTH);
-        // 将有效期日期标签添加到有效期面板的中心位置
-        validPanel.add(dateLabel, BorderLayout.CENTER);
+        // 设置有效期标签字体为 Arial 加粗，字号 10
+        validLabel.setFont(new Font("Arial", Font.BOLD, 10)); 
+        // 设置有效期标签字体颜色为浅灰色
+        validLabel.setForeground(new Color(180, 180, 220)); 
+        
+        JLabel dateLabel = new JLabel(expiryDate);
+        // 设置有效期日期标签字体为 Arial 加粗，字号 14
+        dateLabel.setFont(new Font("Arial", Font.BOLD, 14)); 
+        // 设置有效期日期标签字体颜色为白色
+        dateLabel.setForeground(Color.WHITE); 
+        
+        // 将有效期标签添加到有效期信息面板的北部位置
+        validPanel.add(validLabel, BorderLayout.NORTH); 
+        // 将有效期日期标签添加到有效期信息面板的中心位置
+        validPanel.add(dateLabel, BorderLayout.CENTER); 
 
-        // 将持卡人信息面板添加到底部面板
-        bottomPanel.add(holderPanel);
-        // 将有效期信息面板添加到底部面板
-        bottomPanel.add(validPanel);
+        // 将持卡人信息添加到底部信息面板
+        bottomPanel.add(holderPanel); 
+        // 将有效期信息添加到底部信息面板
+        bottomPanel.add(validPanel); 
 
-        // 组合布局
-        // 设置网格袋约束的 x 坐标为 0
+        // 设置网格包约束的 x 坐标为 0
         gbc.gridx = 0;
-        // 设置网格袋约束的 y 坐标为 0
+        // 设置网格包约束的 y 坐标为 0
         gbc.gridy = 0;
-        // 设置组件的对齐方式为左上角对齐
+        // 设置组件对齐方式为左上角对齐
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        // 将余额面板添加到内容面板
-        content.add(balancePanel, gbc);
+        // 将余额区域添加到内容面板
+        content.add(balancePanel, gbc); 
 
-        // 设置网格袋约束的 y 坐标为 1
+        // 设置网格包约束的 y 坐标为 1
         gbc.gridy = 1;
+        // 设置组件在水平方向上的权重为 1.0
+        gbc.weightx = 1.0;
         // 设置组件在水平方向上填充
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        // 将卡号面板添加到内容面板
-        content.add(numberPanel, gbc);
+        // 将卡号区域添加到内容面板
+        content.add(numberPanel, gbc); 
 
-        // 设置网格袋约束的 y 坐标为 2
+        // 将持卡人信息添加到底部信息面板
+        bottomPanel.add(holderPanel); 
+        // 将有效期信息添加到底部信息面板
+        bottomPanel.add(validPanel); 
+
+        // 设置网格包约束的 y 坐标为 2
         gbc.gridy = 2;
         // 设置组件在垂直方向上的权重为 1.0
         gbc.weighty = 1.0;
-        // 将底部信息面板添加到内容面板
-        content.add(bottomPanel, gbc);
+        // 设置组件在水平和垂直方向上填充
+        gbc.fill = GridBagConstraints.BOTH;
+        // 将底部信息区域添加到内容面板
+        content.add(bottomPanel, gbc); 
 
-        // 将内容面板添加到卡片面板的中心位置
-        panel.add(content, BorderLayout.CENTER);
-        return panel;
+        card.add(content, BorderLayout.CENTER);
+        return card;
+    }
+    
+    // 掩码卡号
+    private String maskCardNumber(String cardNumber) {
+        if (cardNumber.length() >= 16) {
+            return cardNumber.substring(0, 4) + " **** **** " + cardNumber.substring(12);
+        } else {
+            return cardNumber;
+        }
     }
 
     /**

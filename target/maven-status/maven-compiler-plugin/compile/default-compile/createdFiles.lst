@@ -58,6 +58,7 @@ ui\DataEntryPage$2.class
 views\TransactionsView.class
 views\DashboardView$5.class
 views\AccountsView$1.class
+views\TransactionsView$6.class
 views\CurrencySettingViewPanel$ConvertListener.class
 ui\LoginPage.class
 services\SecurityService.class
