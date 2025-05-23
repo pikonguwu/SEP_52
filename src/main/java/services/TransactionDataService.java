@@ -21,8 +21,8 @@ import java.text.ParseException;
  * <pre>
  * TransactionDataService service = new TransactionDataService();
  * service.addTransaction("01/01/2024", "Grocery shopping", "$100.50", "Expense");
- * Map<String, Double> weeklySpending = service.getWeeklySpending();
- * Map<String, Double> categories = service.getExpenseCategories();
+ * <code>Map&lt;String, Double&gt;</code> weeklySpending = service.getWeeklySpending();
+ * <code>Map&lt;String, Double&gt;</code> categories = service.getExpenseCategories();
  * </pre>
  * 
  * @author System

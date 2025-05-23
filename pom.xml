@@ -42,12 +42,20 @@
   </build>
 
   <dependencies>
+    <!-- JFreeChart -->
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>1.5.3</version>
     </dependency>
-
+    
+    <!-- Gson -->
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>

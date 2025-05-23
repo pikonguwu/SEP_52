@@ -1,0 +1,66 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+@argfile
+-classpath
+'C:/Users/ZFL/.m2/repository/org/jfree/jfreechart/1.0.19/jfreechart-1.0.19.jar;C:/Users/ZFL/.m2/repository/org/jfree/jcommon/1.0.23/jcommon-1.0.23.jar;C:/Users/ZFL/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'21'
+-sourcepath
+'E:/research/SEP_52/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'E:/research/SEP_52/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'my-finance-tracker 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'my-finance-tracker 1.0-SNAPSHOT API'
+Analysis
+components
+constants
+Controller
+data
+Entity
+services
+ui
+views
+'E:/research/SEP_52/src/main/java/Main.java'
+C:\Users\ZFL\.m2\repository\org\jfree\jfreechart\1.0.19\jfreechart-1.0.19.jar = 1746988892763
+C:\Users\ZFL\.m2\repository\org\jfree\jcommon\1.0.23\jcommon-1.0.23.jar = 1746988892655
+C:\Users\ZFL\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar = 1746988892522
+E:\research\SEP_52\src\main\java\Main.java = 1748024596967
+E:\research\SEP_52\src\main\java = 1748019201443
+E:\research\SEP_52\target\reports\apidocs\allclasses-index.html = 1748026658475
+E:\research\SEP_52\target\reports\apidocs\allpackages-index.html = 1748026658478
+E:\research\SEP_52\target\reports\apidocs\copy.svg = 1748026658516
+E:\research\SEP_52\target\reports\apidocs\element-list = 1748026658214
+E:\research\SEP_52\target\reports\apidocs\help-doc.html = 1748026658511
+E:\research\SEP_52\target\reports\apidocs\index-all.html = 1748026658501
+E:\research\SEP_52\target\reports\apidocs\index.html = 1748026658455
+E:\research\SEP_52\target\reports\apidocs\javadoc.bat = 1748026606591
+E:\research\SEP_52\target\reports\apidocs\link.svg = 1748026658518
+E:\research\SEP_52\target\reports\apidocs\member-search-index.js = 1748026658483
+E:\research\SEP_52\target\reports\apidocs\module-search-index.js = 1748026658479
+E:\research\SEP_52\target\reports\apidocs\overview-summary.html = 1748026658507
+E:\research\SEP_52\target\reports\apidocs\overview-tree.html = 1748026658452
+E:\research\SEP_52\target\reports\apidocs\package-search-index.js = 1748026658481
+E:\research\SEP_52\target\reports\apidocs\script.js = 1748026658515
+E:\research\SEP_52\target\reports\apidocs\search-page.js = 1748026658522
+E:\research\SEP_52\target\reports\apidocs\search.html = 1748026658504
+E:\research\SEP_52\target\reports\apidocs\search.js = 1748026658520
+E:\research\SEP_52\target\reports\apidocs\serialized-form.html = 1748026658335
+E:\research\SEP_52\target\reports\apidocs\stylesheet.css = 1748026658513
+E:\research\SEP_52\target\reports\apidocs\tag-search-index.js = 1748026658484
+E:\research\SEP_52\target\reports\apidocs\type-search-index.js = 1748026658482

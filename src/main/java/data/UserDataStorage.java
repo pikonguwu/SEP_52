@@ -22,7 +22,6 @@ public class UserDataStorage {
      *
      * @param username The username of the new user
      * @param password The password of the new user
-     * @throws IOException If an I/O error occurs while writing to the file
      */
     public static void registerUser(String username, String password) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
@@ -42,7 +41,6 @@ public class UserDataStorage {
      * @param username The username to authenticate
      * @param password The password to verify
      * @return true if the credentials are valid, false otherwise
-     * @throws IOException If an I/O error occurs while reading the file
      */
     public static boolean authenticateUser(String username, String password) {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {

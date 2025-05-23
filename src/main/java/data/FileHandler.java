@@ -20,7 +20,6 @@ public class FileHandler {
      *
      * @param filePath The path to the file containing transaction data
      * @return A list of Transaction objects loaded from the file
-     * @throws IOException If an I/O error occurs while reading the file
      */
     public List<Transaction> loadTransactions(String filePath) {
         List<Transaction> transactions = new ArrayList<>();
@@ -52,7 +51,6 @@ public class FileHandler {
      *
      * @param transactions The list of transactions to be saved
      * @param filePath The path where the transactions will be saved
-     * @throws IOException If an I/O error occurs while writing to the file
      */
     public void saveTransactions(List<Transaction> transactions, String filePath) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
