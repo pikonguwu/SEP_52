@@ -24,114 +24,129 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * TransactionsView 类继承自 BaseView，用于展示交易视图界面。
- * 该界面包含标题、卡片面板、费用图表和交易表格，并且支持分页查看交易记录。
+ * The {@code TransactionsView} class extends {@code BaseView} to display the transactions view interface.
+ * This view includes a title, card panel, expense chart, and transaction table,
+ * and supports viewing transaction records with potential pagination (pagination is placeholder).
  */
 public class TransactionsView extends BaseView {
     /**
-     * 获取视图的名称，用于标识该视图。
+     * Gets the name of the view, used to identify this view.
      *
-     * @return 视图名称 "Transactions"
+     * @return The view name "Transactions".
      */
     @Override
     public String getViewName() {
         return "Transactions";
     }
 
+    /** Table displaying all transactions. */
     private JTable transactionTable;
+    /** Model for the main transaction table. */
     private DefaultTableModel tableModel;
+    /** Table displaying income transactions. */
     private JTable incomeTable;
+    /** Table displaying expense transactions. */
     private JTable expenseTable;
+    /** Model for the income table. */
     private DefaultTableModel incomeTableModel;
+    /** Model for the expense table. */
     private DefaultTableModel expenseTableModel;
 
-    // 添加数据服务和图表相关字段
+    // Add data service and chart-related fields
+    /** Service for handling transaction data. */
     private TransactionDataService dataService;
+    /** JFreeChart object for the expense chart. */
     private JFreeChart expenseChart;
+    /** Panel displaying the expense chart. */
     private ChartPanel expenseChartPanel;
 
     /**
-     * 构造函数
+     * Constructs a new {@code TransactionsView}.
      */
     public TransactionsView() {
-        // 初始化数据服务
+        // Initialize data service
         dataService = new TransactionDataService();
     }
 
     /**
-     * 初始化用户界面，设置布局、添加标题、卡片面板、费用图表和交易表格。
+     * Initializes the user interface.
+     * Sets the layout, adds the title, card panel, expense chart, and transaction table.
+     * Also initializes table models and loads initial data.
      */
     @Override
     public void initUI() {
-        // 设置布局管理器，组件间水平和垂直间距为 15 像素
+        // Set layout manager with 15 pixel horizontal and vertical gaps
         setLayout(new BorderLayout(15, 15));
-        // 设置面板的内边距，上、左、下、右均为 20 像素
+        // Set panel padding: 20 pixels top, left, bottom, right
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 创建顶部标题标签
+        // Create top title label
         JLabel titleLabel = new JLabel("Transactions", SwingConstants.LEFT);
-        // 设置标题字体为全局定义的标题字体
+        // Set title font to the globally defined title font
         titleLabel.setFont(AppConstants.TITLE_FONT);
-        // 设置标题标签的底部内边距为 15 像素
+        // Set title label bottom padding to 15 pixels
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
-        // 将标题标签添加到面板的北部位置
+        // Add title label to the north position
         add(titleLabel, BorderLayout.NORTH);
 
-        // 创建主内容面板，使用 1 行 2 列的网格布局，组件间水平和垂直间距为 15 像素
+        // Create main content panel, using a 1 row, 2 column grid layout with 15 pixel horizontal and vertical gaps
         RoundedPanel gridPanel = new RoundedPanel(new GridLayout(1, 2, 15, 15));
-        // 添加卡片面板并包装上标题
+        // Add card panel wrapped with a title
         gridPanel.add(wrapComponent(createCardPanel(), "My Cards"));
-        // 添加费用图表并包装上标题
+        // Add expense chart wrapped with a title
         gridPanel.add(wrapComponent(createExpenseChart(), "My Expenses"));
-        // 将主内容面板添加到面板的中心位置
+        // Add main content panel to the center position
         add(gridPanel, BorderLayout.CENTER);
 
-        // 初始化表格模型
+        // Initialize table models
         initializeTableModels();
 
-        // 将交易表格面板添加到面板的南部位置
+        // Add transaction table panel to the south position
         add(createTransactionPanel(), BorderLayout.SOUTH);
 
-        // 加载初始交易数据到数据服务
+        // Load initial transaction data into the data service
         loadInitialTransactions();
     }
 
     /**
-     * 加载初始交易数据到数据服务
+     * Loads initial transaction data into the data service.
+     * Data is currently loaded from the table model after initialization.
      */
     private void loadInitialTransactions() {
         try {
-            // 从表格中获取已有的交易数据
+            // Get existing transaction data from the table
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 String description = (String) tableModel.getValueAt(i, 0);
                 String date = (String) tableModel.getValueAt(i, 4);
                 String amount = (String) tableModel.getValueAt(i, 5);
                 String type = amount.startsWith("-") ? "Expense" : "Income";
 
-                // 清理金额字符串
+                // Clean up amount string
                 String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
 
-                // 添加到数据服务
+                // Add to data service
                 dataService.addTransaction(date, description, cleanAmount, type);
             }
 
-            // 首次更新图表
+            // Initial chart update
             updateExpenseChart();
         } catch (Exception e) {
-            // 添加异常处理以便更好地诊断问题
+            // Add exception handling for better diagnosis
             System.err.println("Error in loadInitialTransactions: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * 初始化所有表格模型
+     * Initializes all table models (all transactions, income, and expense)
+     * and creates the corresponding {@code JTable} instances.
+     * Populates the tables with initial hardcoded data.
      */
     private void initializeTableModels() {
-        // 定义表格的列名
+        // Define table column names
         String[] columnNames = { "Description", "Transaction ID", "Type", "Card", "Date", "Amount" };
 
-        // 创建主表格模型
+        // Create main table model
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -139,7 +154,7 @@ public class TransactionsView extends BaseView {
             }
         };
 
-        // 创建收入表格模型
+        // Create income table model
         incomeTableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -147,7 +162,7 @@ public class TransactionsView extends BaseView {
             }
         };
 
-        // 创建支出表格模型
+        // Create expense table model
         expenseTableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -155,12 +170,12 @@ public class TransactionsView extends BaseView {
             }
         };
 
-        // 创建表格
+        // Create tables
         transactionTable = new JTable(tableModel);
         incomeTable = new JTable(incomeTableModel);
         expenseTable = new JTable(expenseTableModel);
 
-        // 设置表格样式
+        // Set table styles
         transactionTable.setFont(new Font("Arial", Font.PLAIN, 14));
         transactionTable.setRowHeight(25);
         transactionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
@@ -181,13 +196,13 @@ public class TransactionsView extends BaseView {
                 { "Emily", "567890", "Transfer", "7890******", "14 Jan, 10.40 PM", "+$840" }
         };
 
-        // 将初始数据添加到相应的表格中
+        // Add initial data to corresponding tables
         for (Object[] row : data) {
-            // 添加到主表格
+            // Add to main table
             tableModel.addRow(row);
 
-            // 根据金额判断类型并添加到相应表格
-            String amount = (String) row[5]; // 金额在第6列
+            // Add to corresponding table based on amount (type)
+            String amount = (String) row[5]; // Amount is in the 6th column
             if (amount.startsWith("-")) {
                 expenseTableModel.addRow(row);
             } else {
@@ -197,79 +212,81 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * 创建交易表格面板，包含标题、选项卡和分页控件。
+     * Creates the transaction table panel, including the title, tabbed pane, and pagination controls.
      *
-     * @return 包含交易表格和分页控件的面板
+     * @return A panel containing the transaction tables and pagination controls.
      */
     private JPanel createTransactionPanel() {
-        // 创建主面板，使用边界布局
+        // Create main panel using BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // 顶部：标题
+        // Top: Title
         JLabel titleLabel = new JLabel("Recent Transactions", SwingConstants.CENTER);
-        // 设置标题字体为 Arial 加粗，字号 18
+        // Set title font to Arial Bold, size 18
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        // 设置标题标签的上下内边距为 10 像素
+        // Set title label top/bottom padding to 10 pixels
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        // 将标题标签添加到主面板的北部位置
+        // Add title label to the north position
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // 中部：选项卡和交易表格
+        // Center: Tabbed pane and transaction tables
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // 添加"所有交易"选项卡
+        // Add "All Transactions" tab
         tabbedPane.addTab("All Transactions", new JScrollPane(transactionTable));
 
-        // 添加"收入"选项卡
+        // Add "Income" tab
         tabbedPane.addTab("Income", new JScrollPane(incomeTable));
 
-        // 添加"支出"选项卡
+        // Add "Expense" tab
         tabbedPane.addTab("Expense", new JScrollPane(expenseTable));
 
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
-        // 底部：分页控件
+        // Bottom: Pagination controls
         JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton prevButton = new JButton("<Previous");
         JButton nextButton = new JButton("Next>");
         JLabel pageLabel = new JLabel("1");
-        // 将上一页按钮添加到分页面板
+        // Add previous button to pagination panel
         paginationPanel.add(prevButton);
-        // 将页码标签添加到分页面板
+        // Add page number label to pagination panel
         paginationPanel.add(pageLabel);
-        // 将下一页按钮添加到分页面板
+        // Add next button to pagination panel
         paginationPanel.add(nextButton);
-        // 将分页面板添加到主面板的南部位置
+        // Add pagination panel to the south position
         mainPanel.add(paginationPanel, BorderLayout.SOUTH);
 
-        // 分页按钮事件
+        // Pagination button events
         prevButton.addActionListener(_e -> {
-            // 上一页逻辑
-            JOptionPane.showMessageDialog(null, "上一页");
+            // Previous page logic
+            JOptionPane.showMessageDialog(null, "上一页"); // Original Chinese comment
         });
         nextButton.addActionListener(_e -> {
-            // 下一页逻辑
-            JOptionPane.showMessageDialog(null, "下一页");
+            // Next page logic
+            JOptionPane.showMessageDialog(null, "下一页"); // Original Chinese comment
         });
 
-        // 设置主面板的首选大小为 800x350 像素
+        // Set preferred size for the main panel to 800x350 pixels
         mainPanel.setPreferredSize(new Dimension(800, 350));
 
         return mainPanel;
     }
 
     /**
-     * 创建卡片面板，模拟银行卡界面，包含余额、卡号、持卡人信息和有效期信息。
+     * Creates the card panel, simulating bank card interfaces.
+     * It contains card representations, balance, number, holder, and expiry information,
+     * with horizontal scrolling and an "Add Card" function via a dialog.
      *
-     * @return 包含银行卡信息的面板
+     * @return A panel containing the bank card information.
      */
     private JPanel createCardPanel() {
-        // 创建卡片容器面板，使用水平滚动布局
+        // Create card container panel with horizontal BoxLayout
         JPanel cardsContainer = new JPanel();
         cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.X_AXIS));
         cardsContainer.setOpaque(false);
         
-        // 创建滚动面板
+        // Create scroll pane
         JScrollPane scrollPane = new JScrollPane(cardsContainer);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -277,28 +294,28 @@ public class TransactionsView extends BaseView {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         
-        // 创建主面板
+        // Create main panel
         RoundedPanel mainPanel = new RoundedPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // 将 Graphics 对象转换为 Graphics2D 对象以使用更高级的绘图功能
+                // Cast Graphics object to Graphics2D for advanced drawing features
                 Graphics2D g2d = (Graphics2D) g;
-                // 设置绘图颜色为深蓝色
+                // Set drawing color to dark blue
                 g2d.setColor(new Color(40, 80, 150));
-                // 绘制圆角矩形填充整个面板
+                // Draw filled rounded rectangle covering the entire panel
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
         };
-        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        // Set card panel padding: 25 pixels top, left, bottom, right
         mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
-        // 设置卡片面板的首选大小为 320x200 像素
+        // Set preferred size for the card panel to 320x200 pixels
         mainPanel.setPreferredSize(new Dimension(320, 200)); 
 
-        // 创建默认卡片
+        // Create default card
         RoundedPanel defaultCard = createCard();
         
-        // 创建添加按钮
+        // Create add button
         RoundedButton addCardButton = new RoundedButton("+ Add Card");
         addCardButton.setFont(new Font("Arial", Font.BOLD, 12));
         addCardButton.setBackground(new Color(255, 255, 255, 50));
@@ -308,49 +325,49 @@ public class TransactionsView extends BaseView {
         addCardButton.setContentAreaFilled(false);
         addCardButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // 创建按钮容器面板，用于定位按钮
-        JPanel buttonContainer = new JPanel(null); // 使用绝对布局
+        // Create button container panel for positioning the button
+        JPanel buttonContainer = new JPanel(null); // Use absolute layout
         buttonContainer.setOpaque(false);
         buttonContainer.setPreferredSize(defaultCard.getPreferredSize());
         addCardButton.setBounds(
-            defaultCard.getPreferredSize().width - 100, // 右边距
-            10, // 上边距
-            100, // 按钮宽度
-            30  // 按钮高度
+            defaultCard.getPreferredSize().width - 100, // Right margin
+            10, // Top margin
+            100, // Button width
+            30  // Button height
         );
         buttonContainer.add(addCardButton);
         
-        // 创建卡片和按钮的叠加面板
+        // Create layered pane for card and button overlay
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(defaultCard.getPreferredSize());
         layeredPane.add(defaultCard, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(buttonContainer, JLayeredPane.PALETTE_LAYER);
         
-        // 设置卡片和按钮容器的位置
+        // Set bounds for the card and button container
         defaultCard.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
         buttonContainer.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
         
-        // 添加按钮事件
+        // Add button event listener
         addCardButton.addActionListener(e -> {
             AddCardDialog dialog = new AddCardDialog((Frame) SwingUtilities.getWindowAncestor(this));
             dialog.setVisible(true);
             
             if (dialog.isConfirmed()) {
-                // 获取新卡片信息
+                // Get new card information
                 String cardNumber = dialog.getCardNumber();
                 String cardholderName = dialog.getCardholderName();
                 String expiryDate = dialog.getExpiryDate();
                 double balance = dialog.getBalance();
                 
-                // 创建新卡片
+                // Create new card
                 RoundedPanel newCard = createCard(cardNumber, cardholderName, expiryDate, balance);
                 
-                // 创建新卡片的按钮容器
+                // Create new card's button container
                 JPanel newButtonContainer = new JPanel(null);
                 newButtonContainer.setOpaque(false);
                 newButtonContainer.setPreferredSize(newCard.getPreferredSize());
                 
-                // 复制添加按钮到新卡片
+                // Create new add button
                 RoundedButton newAddButton = new RoundedButton("+ Add Card");
                 newAddButton.setFont(addCardButton.getFont());
                 newAddButton.setBackground(addCardButton.getBackground());
@@ -367,54 +384,67 @@ public class TransactionsView extends BaseView {
                 );
                 newButtonContainer.add(newAddButton);
                 
-                // 创建新卡片的叠加面板
+                // Create new card's layered pane
                 JLayeredPane newLayeredPane = new JLayeredPane();
                 newLayeredPane.setPreferredSize(newCard.getPreferredSize());
                 newLayeredPane.add(newCard, JLayeredPane.DEFAULT_LAYER);
                 newLayeredPane.add(newButtonContainer, JLayeredPane.PALETTE_LAYER);
                 
-                // 设置新卡片和按钮容器的位置
+                // Set bounds for the new card and button container
                 newCard.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
                 newButtonContainer.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
                 
-                // 添加新卡片到容器
+                // Add new card to the container
                 cardsContainer.add(newLayeredPane);
-                cardsContainer.add(Box.createHorizontalStrut(15)); // 添加卡片间距
+                cardsContainer.add(Box.createHorizontalStrut(15)); // Add spacing between cards
                 
-                // 刷新容器
+                // Refresh container
                 cardsContainer.revalidate();
                 cardsContainer.repaint();
                 
-                // 滚动到新添加的卡片
+                // Scroll to the newly added card
                 scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
                 
-                // 显示成功消息
+                // Display success message
                 JOptionPane.showMessageDialog(this,
-                    "卡片添加成功！\n" +
-                    "卡号: " + maskCardNumber(cardNumber) + "\n" +
-                    "持卡人: " + cardholderName + "\n" +
-                    "有效期: " + expiryDate + "\n" +
-                    "余额: $" + String.format("%.2f", balance),
-                    "成功",
+                    "卡片添加成功！\n" + // Original Chinese comment
+                    "卡号: " + maskCardNumber(cardNumber) + "\n" + // Original Chinese comment
+                    "持卡人: " + cardholderName + "\n" + // Original Chinese comment
+                    "有效期: " + expiryDate + "\n" + // Original Chinese comment
+                    "余额: $" + String.format("%.2f", balance), // Original Chinese comment
+                    "成功", // Original Chinese comment
                     JOptionPane.INFORMATION_MESSAGE);
             }
         });
         
-        // 添加默认卡片到容器
+        // Add default card to the container
         cardsContainer.add(layeredPane);
         
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         return mainPanel;
     }
     
-    // 创建单个卡片 - 无参默认版本
+    /**
+     * Creates a default card panel with predefined data.
+     *
+     * @return A panel representing a bank card.
+     */
     private RoundedPanel createCard() {
         return createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
     }
     
-    // 创建单个卡片 - 带参数版本
+    /**
+     * Creates a single card panel with the specified card details.
+     * Uses custom painting for the rounded background and arranges details using GridBagLayout.
+     *
+     * @param cardNumber     The card number.
+     * @param cardholderName The cardholder's name.
+     * @param expiryDate     The card's expiry date (MM/YY).
+     * @param balance        The card's balance.
+     * @return A panel representing a bank card with the given details.
+     */
     private RoundedPanel createCard(String cardNumber, String cardholderName, String expiryDate, double balance) {
-        // 创建带圆角的卡片容器
+        // Create rounded card container
         RoundedPanel card = new RoundedPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -424,56 +454,56 @@ public class TransactionsView extends BaseView {
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             }
         };
-        // 设置卡片面板的内边距，上、左、下、右均为 25 像素
+        // Set card panel padding: 25 pixels top, left, bottom, right
         card.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
-        // 设置卡片面板的首选大小为 320x200 像素
+        // Set preferred size for the card panel to 320x200 pixels
         card.setPreferredSize(new Dimension(320, 200)); 
 
-        // 主内容容器
+        // Main content container
         JPanel content = new JPanel(new GridBagLayout()) {
             /**
-             * 重写 isOpaque 方法，使面板背景透明。
+             * Override isOpaque method to make the panel background transparent.
              */
             @Override
             public boolean isOpaque() {
                 return false;
             }
         };
-        // 创建网格包约束对象
+        // Create GridBag constraints object
         GridBagConstraints gbc = new GridBagConstraints();
-        // 设置组件间的内边距为 5 像素
+        // Set component padding to 5 pixels
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // 余额区域（左上）
+        // Balance area (top-left)
         JPanel balancePanel = new JPanel(new BorderLayout());
-        // 设置余额面板背景透明
+        // Set balance panel background transparent
         balancePanel.setOpaque(false);
         JLabel balanceLabel = new JLabel("BALANCE");
-        // 设置余额标签字体为 Arial 加粗，字号 12
+        // Set balance label font to Arial Bold, size 12
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        // 设置余额标签字体颜色为浅灰色
+        // Set balance label font color to light gray
         balanceLabel.setForeground(new Color(180, 180, 220));
 
         JLabel amountLabel = new JLabel(String.format("$%.2f", balance));
-        // 设置金额标签字体为 Arial 加粗，字号 24
+        // Set amount label font to Arial Bold, size 24
         amountLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        // 设置金额标签字体颜色为白色
+        // Set amount label font color to white
         amountLabel.setForeground(Color.WHITE);
 
-        // 将余额标签添加到余额面板的北部位置
+        // Add balance label to the north position of the balance panel
         balancePanel.add(balanceLabel, BorderLayout.NORTH);
-        // 将金额标签添加到余额面板的中心位置
+        // Add amount label to the center position of the balance panel
         balancePanel.add(amountLabel, BorderLayout.CENTER);
 
-        // 卡号区域（中间偏上）
+        // Card number area (middle-top)
         JPanel numberPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         numberPanel.setOpaque(false);
         String[] segments = cardNumber.split(" ");
         if (segments.length == 1) {
-            // 如果没有空格分隔，则按照每4位分隔
+            // If no space separator, split every 4 digits
             numberPanel.add(createCardSegment(cardNumber.substring(0, 4), 22));
-        numberPanel.add(createCardSegment("****", 18));
-        numberPanel.add(createCardSegment("****", 18));
+            numberPanel.add(createCardSegment("****", 18));
+            numberPanel.add(createCardSegment("****", 18));
             numberPanel.add(createCardSegment(cardNumber.substring(cardNumber.length() - 4), 22));
         } else {
             for (String segment : segments) {
@@ -481,91 +511,96 @@ public class TransactionsView extends BaseView {
             }
         }
 
-        // 底部信息区域
+        // Bottom information area
         JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
-        // 设置底部信息面板背景透明
+        // Set bottom info panel background transparent
         bottomPanel.setOpaque(false);
 
-        // 左侧持卡人信息
+        // Left side cardholder information
         JPanel holderPanel = new JPanel(new BorderLayout());
-        // 设置持卡人信息面板背景透明
+        // Set cardholder info panel background transparent
         holderPanel.setOpaque(false);
         JLabel holderLabel = new JLabel("CARDHOLDER");
-        // 设置持卡人标签字体为 Arial 加粗，字号 10
+        // Set cardholder label font to Arial Bold, size 10
         holderLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        // 设置持卡人标签字体颜色为浅灰色
+        // Set cardholder label font color to light gray
         holderLabel.setForeground(new Color(180, 180, 220));
 
         JLabel nameLabel = new JLabel(cardholderName);
-        // 设置持卡人姓名标签字体为 Arial 加粗，字号 14
+        // Set cardholder name label font to Arial Bold, size 14
         nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        // 设置持卡人姓名标签字体颜色为白色
+        // Set cardholder name label font color to white
         nameLabel.setForeground(Color.WHITE);
 
-        // 将持卡人标签添加到持卡人信息面板的北部位置
+        // Add cardholder label to the north position of the holder panel
         holderPanel.add(holderLabel, BorderLayout.NORTH);
-        // 将持卡人姓名标签添加到持卡人信息面板的中心位置
+        // Add cardholder name label to the center position of the holder panel
         holderPanel.add(nameLabel, BorderLayout.CENTER);
 
-        // 右侧有效期信息
+        // Right side expiry date information
         JPanel validPanel = new JPanel(new BorderLayout());
-        // 设置有效期信息面板背景透明
+        // Set valid info panel background transparent
         validPanel.setOpaque(false);
         JLabel validLabel = new JLabel("VALID THRU");
-        // 设置有效期标签字体为 Arial 加粗，字号 10
+        // Set valid thru label font to Arial Bold, size 10
         validLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        // 设置有效期标签字体颜色为浅灰色
+        // Set valid thru label font color to light gray
         validLabel.setForeground(new Color(180, 180, 220));
 
         JLabel dateLabel = new JLabel(expiryDate);
-        // 设置有效期日期标签字体为 Arial 加粗，字号 14
+        // Set expiry date label font to Arial Bold, size 14
         dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        // 设置有效期日期标签字体颜色为白色
+        // Set expiry date label font color to white
         dateLabel.setForeground(Color.WHITE);
 
-        // 将有效期标签添加到有效期信息面板的北部位置
+        // Add valid thru label to the north position of the valid panel
         validPanel.add(validLabel, BorderLayout.NORTH);
-        // 将有效期日期标签添加到有效期信息面板的中心位置
+        // Add expiry date label to the center position of the valid panel
         validPanel.add(dateLabel, BorderLayout.CENTER);
 
-        // 布局组合
-        // 设置网格包约束的 x 坐标为 0
+        // Layout combination
+        // Set GridBag constraints x coordinate to 0
         gbc.gridx = 0;
-        // 设置网格包约束的 y 坐标为 0
+        // Set GridBag constraints y coordinate to 0
         gbc.gridy = 0;
-        // 设置组件对齐方式为左上角对齐
+        // Set component alignment to top-left
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        // 将余额区域添加到内容面板
+        // Add balance area to the content panel
         content.add(balancePanel, gbc);
 
-        // 设置网格包约束的 y 坐标为 1
+        // Set GridBag constraints y coordinate to 1
         gbc.gridy = 1;
-        // 设置组件在水平方向上的权重为 1.0
+        // Set component horizontal weight to 1.0
         gbc.weightx = 1.0;
-        // 设置组件在水平方向上填充
+        // Set component fill to horizontal
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        // 将卡号区域添加到内容面板
+        // Add card number area to the content panel
         content.add(numberPanel, gbc);
 
-        // 将持卡人信息添加到底部信息面板
+        // Add cardholder info to the bottom info panel
         bottomPanel.add(holderPanel);
-        // 将有效期信息添加到底部信息面板
+        // Add valid thru info to the bottom info panel
         bottomPanel.add(validPanel);
 
-        // 设置网格包约束的 y 坐标为 2
+        // Set GridBag constraints y coordinate to 2
         gbc.gridy = 2;
-        // 设置组件在垂直方向上的权重为 1.0
+        // Set component vertical weight to 1.0
         gbc.weighty = 1.0;
-        // 设置组件在水平和垂直方向上填充
+        // Set component fill to both horizontal and vertical
         gbc.fill = GridBagConstraints.BOTH;
-        // 将底部信息区域添加到内容面板
+        // Add bottom information area to the content panel
         content.add(bottomPanel, gbc);
 
         card.add(content, BorderLayout.CENTER);
         return card;
     }
     
-    // 掩码卡号
+    /**
+     * Masks the card number, showing only the first 4 and last 4 digits for longer numbers.
+     *
+     * @param cardNumber The original card number string.
+     * @return The masked card number string.
+     */
     private String maskCardNumber(String cardNumber) {
         if (cardNumber.length() >= 16) {
             return cardNumber.substring(0, 4) + " **** **** " + cardNumber.substring(12);
@@ -575,54 +610,56 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * 创建卡号分段组件，用于显示银行卡号的分段信息。
+     * Creates a JLabel component for a segment of the card number.
+     * Sets font, color, and padding for the segment text.
      *
-     * @param text     卡号分段的文本内容
-     * @param fontSize 卡号分段文本的字体大小
-     * @return 包含卡号分段信息的 JLabel 组件
+     * @param text     The text content for the card segment (e.g., "1234" or "****").
+     * @param fontSize The font size for the segment text.
+     * @return A JLabel component displaying the card segment.
      */
     private JLabel createCardSegment(String text, int fontSize) {
         JLabel segment = new JLabel(text);
-        // 设置卡号分段标签字体为 Arial 加粗，指定字号
+        // Set card segment label font to Arial Bold, specified size
         segment.setFont(new Font("Arial", Font.BOLD, fontSize));
-        // 设置卡号分段标签字体颜色为白色
+        // Set card segment label font color to white
         segment.setForeground(Color.WHITE);
-        // 设置卡号分段标签的左右内边距为 5 像素
+        // Set card segment label left/right padding to 5 pixels
         segment.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         return segment;
     }
 
     /**
-     * 创建费用图表，显示每月的费用支出情况。
+     * Creates the expense chart, showing monthly expense breakdown by category.
+     * Initializes a 3D bar chart with an empty dataset.
      *
-     * @return 包含 3D 柱状图的图表面板
+     * @return A ChartPanel containing the 3D bar chart.
      */
     private ChartPanel createExpenseChart() {
-        // 创建默认的分类数据集
+        // Create default category dataset
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        // 初始化为空数据集，稍后会在updateExpenseChart中更新
+        // Initialize with empty dataset, will be updated later in updateExpenseChart
         String[] categories = { "Housing", "Food", "Transport", "Entertainment", "Savings", "Others" };
         for (String category : categories) {
             dataset.addValue(0, "Expenses", category);
         }
 
-        // 创建 3D 柱状图
+        // Create 3D bar chart
         expenseChart = ChartFactory.createBarChart3D(
-                "", // 图表标题
-                "Category", // 分类轴标签
-                "Amount ($)", // 数值轴标签
-                dataset, // 数据集
-                PlotOrientation.VERTICAL, // 图表方向
-                true, // 是否显示图例
-                true, // 是否生成工具提示
-                false // 是否生成网址链接
+                "", // Chart title
+                "Category", // Category axis label
+                "Amount ($)", // Value axis label
+                dataset, // Dataset
+                PlotOrientation.VERTICAL, // Chart orientation
+                true, // Whether to display legend
+                true, // Whether to generate tooltips
+                false // Whether to generate URLs
         );
 
-        // 自定义图表样式
+        // Customize chart style
         expenseChart.setBackgroundPaint(Color.WHITE);
 
-        // 创建图表面板
+        // Create chart panel
         expenseChartPanel = new ChartPanel(expenseChart);
         expenseChartPanel.setPreferredSize(new Dimension(400, 300));
 
@@ -630,28 +667,29 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * 更新费用图表
+     * Updates the expense chart with the latest data from the transaction data service.
+     * Recreates the dataset based on current expense categories and their amounts.
      */
     private void updateExpenseChart() {
         try {
             if (dataService != null && expenseChart != null) {
-                // 获取各类支出数据
+                // Get category expense data
                 Map<String, Double> categoryData = dataService.getExpenseCategories();
 
-                // 创建新的数据集
+                // Create a new dataset
                 DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-                // 添加数据
+                // Add data
                 for (Map.Entry<String, Double> entry : categoryData.entrySet()) {
                     dataset.addValue(entry.getValue(), "Expenses", entry.getKey());
                 }
 
-                // 如果没有数据，添加默认分类
+                // If no data, add default category
                 if (categoryData.isEmpty()) {
                     dataset.addValue(0, "Expenses", "No Data");
                 }
 
-                // 更新图表数据集
+                // Update chart dataset
                 expenseChart.getCategoryPlot().setDataset(dataset);
             }
         } catch (Exception e) {
@@ -661,43 +699,46 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * 包装组件，为组件添加标题边框并设置背景颜色。
+     * Wraps a component within a panel with a titled border and a white background.
+     * Useful for organizing sections of the UI.
      *
-     * @param comp  需要包装的组件
-     * @param title 包装组件的标题
-     * @return 包装后的面板
+     * @param comp  The component to wrap.
+     * @param title The title for the border.
+     * @return A JPanel containing the wrapped component and title border.
      */
     private JPanel wrapComponent(Component comp, String title) {
-        // 创建使用边界布局的面板
+        // Create panel using BorderLayout
         JPanel wrapper = new JPanel(new BorderLayout());
-        // 为面板设置标题边框
+        // Set titled border for the panel
         wrapper.setBorder(BorderFactory.createTitledBorder(title));
-        // 设置面板的背景颜色为白色
+        // Set panel background color to white
         wrapper.setBackground(Color.WHITE);
-        // 将组件添加到面板的中心位置
+        // Add component to the center position of the panel
         wrapper.add(comp, BorderLayout.CENTER);
         return wrapper;
     }
 
     /**
-     * 添加交易记录
-     * 
-     * @param date        交易日期
-     * @param description 交易描述
-     * @param amount      交易金额
-     * @param type        交易类型
+     * Adds a new transaction record to the view.
+     * This includes adding the transaction to the relevant tables and updating the expense chart.
+     * A random transaction ID and masked card number are generated for display.
+     *
+     * @param date        The date of the transaction.
+     * @param description The description of the transaction.
+     * @param amount      The transaction amount (e.g., "-$2,500" or "+$750").
+     * @param type        The conceptual type of the transaction (e.g., "Shopping", "Transfer", "Service").
      */
     public void addTransaction(String date, String description, String amount, String type) {
         try {
-            // 生成随机交易ID
+            // Generate random transaction ID
             String transactionId = String.format("%06d", (int) (Math.random() * 1000000));
-            // 生成随机卡号
+            // Generate random card number
             String cardNumber = String.format("%04d******", (int) (Math.random() * 10000));
 
-            // 根据金额判断交易类型
+            // Determine transaction type based on amount
             String actualType = amount.startsWith("-") ? "Expense" : "Income";
 
-            // 添加新行到表格
+            // Add new row to the table
             Object[] rowData = {
                     description,
                     transactionId,
@@ -709,18 +750,18 @@ public class TransactionsView extends BaseView {
 
             tableModel.addRow(rowData);
 
-            // 根据实际类型添加到相应的表格
+            // Add to corresponding tables based on actual type
             if (actualType.equals("Income")) {
                 incomeTableModel.addRow(rowData);
             } else {
                 expenseTableModel.addRow(rowData);
             }
 
-            // 添加到数据服务
+            // Add to data service
             String cleanAmount = amount.replace("$", "").replace("+", "").replace("-", "");
             dataService.addTransaction(date, description, cleanAmount, type);
 
-            // 更新图表
+            // Update chart
             updateExpenseChart();
         } catch (Exception e) {
             System.err.println("Error adding transaction: " + e.getMessage());
@@ -729,16 +770,19 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * 删除交易记录
-     * 
-     * @param date        交易日期
-     * @param description 交易描述
-     * @param amount      交易金额
-     * @param type        交易类型
+     * Removes a transaction record from the view based on matching details.
+     * Attempts to find and remove the transaction from the main and type-specific tables.
+     * Note: The underlying data service is not fully updated by this method in the current implementation.
+     * The expense chart is updated after removal from tables.
+     *
+     * @param date        The date of the transaction to remove.
+     * @param description The description of the transaction to remove.
+     * @param amount      The amount of the transaction to remove.
+     * @param type        The type of the transaction (used to determine which specific table to check).
      */
     public void removeTransaction(String date, String description, String amount, String type) {
         try {
-            // 在主表格中查找并删除匹配的行
+            // Find and remove matching row in the main table
             for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
                 if (tableModel.getValueAt(i, 0).equals(description) &&
                         tableModel.getValueAt(i, 4).equals(date) &&
@@ -748,7 +792,7 @@ public class TransactionsView extends BaseView {
                 }
             }
 
-            // 根据交易类型在相应的表格中查找并删除匹配的行
+            // Find and remove matching row in the corresponding table based on type
             String actualType = amount.startsWith("-") ? "Expense" : "Income";
             DefaultTableModel targetModel = actualType.equals("Income") ? incomeTableModel : expenseTableModel;
 
@@ -761,11 +805,11 @@ public class TransactionsView extends BaseView {
                 }
             }
 
-            // 此处应该更新数据服务中的数据
-            // 但TransactionDataService当前不支持删除单个交易
-            // 因此需要重新构建所有交易数据
+            // Data in the data service should ideally be updated here
+            // However, TransactionDataService currently does not support removing single transactions
+            // Therefore, all transaction data would need to be rebuilt
 
-            // 更新图表
+            // Update chart
             updateExpenseChart();
         } catch (Exception e) {
             System.err.println("Error removing transaction: " + e.getMessage());
