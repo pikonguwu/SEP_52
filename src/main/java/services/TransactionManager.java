@@ -5,18 +5,48 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 /**
- * 交易数据管理器 - 单例模式
- * 负责管理所有交易数据并通知各个视图更新
+ * A singleton service class that manages financial transactions and implements the Observer pattern
+ * for transaction updates. This class serves as the central manager for all transaction-related
+ * operations and coordinates updates between the data service and registered listeners.
+ * 
+ * <p>The TransactionManager follows the Singleton pattern to ensure a single instance
+ * manages all transaction data across the application. It maintains a list of listeners
+ * that are notified of any changes to the transaction data.
+ * 
+ * <p>Example usage:
+ * <pre>
+ * TransactionManager manager = TransactionManager.getInstance();
+ * manager.addListener(new TransactionListener() {
+ *     public void onTransactionAdded(String date, String desc, String amount, String type) {
+ *         // Handle new transaction
+ *     }
+ *     // ... implement other listener methods
+ * });
+ * manager.addTransaction("01/01/2024", "Grocery", "$100.50", "Expense");
+ * </pre>
+ * 
+ * @author System
+ * @version 1.0
  */
 public class TransactionManager {
     private static TransactionManager instance;
     private List<TransactionListener> listeners = new ArrayList<>();
     private TransactionDataService dataService;
     
+    /**
+     * Private constructor to enforce singleton pattern.
+     * Initializes the transaction data service.
+     */
     private TransactionManager() {
         dataService = new TransactionDataService();
     }
     
+    /**
+     * Gets the singleton instance of TransactionManager.
+     * Creates a new instance if one doesn't exist.
+     * 
+     * @return the singleton instance of TransactionManager
+     */
     public static synchronized TransactionManager getInstance() {
         if (instance == null) {
             instance = new TransactionManager();
@@ -25,7 +55,10 @@ public class TransactionManager {
     }
     
     /**
-     * 添加交易监听器
+     * Registers a new transaction listener.
+     * The listener will be notified of all transaction changes.
+     * 
+     * @param listener the listener to be registered
      */
     public void addListener(TransactionListener listener) {
         if (!listeners.contains(listener)) {
@@ -34,36 +67,45 @@ public class TransactionManager {
     }
     
     /**
-     * 添加交易记录
+     * Adds a new transaction and notifies all registered listeners.
+     * 
+     * @param date the transaction date
+     * @param description the transaction description
+     * @param amount the transaction amount
+     * @param type the transaction type (Income/Expense)
      */
     public void addTransaction(String date, String description, String amount, String type) {
-        // 添加到数据服务
         dataService.addTransaction(date, description, amount, type);
         
-        // 通知所有监听器
         for (TransactionListener listener : listeners) {
             listener.onTransactionAdded(date, description, amount, type);
         }
     }
     
     /**
-     * 更新交易记录
+     * Updates an existing transaction and notifies all registered listeners.
+     * 
+     * @param index the index of the transaction to update
+     * @param date the new transaction date
+     * @param description the new transaction description
+     * @param amount the new transaction amount
+     * @param type the new transaction type
      */
     public void updateTransaction(int index, String date, String description, String amount, String type) {
-        // 获取旧数据
+        // Get old data
         Map<String, Object> oldTransaction = dataService.getTransactions().get(index);
         String oldDate = (String) oldTransaction.get("date");
         String oldDescription = (String) oldTransaction.get("description");
         double oldAmountValue = (Double) oldTransaction.get("amount");
         String oldType = (String) oldTransaction.get("type");
         
-        // 格式化旧金额
+        // Format old amount
         String oldAmount = String.format("%.2f", oldAmountValue);
         
-        // 更新数据服务
+        // Update data service
         dataService.updateTransaction(index, date, description, amount, type);
         
-        // 通知所有监听器
+        // Notify all listeners
         for (TransactionListener listener : listeners) {
             listener.onTransactionUpdated(
                 oldDate, oldDescription, oldAmount, oldType,
@@ -73,10 +115,15 @@ public class TransactionManager {
     }
     
     /**
-     * 移除交易记录
+     * Removes a transaction and notifies all registered listeners.
+     * 
+     * @param date the date of the transaction to remove
+     * @param description the description of the transaction to remove
+     * @param amount the amount of the transaction to remove
+     * @param type the type of the transaction to remove
      */
     public void removeTransaction(String date, String description, String amount, String type) {
-        // 查找匹配的交易记录
+        // Find matching transaction
         List<Map<String, Object>> transactions = dataService.getTransactions();
         int indexToRemove = -1;
         
@@ -94,11 +141,11 @@ public class TransactionManager {
             }
         }
         
-        // 如果找到匹配的记录，从列表中移除
+        // Remove if found
         if (indexToRemove >= 0) {
             transactions.remove(indexToRemove);
             
-            // 通知所有监听器
+            // Notify all listeners
             for (TransactionListener listener : listeners) {
                 listener.onTransactionRemoved(date, description, amount, type);
             }
@@ -106,35 +153,72 @@ public class TransactionManager {
     }
     
     /**
-     * 获取所有交易记录
+     * Retrieves all transactions.
+     * 
+     * @return a list of all transaction records
      */
     public List<Map<String, Object>> getAllTransactions() {
         return dataService.getTransactions();
     }
     
     /**
-     * 获取每周支出数据
+     * Gets the weekly spending analysis.
+     * 
+     * @return a map containing daily spending totals for the current week
      */
     public Map<String, Double> getWeeklySpending() {
         return dataService.getWeeklySpending();
     }
     
     /**
-     * 获取支出分类数据
+     * Gets the expense category analysis.
+     * 
+     * @return a map containing expense categories and their total amounts
      */
     public Map<String, Double> getExpenseCategories() {
         return dataService.getExpenseCategories();
     }
     
     /**
-     * 交易监听器接口
+     * Interface for transaction event listeners.
+     * Implementations of this interface will be notified of transaction changes.
      */
     public interface TransactionListener {
+        /**
+         * Called when a new transaction is added.
+         * 
+         * @param date the transaction date
+         * @param description the transaction description
+         * @param amount the transaction amount
+         * @param type the transaction type
+         */
         void onTransactionAdded(String date, String description, String amount, String type);
+
+        /**
+         * Called when an existing transaction is updated.
+         * 
+         * @param oldDate the previous transaction date
+         * @param oldDescription the previous transaction description
+         * @param oldAmount the previous transaction amount
+         * @param oldType the previous transaction type
+         * @param newDate the new transaction date
+         * @param newDescription the new transaction description
+         * @param newAmount the new transaction amount
+         * @param newType the new transaction type
+         */
         void onTransactionUpdated(
             String oldDate, String oldDescription, String oldAmount, String oldType,
             String newDate, String newDescription, String newAmount, String newType
         );
+
+        /**
+         * Called when a transaction is removed.
+         * 
+         * @param date the removed transaction date
+         * @param description the removed transaction description
+         * @param amount the removed transaction amount
+         * @param type the removed transaction type
+         */
         void onTransactionRemoved(String date, String description, String amount, String type);
     }
 }

@@ -12,47 +12,47 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 /**
- * 用于调用百度文心一言 API 的服务类。
- * 该类提供了获取访问令牌和获取 AI 响应的功能。
+ * The service class used to invoke the Baidu Wenxin Yiyan API.
+ * This class provides the functionality of obtaining access tokens and obtaining AI responses.
  */
 public class BaiduAIService {
     /**
-     * 访问百度 API 的密钥，用于身份验证。
+     * The API key for accessing the Baidu API, used for authentication.
      */
     // private static final String API_KEY = "你的API_KEY";
     private static final String API_KEY = "fsc3SLgibtm12hRyO6LYSiQc";
 
     /**
-     * 访问百度 API 的密钥，用于身份验证。
-     * 注意：该密钥中的 "Kfeak" 可能是拼写错误，建议检查并修正。
+     * The access key for accessing the Baidu API, used for authentication.
+     * Note: The "Kfeak" in the key may be a spelling error, please check and correct it.
      */
     private static final String SECRET_KEY = "yTZ5k2rdFsUjxIYniDjgKbH3ffaIoqOQ";
 
     // private static final String SECRET_KEY = "你的SECRET_KEY";
     /**
-     * 用于获取访问令牌的 URL，通过 API 密钥和密钥来请求。
+     * The URL for obtaining the access token, requested through the API key and secret key.
      */
 
     private static final String ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + API_KEY + "&client_secret=" + SECRET_KEY;
     /**
-     * 百度文心一言 API 的基础 URL，用于发送聊天请求。
+     * The base URL for the Baidu Wenxin Yiyan API, used to send chat requests.
      */
     private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-lite-8k";
 
     // private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions";
 
     /**
-     * 获取访问令牌的方法。
-     * 向百度 API 发送请求，获取用于后续 API 调用的访问令牌。
+     * The method for obtaining the access token.
+     * Send a request to the Baidu API to obtain an access token for subsequent API calls.
      *
-     * @return 访问令牌字符串
-     * @throws IOException 如果在发送请求或处理响应时发生 I/O 错误
-     * @throws InterruptedException 如果在等待响应时线程被中断
+     * @return The access token string
+     * @throws IOException If an I/O error occurs when sending the request or processing the response
+     * @throws InterruptedException If the thread is interrupted while waiting for the response
      */
     private String getAccessToken() throws IOException, InterruptedException {
-        // 创建一个新的 HTTP 客户端
+        // Create a new HTTP client
         HttpClient client = HttpClient.newHttpClient();
-        // 构建 HTTP 请求
+        // Build the HTTP request
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(ACCESS_TOKEN_URL))
                 .header("Content-Type", "application/json")
@@ -60,69 +60,69 @@ public class BaiduAIService {
                 .POST(HttpRequest.BodyPublishers.ofString(""))
                 .build();
 
-        // 发送请求并获取响应
+        // Send the request and get the response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // 使用 Gson 将响应体解析为 Map
+        // Use Gson to parse the response body to a Map
         Map<String, Object> result = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
 
         if (result.containsKey("error")) {
             throw new IOException("Failed to get access token: " + result.get("error_description"));
         }
 
-        // 从结果中提取访问令牌并返回
+        // Extract the access token from the result and return it
         return (String) result.get("access_token");
     }
 
     /**
-     * 获取 AI 响应的方法。
-     * 先获取访问令牌，然后构建请求体并发送请求到百度文心一言 API，最后返回 AI 的响应。
+     * The method of obtaining AI responses.
+     * First, obtain the access token, then build the request body and send the request to the Baidu Wenxin Yiyan API, and finally return the response from the AI.
      *
-     * @param message 用户输入的聊天消息
-     * @return AI 的响应字符串，如果发生错误则返回错误信息
+     * @param message The chat message entered by the user
+     * @return The response string of AI returns an error message if an error occurs
      */
     public String getAIResponse(String message) {
         try {
-            // 获取访问令牌
+            // Obtain the access token
             String accessToken = getAccessToken();
-            // 构建完整的 API 请求 URL
+            // Build the complete API request URL
             String apiUrl = API_BASE_URL + "?access_token=" + accessToken;
 
-            // 构建消息列表
+            // Build a message list
             List<Map<String, String>> messages = new ArrayList<Map<String, String>>();
             Map<String, String> userMessage = new HashMap<String, String>();
             userMessage.put("role", "user");
             userMessage.put("content", message);
             messages.add(userMessage);
 
-            // 构建请求体
+            // Build the request body
             Map<String, Object> requestBodyMap = new HashMap<String, Object>();
             requestBodyMap.put("messages", messages);
-            // 使用 Gson 将请求体转换为 JSON 字符串
+            // Use Gson to convert the request body to a JSON string
             String requestBody = new Gson().toJson(requestBodyMap);
 
-            // 创建 HTTP 请求
+            // Create an HTTP request
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
-            // 发送请求并获取响应
+            // Send a request and obtain a response
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // 检查响应是否包含错误
+            // Check whether the response contains errors
             Map<String, Object> responseMap = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
             if (responseMap.containsKey("error")) {
                 throw new IOException("API Error: " + responseMap.get("error"));
             }
 
-            // 返回响应体
+            // Return the response body
             return response.body();
         } catch (IOException | InterruptedException e) {
-            // 打印异常堆栈信息
+            // Print the abnormal stack information
             e.printStackTrace();
-            // 返回错误信息
+            // Return error message
             return "Error: " + e.getMessage();
         }
     }

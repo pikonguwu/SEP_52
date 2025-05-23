@@ -4,10 +4,42 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
+/**
+ * A service class that manages financial transaction data and provides analysis functionality.
+ * This class handles the storage, retrieval, and analysis of financial transactions,
+ * including daily spending patterns and expense categorization.
+ * 
+ * <p>The service maintains a list of transactions, where each transaction contains:
+ * <ul>
+ *     <li>Date (in dd/MM/yyyy format)</li>
+ *     <li>Description</li>
+ *     <li>Amount (with support for currency symbols and formatting)</li>
+ *     <li>Type (Income/Expense)</li>
+ * </ul>
+ * 
+ * <p>Example usage:
+ * <pre>
+ * TransactionDataService service = new TransactionDataService();
+ * service.addTransaction("01/01/2024", "Grocery shopping", "$100.50", "Expense");
+ * Map<String, Double> weeklySpending = service.getWeeklySpending();
+ * Map<String, Double> categories = service.getExpenseCategories();
+ * </pre>
+ * 
+ * @author System
+ * @version 1.0
+ */
 public class TransactionDataService {
     private List<Map<String, Object>> transactions = new ArrayList<>();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     
+    /**
+     * Adds a new transaction to the transaction list.
+     * 
+     * @param date the transaction date in dd/MM/yyyy format
+     * @param description the transaction description
+     * @param amount the transaction amount (can include currency symbols and formatting)
+     * @param type the transaction type (Income/Expense)
+     */
     public void addTransaction(String date, String description, String amount, String type) {
         Map<String, Object> transaction = new HashMap<>();
         transaction.put("date", date);
@@ -18,6 +50,15 @@ public class TransactionDataService {
         transactions.add(transaction);
     }
     
+    /**
+     * Updates an existing transaction at the specified index.
+     * 
+     * @param index the index of the transaction to update
+     * @param date the new transaction date in dd/MM/yyyy format
+     * @param description the new transaction description
+     * @param amount the new transaction amount
+     * @param type the new transaction type
+     */
     public void updateTransaction(int index, String date, String description, String amount, String type) {
         if (index >= 0 && index < transactions.size()) {
             Map<String, Object> transaction = transactions.get(index);
@@ -28,45 +69,49 @@ public class TransactionDataService {
         }
     }
     
+    /**
+     * Parses a string amount into a double value.
+     * Removes currency symbols, commas, and plus signs while preserving minus signs for expenses.
+     * 
+     * @param amount the amount string to parse
+     * @return the parsed double value
+     */
     private double parseAmount(String amount) {
-        // 移除$符号、逗号和加号，保留减号表示支出
         return Double.parseDouble(amount.replace("$", "")
                                       .replace(",", "")
                                       .replace("+", ""));
     }
     
-    // 获取一周内各天的支出数据
+    /**
+     * Calculates the total spending for each day of the current week.
+     * Returns a map with days (Mon-Sun) as keys and total spending as values.
+     * 
+     * @return a LinkedHashMap containing daily spending totals for the current week
+     */
     public Map<String, Double> getWeeklySpending() {
         Map<String, Double> weeklyData = new LinkedHashMap<>();
-        // 初始化一周每天的数据
         String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
         for (String day : days) {
             weeklyData.put(day, 0.0);
         }
         
-        // 获取当前日期
         Calendar calendar = Calendar.getInstance();
         
-        // 处理每条交易
         for (Map<String, Object> transaction : transactions) {
             try {
                 String dateStr = (String)transaction.get("date");
                 Date transDate = dateFormat.parse(dateStr);
                 
-                // 设置日历对象为交易日期
                 calendar.setTime(transDate);
                 
-                // 获取星期几（1=周日，2=周一...7=周六）
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                String dayName = days[(dayOfWeek + 5) % 7]; // 转换为Mon-Sun
+                String dayName = days[(dayOfWeek + 5) % 7];
                 
-                // 如果是支出类型，累加金额
                 if ("Expense".equals(transaction.get("type"))) {
                     double amount = Math.abs((Double)transaction.get("amount"));
                     weeklyData.put(dayName, weeklyData.get(dayName) + amount);
                 }
             } catch (ParseException e) {
-                // 日期解析错误，忽略此交易
                 System.out.println("Error parsing date: " + e.getMessage());
             }
         }
@@ -74,18 +119,21 @@ public class TransactionDataService {
         return weeklyData;
     }
     
-    // 获取各类支出的占比数据
+    /**
+     * Analyzes and categorizes expenses based on transaction descriptions.
+     * Categories include: Housing, Food, Transport, Entertainment, Savings, and Others.
+     * 
+     * @return a HashMap containing expense categories and their total amounts
+     */
     public Map<String, Double> getExpenseCategories() {
         Map<String, Double> categoryData = new HashMap<>();
         
-        // 根据交易描述推断分类
         for (Map<String, Object> transaction : transactions) {
             if ("Expense".equals(transaction.get("type"))) {
                 String description = ((String)transaction.get("description")).toLowerCase();
                 String category = getCategoryFromDescription(description);
                 double amount = Math.abs((Double)transaction.get("amount"));
                 
-                // 累加到相应分类
                 categoryData.put(category, categoryData.getOrDefault(category, 0.0) + amount);
             }
         }
@@ -93,8 +141,14 @@ public class TransactionDataService {
         return categoryData;
     }
     
+    /**
+     * Determines the expense category based on the transaction description.
+     * Uses keyword matching to categorize transactions into predefined categories.
+     * 
+     * @param description the transaction description to analyze
+     * @return the determined expense category
+     */
     private String getCategoryFromDescription(String description) {
-        // 基于关键词推断分类
         if (description.contains("rent") || description.contains("mortgage") || description.contains("house")) {
             return "Housing";
         } else if (description.contains("food") || description.contains("grocery") || description.contains("restaurant")) {
@@ -110,6 +164,11 @@ public class TransactionDataService {
         }
     }
     
+    /**
+     * Retrieves the complete list of transactions.
+     * 
+     * @return a List of Maps containing all transaction data
+     */
     public List<Map<String, Object>> getTransactions() {
         return transactions;
     }
