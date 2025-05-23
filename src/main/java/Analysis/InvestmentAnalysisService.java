@@ -33,10 +33,10 @@ public class InvestmentAnalysisService {
             showAnalysisReport(analysisReport, parentComponent);
 
             JOptionPane.showMessageDialog(parentComponent,
-                    "投资分析报告已生成!", "成功", JOptionPane.INFORMATION_MESSAGE);
+                    "Investment analysis report has been generated!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(parentComponent,
-                    "生成报告时出错: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    "Error generating report:" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -50,13 +50,13 @@ public class InvestmentAnalysisService {
         BaiduAIService baiduAIService = new BaiduAIService();
 
         // 2. 调用大模型API
-        String prompt = "以下是一些交易记录，请用清晰易读的格式帮我进行分析并给出建议。"
-                + "请按照以下格式输出：\n"
-                + "1. 每笔交易单独列出，包含交易名称和金额\n"
-                + "2. 分析部分简明扼要\n"
-                + "3. 建议部分使用项目符号列出\n"
-                + "4. 最后给出总体建议\n\n"
-                + "交易记录如下：\n\n" + investmentData;
+        String prompt = "Below are some transaction records. Please analyze them in a clear and readable format and provide recommendations. Use English to answer."
+        + "Please format the output as follows:\n"
+        + "1. List each transaction separately, including transaction name and amount\n"
+        + "2. Keep the analysis section concise\n"
+        + "3. Use bullet points for recommendations\n"
+        + "4. Provide overall recommendations at the end\n\n"
+        + "Transaction records:\n\n" + investmentData;
 
         System.out.println("发送给AI的提示词：\n" + prompt);
 
@@ -75,22 +75,22 @@ public class InvestmentAnalysisService {
             String result = jsonObject.get("result").getAsString();
 
             StringBuilder formatted = new StringBuilder();
-            formatted.append("================ 交易分析报告 ================\n\n");
+            formatted.append("================ TRANSACTION ANALYSIS REPORT ================\n\n");
 
             String[] sections = result.split("\n\n");
             for (String section : sections) {
-                if (section.startsWith("总体建议：")) {
-                    formatted.append("\n===== 总体建议 =====\n");
+                if (section.startsWith("Overall recommendations:")) {
+                    formatted.append("\n===== Overall recommendations =====\n");
                     formatted.append(section.substring(5).replace("\n", "\n• "));
                 } else if (section.matches("\\d+\\.\\s.+")) {
-                    formatted.append(section.replaceFirst("(\\d+\\.)", "===== 交易$1 =====\n"))
+                    formatted.append(section.replaceFirst("(\\d+\\.)", "===== TRANSACTION$1 =====\n"))
                             .append("\n");
                 } else {
                     formatted.append(section).append("\n");
                 }
             }
 
-            formatted.append("\n================ 报告结束 ================");
+            formatted.append("\n================ REPORT END ================");
             return formatted.toString();
         } catch (Exception e) {
             return "原始响应：\n" + jsonResponse;
@@ -101,7 +101,7 @@ public class InvestmentAnalysisService {
             // 从文件中读取投资数据
             String filePath = "transactions.txt"; // 确保文件路径正确
             StringBuilder data = new StringBuilder();
-            data.append("交易数据:\n");
+            data.append("Transaction data:\n");
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
                 String line;
@@ -130,7 +130,7 @@ public class InvestmentAnalysisService {
      * @param parentComponent 父组件
      */
     private void showAnalysisReport(String report, Component parentComponent) {
-        JDialog reportDialog = new JDialog((Frame)null, "分析报告", true);
+        JDialog reportDialog = new JDialog((Frame)null, "Analysis Report", true);
         reportDialog.setSize(700, 550);
         reportDialog.setLocationRelativeTo(parentComponent);
 
@@ -143,13 +143,13 @@ public class InvestmentAnalysisService {
         reportDialog.add(scrollPane);
 
         JPanel buttonPanel = new JPanel();
-        JButton saveButton = new JButton("保存报告");
+        JButton saveButton = new JButton("Save Report");
         saveButton.addActionListener(e -> {
             saveReportToFile(report, parentComponent);
             reportDialog.dispose();
         });
 
-        JButton closeButton = new JButton("关闭");
+        JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> reportDialog.dispose());
 
         buttonPanel.add(saveButton);
@@ -166,7 +166,7 @@ public class InvestmentAnalysisService {
      */
     private void saveReportToFile(String report, Component parentComponent) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("保存投资分析报告");
+        fileChooser.setDialogTitle("Save Investment Analysis Report");
         fileChooser.setSelectedFile(new File("investment_analysis_report_" +
                 new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".txt"));
 
@@ -175,10 +175,10 @@ public class InvestmentAnalysisService {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 writer.write(report);
                 JOptionPane.showMessageDialog(parentComponent,
-                        "报告已保存到: " + file.getAbsolutePath(), "成功", JOptionPane.INFORMATION_MESSAGE);
+                        "Report has been saved to: " + file.getAbsolutePath(), "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(parentComponent,
-                        "保存报告时出错: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                        "Error saving report:" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
