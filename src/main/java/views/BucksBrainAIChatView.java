@@ -52,14 +52,14 @@ public class BucksBrainAIChatView extends BaseView {
         inputField = new JTextField();
         inputField.setFont(AppConstants.BODY_FONT.deriveFont(14f));
 
-        sendButton = new JButton("发送");
+        sendButton = new JButton("Send");
         sendButton.setFont(AppConstants.BUTTON_FONT);
         sendButton.addActionListener(this::handleSendMessage);
 
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
 
-        add(createHeader("Bucks Brain - 智能助手"), BorderLayout.NORTH);
+        add(createHeader("Bucks Brain - AI Assistant"), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
     }
@@ -74,7 +74,7 @@ public class BucksBrainAIChatView extends BaseView {
                 }
             }
         } catch (IOException e) {
-            System.err.println("保存对话历史失败: " + e.getMessage());
+            System.err.println("Failed to save the conversation history: " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class BucksBrainAIChatView extends BaseView {
                     }
                 }
             } catch (IOException e) {
-                System.err.println("加载对话历史失败: " + e.getMessage());
+                System.err.println("Failed to load the conversation history: " + e.getMessage());
             }
         }
 
@@ -175,7 +175,7 @@ public class BucksBrainAIChatView extends BaseView {
                 processAIMessage(message);
                 inputField.setText("");
             } else {
-                JOptionPane.showMessageDialog(this, "输入包含非法字符，请重新输入。");
+                JOptionPane.showMessageDialog(this, "The input contains illegal characters. Please re-enter.");
             }
         }
     }
@@ -196,7 +196,7 @@ public class BucksBrainAIChatView extends BaseView {
                     // 解析JSON并提取需要的内容
                     response = formatAIResponse(rawResponse);
                 } catch (Exception ex) {
-                    response = "请求出现错误：" + ex.getMessage();
+                    response = "An error occurred in the request." + ex.getMessage();
                 }
                 return null;
             }
@@ -232,9 +232,9 @@ public class BucksBrainAIChatView extends BaseView {
                 // 保留原有的加粗标记
                 return result;
             }
-            return "无法解析AI响应: " + rawResponse;
+            return "Unable to parse the AI response: " + rawResponse;
         } catch (Exception e) {
-            return "解析AI响应时出错: " + e.getMessage() + "\n原始响应:\n" + rawResponse;
+            return "Error occurred when analyzing the AI response: " + e.getMessage() + "\nOriginal response:\n" + rawResponse;
         }
     }
 

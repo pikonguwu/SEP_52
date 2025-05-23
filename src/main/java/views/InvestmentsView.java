@@ -38,10 +38,10 @@ public class InvestmentsView extends BaseView {
         chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // 创建带边框的图表板块
-        chartPanel.add(createChartSection(createAnnualChart("年度收入", true), "Income Trend"));
-        chartPanel.add(createChartSection(createAnnualChart("年度支出", false), "Expense Trend"));
-        chartPanel.add(createChartSection(createMonthlyChart("月度收入"), "Monthly Income"));
-        chartPanel.add(createChartSection(createMonthlyChart("月度支出"), "Monthly Expense"));
+        chartPanel.add(createChartSection(createAnnualChart("Income Trend", true), "Yearly Income"));
+        chartPanel.add(createChartSection(createAnnualChart("Expense Trend", false), "Yearly Expense"));
+        chartPanel.add(createChartSection(createMonthlyChart("Income Trend"), "Monthly Income"));
+        chartPanel.add(createChartSection(createMonthlyChart("Expense Trend"), "Monthly Expense"));
 
         // 底部分析面板
         JPanel analysisPanel = createAnalysisPanel();
