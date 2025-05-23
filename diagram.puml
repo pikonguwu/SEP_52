@@ -1,0 +1,195 @@
+@startuml
+skinparam packageStyle rect
+skinparam linetype ortho
+skinparam orthogonalRouting true
+left to right direction
+
+' ======== 实体层 (Entity) ========
+package "entity" {
+  class Transaction <<Entity>> {
+    - description : String
+    - amount      : BigDecimal
+    - date        : LocalDate
+    - category    : String
+    - type        : String
+    + getDescription() : String
+    + setDescription(desc : String) : void
+    + getAmount()      : BigDecimal
+    + setAmount(a : BigDecimal) : void
+    + getDate()        : LocalDate
+    + setDate(d : LocalDate) : void
+    + getCategory()    : String
+    + setCategory(c : String) : void
+    + getType()        : String
+    + setType(t : String) : void
+  }
+}
+
+' ======== 数据访问层 / 边界 (Boundary) ========
+package "data" {
+  class FileHandler <<Boundary>> {
+    + loadTransactions(path : String) : List<Transaction>
+    + saveTransactions(list : List<Transaction>, path : String) : void
+  }
+  class UserDataStorage <<Boundary>> {
+    + loadSettings() : Map<String,Object>
+    + saveSettings(settings : Map<String,Object>) : void
+  }
+}
+
+' ======== 服务层 / 控制 (Control) & 边界 (Boundary) ========
+package "services" {
+  interface BaiduAIService <<Boundary>> {
+    + analyzeText(text : String) : String
+  }
+  class CurrencyConverterService <<Control>> {
+    + convert(amount : BigDecimal, from : String, to : String) : BigDecimal
+  }
+  class SecurityService <<Control>> {
+    + authenticate(user : String, pwd : String) : boolean
+    + authorize(operation : String) : boolean
+  }
+  class TransactionDataService <<Control>> {
+    + loadAll() : List<Transaction>
+    + save(transaction : Transaction) : void
+  }
+  class TransactionManager <<Control>> {
+    + add(transaction : Transaction) : void
+    + remove(id : String) : void
+    + update(transaction : Transaction) : void
+    + listAll() : List<Transaction>
+  }
+  class TransactionListener <<Boundary>> {
+    + actionPerformed(event : Event) : void
+  }
+}
+
+' ======== 投资分析层 / 控制 (Control) ========
+package "analysis" {
+  class InvestmentAnalysisService <<Control>> {
+    + generateInvestmentReport(parent : Component) : void
+    - analyzeInvestments() : String
+    - formatAIResponse(json : String) : String
+    - prepareInvestmentData() : String
+    - showAnalysisReport(report : String, parent : Component) : void
+    - saveReportToFile(report : String, parent : Component) : void
+  }
+}
+
+' ======== 控制器层 (Control) ========
+package "controller" {
+  class TransactionController <<Control>> {
+    + create(transaction : Transaction) : void
+    + delete(id : String) : void
+    + edit(transaction : Transaction) : void
+    + fetchAll() : List<Transaction>
+  }
+}
+
+' ======== 界面视图层 / 边界 (Boundary) ========
+package "views" {
+  abstract class BaseView <<Boundary>> {
+    + render() : void
+  }
+  class DashboardView <<Boundary>> {
+    + render() : void
+  }
+  class TransactionsView <<Boundary>> {
+    + render() : void
+  }
+  class AccountsView <<Boundary>> {
+    + render() : void
+  }
+  class InvestmentsView <<Boundary>> {
+    + render() : void
+  }
+  class SettingsView <<Boundary>> {
+    + render() : void
+  }
+  class ContentPanel <<Boundary>> {
+    + renderContent() : void
+  }
+  class PrivacySettingsPanel <<Boundary>> {
+    + render() : void
+  }
+  class AddTransactionDialog <<Boundary>> {
+    + showDialog() : void
+  }
+  class BuckBrainAIChatView <<Boundary>> {
+    + sendMessage(msg : String) : void
+  }
+}
+
+' ======== UI 启动层 / 边界 (Boundary) ========
+package "ui" {
+  class Main <<Boundary>> {
+    + main(args : String[]) : void
+  }
+  class FinanceTrackerUI <<Boundary>> {
+    + initUI() : void
+    + show() : void
+  }
+  class LoginPage <<Boundary>> {
+    + showLogin() : void
+  }
+  class RegistrationPage <<Boundary>> {
+    + showRegistration() : void
+  }
+  class DataEntryPage <<Boundary>> {
+    + display() : void
+  }
+  class AddCardDialog <<Boundary>> {
+    + showDialog() : void
+  }
+  class BackgroundPanel <<Boundary>> {
+    + paintComponent(g : Graphics) : void
+  }
+}
+
+' ======== 公共组件层 / 边界 (Boundary) ========
+package "components" {
+  class RoundedPanel <<Boundary>> {
+    - cornerRadius : int
+    + setCornerRadius(radius : int) : void
+    + paintComponent(g : Graphics) : void
+  }
+  class RoundedButton <<Boundary>> {
+    - cornerRadius : int
+    - hovered      : boolean
+    + setCornerRadius(radius : int) : void
+    + setHovered(flag : boolean) : void
+    + paintComponent(g : Graphics) : void
+  }
+}
+
+' ======== 继承 / 实现关系 ========
+BaseView            <|-- DashboardView
+BaseView            <|-- TransactionsView
+BaseView            <|-- AccountsView
+BaseView            <|-- InvestmentsView
+BaseView            <|-- SettingsView
+
+RoundedPanel        <|-- BackgroundPanel
+RoundedButton       <|-- AddCardDialog
+
+BaiduAIService      <|.. BuckBrainAIChatView
+
+TransactionManager     <|.. TransactionDataService
+TransactionDataService <|.. TransactionListener
+
+' ======== 依赖 / 关联 (带标签) ========
+TransactionController --> TransactionManager        : uses
+TransactionManager    --> TransactionDataService     : uses  
+TransactionDataService --> FileHandler               : uses
+TransactionController --> CurrencyConverterService   : uses
+TransactionController --> SecurityService            : uses
+InvestmentAnalysisService --> TransactionDataService : uses
+InvestmentAnalysisService --> BuckBrainAIChatView    : calls
+DashboardView          --> TransactionController     : calls
+TransactionsView       --> TransactionController     : calls
+InvestmentsView        --> InvestmentAnalysisService : uses
+SettingsView           --> SecurityService           : uses
+ContentPanel           --> UserDataStorage           : uses
+BuckBrainAIChatView    --> BaiduAIService            : uses
+
+@enduml
