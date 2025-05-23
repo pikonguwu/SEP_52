@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="services.BaiduAIServiceTest" time="8.798" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.class.path" value="E:\0000Code\SEP_52_zzc\target\test-classes;E:\0000Code\SEP_52_zzc\target\classes;C:\Users\左泽成\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\左泽成\.m2\repository\org\jfree\jfreechart\1.0.19\jfreechart-1.0.19.jar;C:\Users\左泽成\.m2\repository\org\jfree\jcommon\1.0.23\jcommon-1.0.23.jar;C:\Users\左泽成\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\左泽成\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Windows\Temp\surefire7808118661021969197\surefirebooter-20250523225359262_3.jar C:\Windows\Temp\surefire7808118661021969197 2025-05-23T22-53-57_457-jvmRun1 surefire-20250523225359262_1tmp surefire_0-20250523225359262_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="E:\0000Code\SEP_52_zzc\target\test-classes;E:\0000Code\SEP_52_zzc\target\classes;C:\Users\左泽成\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\左泽成\.m2\repository\org\jfree\jfreechart\1.0.19\jfreechart-1.0.19.jar;C:\Users\左泽成\.m2\repository\org\jfree\jcommon\1.0.23\jcommon-1.0.23.jar;C:\Users\左泽成\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\左泽成\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\左泽成"/>
+    <property name="user.language" value="zh"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2023-10-17"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="E:\0000Code\SEP_52_zzc"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Windows\Temp\surefire7808118661021969197\surefirebooter-20250523225359262_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.1+12-LTS-29"/>
+    <property name="user.name" value="Jeffzzc"/>
+    <property name="stdout.encoding" value="GBK"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\左泽成\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Windows\TEMP\"/>
+    <property name="java.version" value="21.0.1"/>
+    <property name="user.dir" value="E:\0000Code\SEP_52_zzc"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="GBK"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Anaconda\envs\pytorch;D:\Anaconda\envs\pytorch\Library\mingw-w64\bin;D:\Anaconda\envs\pytorch\Library\usr\bin;D:\Anaconda\envs\pytorch\Library\bin;D:\Anaconda\envs\pytorch\Scripts;D:\Anaconda\envs\pytorch\bin;D:\Anaconda\condabin;E:\VMware\VMware Player\bin;c:\Users\左泽成\AppData\Local\Programs\cursor\resources\app\bin;C:\Program Files\NVIDIA\CUDNN\v9.5\bin;D:\bin;D:\libnvvp;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\Matlab\bin;D:\texlive\2023\bin\windows;C:\Program Files\NVIDIA Corporation\Nsight Compute 2024.1.1;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Java\jdk-21\bin;C:\Program Files\Java\jdk-21\jre\bin;D:\Anaconda;D:\Anaconda\Scripts;D:\Anaconda\Library\bin;C:\Users\左泽成\AppData\Roaming\Python\Python311\Scripts;D:;Ruby33-x64\bin;D:\Ruby33-x64\bin\bundler;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\dotnet;C:\ffmpeg\bin;E:\Environment\apache-maven-3.9.9\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;D:\Python\Scripts;D:\Python;C:\Users\左泽成\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Java\jdk-21\bin;D:\Py;E:\Software\Ruby33-x64\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin;D:\Python\Scripts;D:\Python;C:\Users\左泽成\AppData\Local\Microsoft\WindowsApps;D:\Microsoft VS Code\bin;C:\Program Files\Java\jdk-21\bin;D:\PyCharm Community Edition 2023.3.3\bin;.;D:\PyCharm 2024.1\bin;.;C:\Users\左泽成\AppData\Local\GitHubDesktop\bin;C:\Users\左泽成\AppData\Roaming\npm;E:\Software\IntelliJIDEA2024.1.7\bin;.;C:\Users\左泽成\AppData\Local\Muse Hub\lib;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="GBK"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.1+12-LTS-29"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="testGetAIResponse" classname="services.BaiduAIServiceTest" time="8.798">
+    <system-out><![CDATA[API返回结果：{"id":"as-qmd2903cx8","object":"chat.completion","created":1748012040,"result":"制定一个节省支出的计划可以帮助你更好地管理你的财务，实现财务自由。以下是一个简单的节省支出的计划，你可以根据自己的实际情况进行调整和修改。\n\n一、了解你的支出\n\n首先，你需要了解你的支出情况。这包括你的固定支出（如房租、水电费、贷款等）和可变支出（如餐饮、购物、娱乐等）。你可以通过查看银行账单、信用卡账单和在线购物记录等方式来了解你的支出情况。\n\n二、设定目标和优先级\n\n在了解你的支出后，设定一些目标和优先级。确定哪些支出是必要的，哪些是可以削减的。例如，你可能需要支付房租和水电费等固定支出，但你可以减少一些不必要的购物和娱乐支出。\n\n三、制定预算\n\n根据你设定的目标和优先级，制定一个预算计划。将你的收入和支出列出来，然后尽可能减少可变支出的金额。确保你的支出不超过你的收入。\n\n四、寻找节省的方法\n\n1. 购物和餐饮：寻找更便宜的购物和餐饮选择。比如购买季节性水果和蔬菜、选择经济实惠的餐厅或自己动手做饭等。\n2. 能源和水费：检查你的能源和水费账单，看看是否有可以节省的地方。例如，调整恒温器的温度、减少用水量等。\n3. 通信和娱乐：考虑取消一些不必要的订阅和会员资格，例如视频流媒体服务或游戏订阅等。\n4. 交通：尝试步行、骑自行车或使用公共交通工具代替私家车出行，这不仅可以节省交通费用，还有助于环保。\n5. 降低负债：如果你有贷款或信用卡债务，努力偿还它们。减少高利率债务可以帮助你节省更多的钱。\n\n五、建立储蓄习惯\n\n除了削减支出外，建立储蓄习惯也非常重要。设定一个储蓄目标，并制定一个计划将一定比例的收入存入银行或投资账户中。你可以考虑自动转账或使用其他方式来确保定期存入资金。\n\n六、定期审查和调整计划\n\n定期审查你的支出计划和预算，并根据需要进行调整。生活中总会有一些变化，如收入增加或减少、突发事件等，因此你需要灵活地调整你的计划以适应这些变化。\n\n七、培养良好的消费习惯\n\n最后，培养良好的消费习惯也是节省支出的关键。学会购买有价值的物品，避免冲动购物，理智对待促销活动和折扣等。了解自己的需求和欲望，避免购买不必要的物品。\n\n通过遵循以上七个步骤并养成良好的习惯，你可以成功地节省支出并实现财务目标。记住，财务管理需要持之以恒，并不断进行调整和优化。","is_truncated":false,"need_clear_history":false,"finish_reason":"normal","usage":{"prompt_tokens":8,"completion_tokens":546,"total_tokens":554}}
+]]></system-out>
+  </testcase>
+</testsuite>

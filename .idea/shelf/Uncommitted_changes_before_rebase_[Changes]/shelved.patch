@@ -1,0 +1,224 @@
+Index: target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>E:\\research\\SEP_52\\src\\main\\java\\components\\RoundedPanel.java\r\nE:\\research\\SEP_52\\src\\main\\java\\Entity\\Transaction.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\PrivacySettingsPanel.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\DataEntryPage.java\r\nE:\\research\\SEP_52\\src\\main\\java\\services\\CurrencyConverterService.java\r\nE:\\research\\SEP_52\\src\\main\\java\\services\\TransactionDataService.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\RegistrationPage.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\InvestmentsView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\SettingsView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\components\\RoundedButton.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\CurrencySettingViewPanel.java\r\nE:\\research\\SEP_52\\src\\main\\java\\data\\UserDataStorage.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\FinanceTrackerUI.java\r\nE:\\research\\SEP_52\\src\\main\\java\\services\\TransactionManager.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\CreditCardsView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\BucksBrainAIChatView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\Analysis\\InvestmentAnalysisService.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\TransactionsView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\LoginPage.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\EditTransactionDialog.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\AddTransactionDialog.java\r\nE:\\research\\SEP_52\\src\\main\\java\\constants\\AppConstants.java\r\nE:\\research\\SEP_52\\src\\main\\java\\data\\FileHandler.java\r\nE:\\research\\SEP_52\\src\\main\\java\\Controller\\TransactionController.java\r\nE:\\research\\SEP_52\\src\\main\\java\\services\\SecurityService.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\AccountsView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\Main.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\BaseView.java\r\nE:\\research\\SEP_52\\src\\main\\java\\ui\\AddCardDialog.java\r\nE:\\research\\SEP_52\\src\\main\\java\\services\\BaiduAIService.java\r\nE:\\research\\SEP_52\\src\\main\\java\\views\\DashboardView.java\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst b/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+--- a/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst	
++++ b/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst	
+@@ -1,31 +1,31 @@
+-E:\research\SEP_52\src\main\java\components\RoundedPanel.java
+-E:\research\SEP_52\src\main\java\Entity\Transaction.java
+-E:\research\SEP_52\src\main\java\views\PrivacySettingsPanel.java
+-E:\research\SEP_52\src\main\java\ui\DataEntryPage.java
+-E:\research\SEP_52\src\main\java\services\CurrencyConverterService.java
+-E:\research\SEP_52\src\main\java\services\TransactionDataService.java
+-E:\research\SEP_52\src\main\java\ui\RegistrationPage.java
+-E:\research\SEP_52\src\main\java\views\InvestmentsView.java
+-E:\research\SEP_52\src\main\java\views\SettingsView.java
+-E:\research\SEP_52\src\main\java\components\RoundedButton.java
+-E:\research\SEP_52\src\main\java\views\CurrencySettingViewPanel.java
+-E:\research\SEP_52\src\main\java\data\UserDataStorage.java
+-E:\research\SEP_52\src\main\java\ui\FinanceTrackerUI.java
+-E:\research\SEP_52\src\main\java\services\TransactionManager.java
+-E:\research\SEP_52\src\main\java\views\CreditCardsView.java
+-E:\research\SEP_52\src\main\java\views\BucksBrainAIChatView.java
+-E:\research\SEP_52\src\main\java\Analysis\InvestmentAnalysisService.java
+-E:\research\SEP_52\src\main\java\views\TransactionsView.java
+-E:\research\SEP_52\src\main\java\ui\LoginPage.java
+-E:\research\SEP_52\src\main\java\views\EditTransactionDialog.java
+-E:\research\SEP_52\src\main\java\views\AddTransactionDialog.java
+-E:\research\SEP_52\src\main\java\constants\AppConstants.java
+-E:\research\SEP_52\src\main\java\data\FileHandler.java
+-E:\research\SEP_52\src\main\java\Controller\TransactionController.java
+-E:\research\SEP_52\src\main\java\services\SecurityService.java
+-E:\research\SEP_52\src\main\java\views\AccountsView.java
+-E:\research\SEP_52\src\main\java\ui\Main.java
+-E:\research\SEP_52\src\main\java\views\BaseView.java
+-E:\research\SEP_52\src\main\java\ui\AddCardDialog.java
+-E:\research\SEP_52\src\main\java\services\BaiduAIService.java
+-E:\research\SEP_52\src\main\java\views\DashboardView.java
++E:\0000Code\SEP_52_zzc\src\main\java\Entity\Transaction.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\CreditCardsView.java
++E:\0000Code\SEP_52_zzc\src\main\java\services\SecurityService.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\CurrencySettingViewPanel.java
++E:\0000Code\SEP_52_zzc\src\main\java\data\FileHandler.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\BucksBrainAIChatView.java
++E:\0000Code\SEP_52_zzc\src\main\java\constants\AppConstants.java
++E:\0000Code\SEP_52_zzc\src\main\java\services\BaiduAIService.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\TransactionsView.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\AccountsView.java
++E:\0000Code\SEP_52_zzc\src\main\java\components\RoundedPanel.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\Main.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\RegistrationPage.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\DataEntryPage.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\BaseView.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\EditTransactionDialog.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\DashboardView.java
++E:\0000Code\SEP_52_zzc\src\main\java\components\RoundedButton.java
++E:\0000Code\SEP_52_zzc\src\main\java\services\CurrencyConverterService.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\InvestmentsView.java
++E:\0000Code\SEP_52_zzc\src\main\java\services\TransactionDataService.java
++E:\0000Code\SEP_52_zzc\src\main\java\Analysis\InvestmentAnalysisService.java
++E:\0000Code\SEP_52_zzc\src\main\java\services\TransactionManager.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\FinanceTrackerUI.java
++E:\0000Code\SEP_52_zzc\src\main\java\Controller\TransactionController.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\AddTransactionDialog.java
++E:\0000Code\SEP_52_zzc\src\main\java\data\UserDataStorage.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\LoginPage.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\PrivacySettingsPanel.java
++E:\0000Code\SEP_52_zzc\src\main\java\views\SettingsView.java
++E:\0000Code\SEP_52_zzc\src\main\java\ui\AddCardDialog.java
+Index: src/main/main.iml
+===================================================================
+diff --git a/src/main/main.iml b/src/main/main.iml
+new file mode 100644
+--- /dev/null	
++++ b/src/main/main.iml	
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="false" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .vscode/settings.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\r\n    \"java.project.sourcePaths\": [\r\n        \"src\",\r\n        \"lib/jfreechart-1.0.1\"\r\n    ],\r\n    \"java.project.outputPath\": \"bin\",\r\n    \"java.project.referencedLibraries\": [\r\n        \"lib/**/*.jar\"\r\n    ]\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.vscode/settings.json b/.vscode/settings.json
+--- a/.vscode/settings.json	
++++ b/.vscode/settings.json	
+@@ -1,7 +1,8 @@
+ {
+     "java.project.sourcePaths": [
+-        "src",
+-        "lib/jfreechart-1.0.1"
++        "BuckBrain_synchronized - new/src",
++        "BuckBrainAI/src",
++        "src/main/java/ui"
+     ],
+     "java.project.outputPath": "bin",
+     "java.project.referencedLibraries": [
+Index: src/.idea/vcs.xml
+===================================================================
+diff --git a/src/.idea/vcs.xml b/src/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	
++++ b/src/.idea/vcs.xml	
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/test/test.iml
+===================================================================
+diff --git a/src/test/test.iml b/src/test/test.iml
+new file mode 100644
+--- /dev/null	
++++ b/src/test/test.iml	
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="true" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++    <orderEntry type="module" module-name="main" />
++  </component>
++</module>
+\ No newline at end of file
+Index: users.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>eFvAXAItb17iaCWoipbHxw==\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/users.txt b/users.txt
+--- a/users.txt	
++++ b/users.txt	
+@@ -1,1 +1,1 @@
+-eFvAXAItb17iaCWoipbHxw==
++d/ELecLygzwjZ3GRmEW+z4Yt/QOhTQxBYJZ8iryzdy0=
+Index: src/.idea/modules.xml
+===================================================================
+diff --git a/src/.idea/modules.xml b/src/.idea/modules.xml
+new file mode 100644
+--- /dev/null	
++++ b/src/.idea/modules.xml	
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/main/main.iml" filepath="$PROJECT_DIR$/main/main.iml" />
++      <module fileurl="file://$PROJECT_DIR$/.idea/src.iml" filepath="$PROJECT_DIR$/.idea/src.iml" />
++      <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: src/.idea/misc.xml
+===================================================================
+diff --git a/src/.idea/misc.xml b/src/.idea/misc.xml
+new file mode 100644
+--- /dev/null	
++++ b/src/.idea/misc.xml	
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/.idea/.gitignore
+===================================================================
+diff --git a/src/.idea/.gitignore b/src/.idea/.gitignore
+new file mode 100644
+--- /dev/null	
++++ b/src/.idea/.gitignore	
+@@ -0,0 +1,8 @@
++# Default ignored files
++/shelf/
++/workspace.xml
++# Editor-based HTTP Client requests
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
+Index: src/.idea/src.iml
+===================================================================
+diff --git a/src/.idea/src.iml b/src/.idea/src.iml
+new file mode 100644
+--- /dev/null	
++++ b/src/.idea/src.iml	
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
