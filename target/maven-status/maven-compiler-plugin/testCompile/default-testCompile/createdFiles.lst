@@ -1,0 +1,7 @@
+services\TransactionDataServiceTest.class
+services\TransactionManagerTest.class
+Controller\TransactionControllerTest.class
+services\CurrencyConverterServiceTest.class
+services\SecurityServiceTest.class
+services\BaiduAIServiceTest.class
+data\UserDataStorageTest.class
