@@ -64,6 +64,7 @@ views\CurrencySettingViewPanel$ConvertListener.class
 ui\LoginPage.class
 services\SecurityService.class
 views\BucksBrainAIChatView$2.class
+ui\LoginPage$3.class
 views\AccountsView$4.class
 views\TransactionsView$3.class
 views\DashboardView$4.class

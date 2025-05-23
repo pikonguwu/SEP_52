@@ -5,12 +5,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * A JPanel that provides user interface components for configuring privacy settings.
+ * It includes checkboxes for controlling transaction history storage, AI recommendations,
+ * and security notifications, along with a save button.
+ */
 public class PrivacySettingsPanel extends JPanel {
     private JCheckBox allowTransactionStorageCheckBox;
     private JCheckBox enablePersonalizedAIBox;
     private JCheckBox enableSecurityNotificationsBox;
     private JButton saveButton;
 
+    /**
+     * Constructs a new PrivacySettingsPanel.
+     * Initializes the layout, creates and adds the privacy setting checkboxes,
+     * the save button, and sets up the action listener for the save button.
+     */
     public PrivacySettingsPanel() {
         setLayout(new GridLayout(5, 1, 10, 10));
         setBorder(BorderFactory.createTitledBorder("Privacy Settings"));
@@ -41,15 +51,29 @@ public class PrivacySettingsPanel extends JPanel {
         });
     }
 
-    // 可添加 get 方法以供外部调用
+    /**
+     * Checks if storing transaction history is allowed based on the checkbox selection.
+     *
+     * @return {@code true} if the "Allow storing my transaction history" checkbox is selected, {@code false} otherwise.
+     */
     public boolean isTransactionStorageAllowed() {
         return allowTransactionStorageCheckBox.isSelected();
     }
 
+    /**
+     * Checks if personalized AI recommendations are enabled based on the checkbox selection.
+     *
+     * @return {@code true} if the "Enable personalized AI recommendations" checkbox is selected, {@code false} otherwise.
+     */
     public boolean isAIEnabled() {
         return enablePersonalizedAIBox.isSelected();
     }
 
+    /**
+     * Checks if security notifications are enabled based on the checkbox selection.
+     *
+     * @return {@code true} if the "Receive security notifications" checkbox is selected, {@code false} otherwise.
+     */
     public boolean isSecurityNotificationsEnabled() {
         return enableSecurityNotificationsBox.isSelected();
     }

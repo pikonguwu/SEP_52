@@ -4,24 +4,28 @@ package views;
 import javax.swing.JPanel;
 
 /**
- * BaseView 是一个抽象类，继承自 JPanel，用于作为所有视图的基类。
- * 它定义了两个抽象方法：getViewName() 和 initUI()，并要求子类实现这些方法。
- * 在构造函数中，BaseView 会自动调用 initUI() 方法来初始化用户界面。
+ * BaseView is an abstract class that extends JPanel and serves as the base class for all views in the application.
+ * It defines two abstract methods, {@link #getViewName()} and {@link #initUI()}, which subclasses must implement.
+ * In the constructor, BaseView automatically calls the {@link #initUI()} method to initialize the user interface.
  */
 public abstract class BaseView extends JPanel {
     /**
-     * 获取视图的名称。
-     * @return 返回视图的名称。
+     * Abstract method to get the name of the view.
+     * This name is typically used to identify the view in a CardLayout or navigation.
+     * @return Returns the name of the view.
      */
     public abstract String getViewName();
 
     /**
-     * 初始化用户界面。子类必须实现此方法以定义视图的 UI 组件和布局。
+     * Abstract method to initialize the user interface of the view.
+     * Subclasses must implement this method to define the UI components and layout for their specific view.
+     * This method is automatically called by the BaseView constructor.
      */
     protected abstract void initUI();
     
     /**
-     * BaseView 的构造函数。在创建 BaseView 实例时，会自动调用 initUI() 方法。
+     * Constructor for BaseView.
+     * When a BaseView instance (or a subclass instance) is created, the {@link #initUI()} method is automatically called.
      */
     public BaseView() {
         initUI();

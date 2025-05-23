@@ -13,20 +13,29 @@ import org.jfree.chart.title.TextTitle; // 新增
 import java.awt.geom.Ellipse2D; // 新增
 import Analysis.InvestmentAnalysisService;
 /**
- * InvestmentsView 类继承自 BaseView，用于展示投资相关信息的视图界面。
- * 该视图包含多个图表展示年度和月度的收入、支出趋势，以及一个底部的分析面板。
- */
-/**
- * InvestmentsView 类继承自 BaseView，用于展示投资相关信息的视图界面。
+ * A view class extending {@link BaseView} used to display investment-related information.
+ * This view includes multiple charts showing annual and monthly income and expense trends,
+ * and a bottom analysis panel.
  */
 public class InvestmentsView extends BaseView {
     private InvestmentAnalysisService analysisService;
 
+    /**
+     * {@inheritDoc}
+     * Returns the name of this view.
+     *
+     * @return The view name "Investments".
+     */
     @Override
     public String getViewName() {
         return "Investments";
     }
 
+    /**
+     * {@inheritDoc}
+     * Initializes the user interface components for the Investments view.
+     * Sets up the layout, creates chart panels and the analysis panel.
+     */
     @Override
     protected void initUI() {
         analysisService = new InvestmentAnalysisService();
@@ -52,11 +61,12 @@ public class InvestmentsView extends BaseView {
     }
 
     /**
-     * 创建带标题的图表板块，包含标题标签和图表容器。
+     * Creates a panel section containing a title label and a chart.
+     * This panel has rounded corners and a specific style.
      *
-     * @param chart 图表面板组件
-     * @param title 图表板块的标题
-     * @return 包含标题和图表的面板
+     * @param chart The ChartPanel component to display.
+     * @param title The title for the chart section.
+     * @return A JPanel containing the title and the chart.
      */
     private JPanel createChartSection(ChartPanel chart, String title) {
         // 创建一个圆角面板，使用边界布局
@@ -94,11 +104,12 @@ public class InvestmentsView extends BaseView {
     }
 
     /**
-     * 创建年度收入或支出的折线图。
+     * Creates an XY line chart displaying annual income or expense data.
+     * The data is currently hardcoded sample data.
      *
-     * @param title 图表的标题
-     * @param isIncome 是否为收入图表，若是则使用蓝色，否则使用红色
-     * @return 包含年度图表的面板
+     * @param title The title of the chart.
+     * @param isIncome If {@code true}, styles the chart for income (blue); if {@code false}, styles for expense (red).
+     * @return A ChartPanel containing the annual chart.
      */
     private ChartPanel createAnnualChart(String title, boolean isIncome) {
         // 创建一个 XY 系列，用于存储数据点
@@ -133,10 +144,11 @@ public class InvestmentsView extends BaseView {
     }
 
     /**
-     * 创建月度收入或支出的折线图，数据为随机生成。
+     * Creates an XY line chart displaying monthly income or expense data.
+     * The data is currently randomly generated sample data.
      *
-     * @param title 图表的标题
-     * @return 包含月度图表的面板
+     * @param title The title of the chart.
+     * @return A ChartPanel containing the monthly chart.
      */
     private ChartPanel createMonthlyChart(String title) {
         // 创建一个 XY 系列，用于存储数据点
@@ -165,10 +177,11 @@ public class InvestmentsView extends BaseView {
     }
 
     /**
-     * 对图表进行样式优化，包括背景、数据线、标题和坐标轴样式。
+     * Applies common style settings to a JFreeChart, including background,
+     * gridlines, data line appearance, title font, and axis tick label fonts.
      *
-     * @param chart 要优化样式的图表
-     * @param color 数据线的颜色
+     * @param chart The JFreeChart to style.
+     * @param color The color to use for the data line and data points.
      */
     private void styleChart(JFreeChart chart, Color color) {
         // 获取图表的 XY 绘图区域
@@ -208,9 +221,10 @@ public class InvestmentsView extends BaseView {
     }
 
     /**
-     * 创建底部的分析面板，包含分析文本和生成报告按钮。
+     * Creates the bottom panel for displaying AI analysis text and a button
+     * to generate a report.
      *
-     * @return 包含分析文本和按钮的面板
+     * @return A JPanel containing the analysis components.
      */
     private JPanel createAnalysisPanel() {
         RoundedPanel panel = new RoundedPanel(new BorderLayout());
