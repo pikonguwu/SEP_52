@@ -125,13 +125,13 @@ Troubleshooting
 
 ### Common Questions
 
-** Startup error "--enable-preview"** :
+Startup error "--enable-preview"
 Make sure to use JDK 21 and the '--enable-preview' flag
 
-2. ** Cannot find the main class **
+2. Cannot find the main class 
 Confirm that the mainClass setting in the Maven configuration is correct (currently it is' ui.Main ')
 
-3. **UI Display Problem ** :
+3. UI Display Problem
 Check whether the picture resources are in the correct location (the 'bin\photo\' directory).
 
 
