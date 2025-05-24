@@ -111,7 +111,7 @@ The application data is stored in the local file:
 
 Add new features
 
-Create a new class in the corresponding directory
+1. Create a new class in the corresponding directory
 2. Follow the existing code structure and naming conventions
 3. Update the UI components to integrate new functions
 
@@ -125,7 +125,7 @@ Troubleshooting
 
 ### Common Questions
 
-Startup error "--enable-preview"
+1. Startup error "--enable-preview"
 Make sure to use JDK 21 and the '--enable-preview' flag
 
 2. Cannot find the main class 
