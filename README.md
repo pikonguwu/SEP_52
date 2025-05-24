@@ -168,3 +168,6 @@ Uniform font is changed by Weijin He, backgroud colour and button size is change
 
 ## Junit test of function
 Maded by Jiayue Ma and Weijin He.
+
+## Update Junit test version and fix the version conflict
+Made by Zecheng Zuo
