@@ -13,7 +13,8 @@ import com.google.gson.Gson;
 
 /**
  * The service class used to invoke the Baidu Wenxin Yiyan API.
- * This class provides the functionality of obtaining access tokens and obtaining AI responses.
+ * This class provides the functionality of obtaining access tokens and
+ * obtaining AI responses.
  */
 public class BaiduAIService {
     /**
@@ -24,30 +25,37 @@ public class BaiduAIService {
 
     /**
      * The access key for accessing the Baidu API, used for authentication.
-     * Note: The "Kfeak" in the key may be a spelling error, please check and correct it.
+     * Note: The "Kfeak" in the key may be a spelling error, please check and
+     * correct it.
      */
     private static final String SECRET_KEY = "yTZ5k2rdFsUjxIYniDjgKbH3ffaIoqOQ";
 
     // private static final String SECRET_KEY = "你的SECRET_KEY";
     /**
-     * The URL for obtaining the access token, requested through the API key and secret key.
+     * The URL for obtaining the access token, requested through the API key and
+     * secret key.
      */
 
-    private static final String ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + API_KEY + "&client_secret=" + SECRET_KEY;
+    private static final String ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id="
+            + API_KEY + "&client_secret=" + SECRET_KEY;
     /**
      * The base URL for the Baidu Wenxin Yiyan API, used to send chat requests.
      */
     private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-lite-8k";
 
-    // private static final String API_BASE_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions";
+    // private static final String API_BASE_URL =
+    // "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions";
 
     /**
      * The method for obtaining the access token.
-     * Send a request to the Baidu API to obtain an access token for subsequent API calls.
+     * Send a request to the Baidu API to obtain an access token for subsequent API
+     * calls.
      *
      * @return The access token string
-     * @throws IOException If an I/O error occurs when sending the request or processing the response
-     * @throws InterruptedException If the thread is interrupted while waiting for the response
+     * @throws IOException          If an I/O error occurs when sending the request
+     *                              or processing the response
+     * @throws InterruptedException If the thread is interrupted while waiting for
+     *                              the response
      */
     private String getAccessToken() throws IOException, InterruptedException {
         // Create a new HTTP client
@@ -63,7 +71,9 @@ public class BaiduAIService {
         // Send the request and get the response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // Use Gson to parse the response body to a Map
-        Map<String, Object> result = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
+        Map<String, Object> result = new Gson().fromJson(response.body(),
+                new com.google.gson.reflect.TypeToken<HashMap<String, Object>>() {
+                }.getType());
 
         if (result.containsKey("error")) {
             throw new IOException("Failed to get access token: " + result.get("error_description"));
@@ -75,7 +85,9 @@ public class BaiduAIService {
 
     /**
      * The method of obtaining AI responses.
-     * First, obtain the access token, then build the request body and send the request to the Baidu Wenxin Yiyan API, and finally return the response from the AI.
+     * First, obtain the access token, then build the request body and send the
+     * request to the Baidu Wenxin Yiyan API, and finally return the response from
+     * the AI.
      *
      * @param message The chat message entered by the user
      * @return The response string of AI returns an error message if an error occurs
@@ -112,7 +124,9 @@ public class BaiduAIService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // Check whether the response contains errors
-            Map<String, Object> responseMap = new Gson().fromJson(response.body(), new com.google.gson.reflect.TypeToken<HashMap<String, Object>>(){}.getType());
+            Map<String, Object> responseMap = new Gson().fromJson(response.body(),
+                    new com.google.gson.reflect.TypeToken<HashMap<String, Object>>() {
+                    }.getType());
             if (responseMap.containsKey("error")) {
                 throw new IOException("API Error: " + responseMap.get("error"));
             }
@@ -125,5 +139,41 @@ public class BaiduAIService {
             // Return error message
             return "Error: " + e.getMessage();
         }
+    }
+
+    /**
+     * The method of text summarization.
+     * This is a placeholder method that simulates the text summarization
+     * functionality.
+     *
+     * @param text The input text to be summarized
+     * @return The summary of the input text
+     */
+    public static String summarizeText(String text) {
+        return "Baidu summary: " + text;
+    }
+
+    /**
+     * The method of sentiment analysis.
+     * This is a placeholder method that simulates the sentiment analysis
+     * functionality.
+     *
+     * @param text The input text to be analyzed
+     * @return The sentiment score of the input text
+     */
+    public static double analyzeSentiment(String text) {
+        return 0.85; // 模拟正面情绪
+    }
+
+    /**
+     * The method of keyword extraction.
+     * This is a placeholder method that simulates the keyword extraction
+     * functionality.
+     *
+     * @param text The input text from which to extract keywords
+     * @return An array of extracted keywords
+     */
+    public static String[] extractKeywords(String text) {
+        return new String[] { "Baidu", "AI", "technology" };
     }
 }

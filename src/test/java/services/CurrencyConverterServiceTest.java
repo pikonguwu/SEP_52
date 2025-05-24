@@ -1,11 +1,12 @@
 package services;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test class for {@link CurrencyConverterService}.
- * This class contains test cases to verify currency conversion and formatting functionality.
+ * This class contains test cases to verify currency conversion and formatting
+ * functionality.
  */
 public class CurrencyConverterServiceTest {
 
@@ -44,9 +45,11 @@ public class CurrencyConverterServiceTest {
      * Tests conversion with an invalid currency code.
      * Expects an IllegalArgumentException to be thrown.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidCurrency() {
-        CurrencyConverterService.convert(100, "ABC", "USD"); // Unsupported currency code
+        assertThrows(IllegalArgumentException.class, () -> {
+            CurrencyConverterService.convert(100, "ABC", "USD");
+        });
     }
 
     /**

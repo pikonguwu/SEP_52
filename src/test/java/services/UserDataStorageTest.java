@@ -1,10 +1,13 @@
 package data;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import data.UserDataStorage;
 
 import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test class for {@link UserDataStorage}.
@@ -20,7 +23,7 @@ public class UserDataStorageTest {
      * Sets up the test environment by deleting the test user file
      * to avoid interference between test cases.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         File file = new File(TEST_FILE);
         if (file.exists()) {
