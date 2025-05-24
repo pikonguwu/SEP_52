@@ -10,39 +10,63 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
+/**
+ * A JPanel that provides a user interface for currency conversion settings.
+ * Allows users to select source and target currencies, enter an amount,
+ * and view the conversion result.
+ */
 public class CurrencySettingViewPanel extends JPanel {
+    /**
+     * Selector for the source currency.
+     */
     private JComboBox<String> fromCurrencySelector;
+    /**
+     * Selector for the target currency.
+     */
     private JComboBox<String> toCurrencySelector;
+    /**
+     * Text field for entering the amount to convert.
+     */
     private JTextField amountInput;
+    /**
+     * Label to display the conversion result.
+     */
     private JLabel resultLabel;
-    private Image backgroundImage;  // 用于存储背景图
+    /**
+     * Image object for the background.
+     */
+    private Image backgroundImage;
 
+    /**
+     * Constructs a new CurrencySettingViewPanel, initializing the UI components
+     * and setting up the layout.
+     */
     public CurrencySettingViewPanel() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        // 加载背景图片
+        // Load background image
         try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\马家悦\\Desktop\\study\\Java\\SEP_52\\src\\main\\java\\photo\\currencybackground.png")); // 使用绝对路径加载图片
+            backgroundImage = ImageIO.read(new File("C:\\Users\\马家悦\\Desktop\\study\\Java\\SEP_52\\src\\main\\java\\photo\\currencybackground.png")); // Load image using an absolute path
             System.out.println("背景图片加载成功！");  // 打印日志，确认图片是否加载成功
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("图片加载失败！请检查路径。");
         }
 
-        // 标题区域
+        // Title area
         JLabel title = new JLabel("Currency Converter");
         title.setFont(new Font("Segoe UI", Font.BOLD, 20));
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
         add(title, BorderLayout.NORTH);
 
-        // 中央表单区域
+        // Central form area
         JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridBagLayout());  // 使用 GridBagLayout 布局
+        formPanel.setLayout(new GridBagLayout());  // Use GridBagLayout
         GridBagConstraints gbc = new GridBagConstraints();
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        formPanel.setBackground(new Color(255, 255, 255, 0)); // 使背景透明
+        formPanel.setBackground(new Color(255, 255, 255, 0)); // Make background transparent
 
         String[] currencies = { "CNY", "USD", "EUR" };
 
@@ -51,13 +75,13 @@ public class CurrencySettingViewPanel extends JPanel {
         fromLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;  // 设置标签左对齐
+        gbc.anchor = GridBagConstraints.WEST;  // Set label left-aligned
         formPanel.add(fromLabel, gbc);
 
         fromCurrencySelector = new JComboBox<>(currencies);
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;  // 使组合框填满
+        gbc.fill = GridBagConstraints.HORIZONTAL;  // Make combo box fill the space
         fromCurrencySelector.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         formPanel.add(fromCurrencySelector, gbc);
 
@@ -66,13 +90,13 @@ public class CurrencySettingViewPanel extends JPanel {
         amountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.NONE;  // 重置为不填充
+        gbc.fill = GridBagConstraints.NONE;  // Reset to no filling
         formPanel.add(amountLabel, gbc);
 
         amountInput = new JTextField("100");
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;  // 使输入框填满
+        gbc.fill = GridBagConstraints.HORIZONTAL;  // Make text field fill the space
         amountInput.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         formPanel.add(amountInput, gbc);
 
@@ -90,51 +114,68 @@ public class CurrencySettingViewPanel extends JPanel {
         toCurrencySelector.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         formPanel.add(toCurrencySelector, gbc);
 
-        // Convert Button: 设置按钮宽度与上面的框相同并居中
+        // Convert Button: Set button width same as fields above and center align
         JButton convertButton = new JButton("Convert");
         convertButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        convertButton.setBackground(new Color(59, 130, 246));  // 保持原来的蓝色
+        convertButton.setBackground(new Color(59, 130, 246));  // Keep the original blue color
         convertButton.setForeground(Color.WHITE);
         convertButton.setFocusPainted(false);
         convertButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        convertButton.setPreferredSize(new Dimension(300, 40));  // 使按钮宽度与输入框一致
-        convertButton.setMaximumSize(new Dimension(300, 40));  // 使按钮宽度与输入框一致
+        convertButton.setPreferredSize(new Dimension(300, 40));  // Make button width consistent with input fields
+        convertButton.setMaximumSize(new Dimension(300, 40));  // Make button width consistent with input fields
         convertButton.addActionListener(new ConvertListener());
 
-        // Result Label: 确保与按钮一致的宽度并居中
+        // Result Label: Ensure width consistent with button and center align
         resultLabel = new JLabel("Result will appear here");
         resultLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         resultLabel.setForeground(new Color(33, 33, 33));
         resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
         resultLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
-        // 设置背景颜色为蓝色，和按钮颜色一致
-        resultLabel.setBackground(new Color(59, 130, 246)); // 与按钮相同的蓝色
-        resultLabel.setOpaque(true); // 设置为不透明，以显示背景色
-        resultLabel.setPreferredSize(new Dimension(300, 40));  // 设置与按钮相同的宽度
-        resultLabel.setMaximumSize(new Dimension(300, 40));  // 设置与按钮相同的宽度
+        // Set background color to blue, consistent with button color
+        resultLabel.setBackground(new Color(59, 130, 246)); // Same blue as the button
+        resultLabel.setOpaque(true); // Set opaque to show background color
+        resultLabel.setPreferredSize(new Dimension(300, 40));  // Set width same as the button
+        resultLabel.setMaximumSize(new Dimension(300, 40));  // Set width same as the button
 
-        // 添加组件到表单
+        // Add components to the form
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.gridwidth = 2;  // 设置按钮跨越两列
+        gbc.gridwidth = 2;  // Set button to span two columns
         formPanel.add(convertButton, gbc);
 
-        // 组装页面
+        // Assemble the page
         add(formPanel, BorderLayout.CENTER);
         add(resultLabel, BorderLayout.SOUTH);
     }
 
-    // 重写 paintComponent 方法来绘制背景图片
+    /**
+     * Overrides the default paintComponent method to draw a background image
+     * before painting the components.
+     *
+     * @param g The Graphics context.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (backgroundImage != null) {
-            // 绘制背景图片，确保背景图在最底层
+            // Draw the background image, ensuring it is at the bottom layer
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
 
+    /**
+     * Action listener for the convert button.
+     * Handles the currency conversion when the button is clicked.
+     */
     private class ConvertListener implements ActionListener {
+        /**
+         * Performs the currency conversion when the button is clicked.
+         * It reads the amount, source, and target currencies, performs the conversion
+         * using {@link CurrencyConverterService}, and displays the result.
+         * Handles {@link NumberFormatException} if the amount is invalid.
+         *
+         * @param e The action event.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             try {

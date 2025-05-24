@@ -8,47 +8,49 @@ import views.PrivacySettingsPanel;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * SettingsView 类继承自 BaseView，用于创建设置视图界面。
- * 该视图包含顶部导航栏和多个内容面板，用户可以通过导航栏切换不同的设置页面。
+ * SettingsView extends BaseView to create the settings interface.
+ * This view features a top navigation bar and multiple content panels,
+ * allowing users to switch between different settings pages.
  */
 public class SettingsView extends BaseView {
     /**
-     * 卡片布局管理器，用于切换内容面板。
+     * CardLayout manager used to switch between content panels.
      */
     private CardLayout cardLayout;
     /**
-     * 包含多个内容面板的容器。
+     * Container holding the different content panels.
      */
     private JPanel contentPanel;
     /**
-     * 顶部导航栏的按钮数组。
+     * Array of navigation buttons in the top bar.
      */
     private RoundedButton[] tabButtons;
     /**
-     * 主题主颜色。
+     * Primary theme color.
      */
     private final Color primaryColor = new Color(0, 122, 255);
     /**
-     * 主题次要颜色。
+     * Secondary theme color.
      */
     private final Color secondaryColor = new Color(245, 247, 250);
     /**
-     * 文本颜色。
+     * Text color.
      */
     private final Color textColor = new Color(80, 80, 80);
     /**
-     * 边框颜色。
+     * Border color.
      */
     private final Color borderColor = new Color(225, 225, 225);
     /**
-     * 导航按钮和表单标签使用的字体。
+     * Font used for tab buttons and form labels.
      */
     private Font tabFont;
 
     /**
-     * 新增字体初始化方法，尝试使用 "Segoe UI" 字体，若失败则使用备用字体。
-     * 
-     * @return 初始化后的字体对象。
+     * Initializes the base font, attempting to use "Segoe UI" and falling back
+     * to a default sans-serif font if unavailable.
+     *
+     * @return the initialized Font object
      */
     private Font createBaseFont() {
         try {
@@ -65,9 +67,9 @@ public class SettingsView extends BaseView {
     // }
 
     /**
-     * 获取视图的名称，用于在界面切换时标识该视图。
-     * 
-     * @return 视图名称 "Settings"。
+     * Returns the name of this view used for identification when switching views.
+     *
+     * @return the view name "Settings"
      */
     @Override
     public String getViewName() {
@@ -75,7 +77,7 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 重写 initUI 方法，初始化设置视图的用户界面。
+     * Overrides initUI to initialize the user interface for the settings view.
      */
     @Override
     protected void initUI() {
@@ -102,9 +104,9 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建顶部导航系统，包含多个导航按钮。
-     * 
-     * @return 包含导航按钮的面板。
+     * Creates the top navigation bar containing multiple navigation buttons.
+     *
+     * @return a JPanel holding the navigation buttons
      */
     // 顶部导航系统 =============================================================
     private JPanel createTopNavigation() {
@@ -131,10 +133,11 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建导航按钮，设置按钮的字体、背景、边框等属性，并添加鼠标和点击事件监听器。
-     * 
-     * @param text 按钮显示的文本。
-     * @return 配置好的导航按钮。
+     * Creates a navigation button with specified text, sets its font, background,
+     * border styling, and attaches mouse and action listeners.
+     *
+     * @param text the text to display on the button
+     * @return the configured RoundedButton instance
      */
     private RoundedButton createNavButton(String text) {
         RoundedButton button = new RoundedButton(text);
@@ -155,9 +158,9 @@ public class SettingsView extends BaseView {
         // 添加鼠标事件监听器
         button.addMouseListener(new MouseAdapter() {
             /**
-             * 鼠标进入按钮区域时，若按钮未被选中，更改按钮背景和边框颜色。
-             * 
-             * @param e 鼠标事件对象。
+             * When the mouse enters the button area, if the button is not selected, change its background and border colors.
+             *
+             * @param e the mouse event object
              */
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -170,9 +173,9 @@ public class SettingsView extends BaseView {
             }
 
             /**
-             * 鼠标离开按钮区域时，若按钮未被选中，恢复按钮背景和边框颜色。
-             * 
-             * @param e 鼠标事件对象。
+             * When the mouse exits the button area, if the button is not selected, restore its background and border colors.
+             *
+             * @param e the mouse event object
              */
             @Override
             public void mouseExited(MouseEvent e) {
@@ -194,10 +197,11 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 包装导航按钮，使其适应父容器的大小。
-     * 
-     * @param btn 要包装的导航按钮。
-     * @return 包装后的面板。
+     * Wraps a navigation button in a panel that adjusts the button's size
+     * to match the parent container.
+     *
+     * @param btn the navigation button to wrap
+     * @return a JPanel containing the wrapped button
      */
     private JPanel wrapNavButton(RoundedButton btn) {
         JPanel wrapper = new JPanel(new BorderLayout());
@@ -207,9 +211,9 @@ public class SettingsView extends BaseView {
         // 添加组件大小变化监听器
         wrapper.addComponentListener(new ComponentAdapter() {
             /**
-             * 当包装面板大小变化时，设置按钮的首选大小与面板相同。
-             * 
-             * @param e 组件事件对象。
+             * When the wrapper panel is resized, set the button's preferred size to match the panel.
+             *
+             * @param e the component event object
              */
             @Override
             public void componentResized(ComponentEvent e) {
@@ -220,9 +224,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 激活指定的导航按钮，更改按钮的背景、前景和边框颜色。
-     * 
-     * @param selected 要激活的按钮。
+     * Activates the specified tab button by updating its background,
+     * foreground, and border colors to indicate selection.
+     *
+     * @param selected the button to activate
      */
     private void activateTab(RoundedButton selected) {
         for (RoundedButton btn : tabButtons) {
@@ -246,7 +251,8 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 初始化内容面板，将不同的设置页面添加到内容面板中。
+     * Initializes the content panels by adding different settings pages
+     * to the contentPanel using the card layout.
      */
     // 内容面板系统 =============================================================
     private void initContentPanels() {
@@ -256,9 +262,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 构建个人资料设置面板，包含头像区域、表单区域和保存按钮。
-     * 
-     * @return 个人资料设置面板。
+     * Builds the "Profile" settings panel, including an avatar section,
+     * a form section, and a save button.
+     *
+     * @return the JPanel for profile settings
      */
     private JPanel buildProfilePanel() {
         ContentPanel panel = new ContentPanel();
@@ -277,9 +284,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 构建偏好设置面板，包含表单区域和保存按钮。
-     * 
-     * @return 偏好设置面板。
+     * Builds the "Preferences" settings panel, including form fields
+     * and a save button.
+     *
+     * @return the JPanel for preference settings
      */
     private JPanel buildPreferencesPanel() {
         ContentPanel panel = new ContentPanel();
@@ -296,9 +304,9 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 构建安全设置面板，包含安全项目区域。
-     * 
-     * @return 安全设置面板。
+     * Builds the "Security" settings panel, including security items.
+     *
+     * @return the JPanel for security settings
      */
     private JPanel buildSecurityPanel() {
         ContentPanel panel = new ContentPanel();
@@ -312,12 +320,13 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 通用内容面板类，用于创建设置页面的基础面板和操作按钮。
+     * A generic content panel used as the base for each settings page,
+     * providing layout and a method for creating action buttons.
      */
     // 通用组件模板 =============================================================
     private class ContentPanel extends JPanel {
         /**
-         * 构造方法，初始化内容面板的布局、边框和背景。
+         * Constructor that initializes the layout, border, and background of the content panel.
          */
         public ContentPanel() {
             setLayout(new BorderLayout(25, 25));
@@ -326,10 +335,11 @@ public class SettingsView extends BaseView {
         }
 
         /**
-         * 创建操作按钮，设置按钮的字体、背景、边框等属性，并添加鼠标事件监听器。
-         * 
-         * @param text 按钮显示的文本。
-         * @return 包装好的操作按钮组件。
+         * Creates an action button with specified text, sets its font,
+         * background, border styling, and attaches mouse event listeners.
+         *
+         * @param text the label text for the button
+         * @return a JComponent wrapping the action button
          */
         public JComponent createActionButton(String text) {
             RoundedButton btn = new RoundedButton(text);
@@ -349,9 +359,9 @@ public class SettingsView extends BaseView {
             // 添加鼠标事件监听器
             btn.addMouseListener(new MouseAdapter() {
                 /**
-                 * 鼠标进入按钮区域时，加深按钮背景颜色。
-                 * 
-                 * @param e 鼠标事件对象。
+                 * When the mouse enters the button area, darken the button background color.
+                 *
+                 * @param e the mouse event object
                  */
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -359,9 +369,9 @@ public class SettingsView extends BaseView {
                 }
 
                 /**
-                 * 鼠标离开按钮区域时，恢复按钮背景颜色。
-                 * 
-                 * @param e 鼠标事件对象。
+                 * When the mouse exits the button area, restore the button background color.
+                 *
+                 * @param e the mouse event object
                  */
                 @Override
                 public void mouseExited(MouseEvent e) {
@@ -378,9 +388,9 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建头像区域，绘制圆形头像并添加边框。
-     * 
-     * @return 包含头像的面板。
+     * Overrides paintComponent to draw a circular avatar image with a border.
+     *
+     * @param g the Graphics context
      */
     private JPanel createAvatarSection() {
         return new JPanel() {
@@ -390,9 +400,9 @@ public class SettingsView extends BaseView {
             }
 
             /**
-             * 重写绘制组件方法，绘制圆形头像和边框。
-             * 
-             * @param g 图形上下文对象。
+             * Overrides the component's paint method to draw a circular avatar image and its border.
+             *
+             * @param g the graphics context used for drawing
              */
             @Override
             protected void paintComponent(Graphics g) {
@@ -420,11 +430,12 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建表单区域，根据传入的字段和下拉框索引创建标签、输入框和下拉框。
-     * 
-     * @param fields          表单字段数组，每个元素包含标签和初始值。
-     * @param dropdownIndices 下拉框所在的索引数组。
-     * @return 包装在滚动面板中的表单区域。
+     * Creates a form section with labels, text fields, and dropdowns
+     * based on provided field definitions and dropdown indices.
+     *
+     * @param fields          a 2D array of label/value pairs
+     * @param dropdownIndices indices specifying which fields should be dropdowns
+     * @return a JScrollPane containing the assembled form panel
      */
     private JComponent createFormSection(String[][] fields, int... dropdownIndices) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 15, 15));
@@ -442,10 +453,11 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建安全项目区域，包含安全项目的标签、输入框和修改按钮。
-     * 
-     * @param items 安全项目数组，每个元素包含标签和描述。
-     * @return 包装在滚动面板中的安全项目区域。
+     * Creates the security items section with labels, input fields,
+     * and modify buttons for each security setting.
+     *
+     * @param items an array where each entry contains label and description
+     * @return a JScrollPane containing the security items panel
      */
     private JComponent createSecurityItems(String[][] items) {
         JPanel panel = new JPanel(new GridLayout(0, 1, 0, 15));
@@ -467,10 +479,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 工具方法，将组件包装在滚动面板中，并设置滚动面板的边框和背景。
-     * 
-     * @param view 要包装的组件。
-     * @return 包装好的滚动面板。
+     * Wraps a component in a JScrollPane and applies border and background settings.
+     *
+     * @param view the Component to wrap
+     * @return the configured JScrollPane
      */
     // 工具方法 ================================================================
     private JScrollPane wrapScrollPane(Component view) {
@@ -481,10 +493,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建表单字段标签，设置标签的字体和颜色。
-     * 
-     * @param text 标签显示的文本。
-     * @return 配置好的标签组件。
+     * Creates a JLabel for form fields with specified text, font, and color.
+     *
+     * @param text the text to display in the label
+     * @return the configured JLabel
      */
     private JLabel createFieldLabel(String text) {
         JLabel label = new JLabel(text);
@@ -496,10 +508,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建输入框，设置输入框的字体、边框和颜色。
-     * 
-     * @param value 输入框的初始值。
-     * @return 配置好的输入框组件。
+     * Creates a JTextField with specified initial value, font, border, and text color.
+     *
+     * @param value the initial text for the field
+     * @return the configured JTextField
      */
     private JTextField createInputField(String value) {
         JTextField field = new JTextField(value);
@@ -513,10 +525,10 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 创建下拉框，设置下拉框的字体、背景、边框和颜色。
-     * 
-     * @param options 下拉框的选项数组。
-     * @return 配置好的下拉框组件。
+     * Creates a JComboBox with specified options, font, border, and color settings.
+     *
+     * @param options array of dropdown options
+     * @return the configured JComboBox
      */
     private JComboBox<String> createDropdown(String[] options) {
         JComboBox<String> combo = new JComboBox<>(options);
@@ -531,11 +543,11 @@ public class SettingsView extends BaseView {
     }
 
     /**
-     * 工具方法，检查数组中是否包含指定的索引。
-     * 
-     * @param indices 索引数组。
-     * @param target  要检查的目标索引。
-     * @return 如果包含返回 true，否则返回 false。
+     * Utility method to check if an array of indices contains a target index.
+     *
+     * @param indices array of indices to search
+     * @param target  the index to check for
+     * @return true if target is found in indices, false otherwise
      */
     private boolean containsIndex(int[] indices, int target) {
         for (int i : indices) {

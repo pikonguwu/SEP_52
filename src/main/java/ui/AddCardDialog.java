@@ -6,13 +6,46 @@ import components.RoundedButton;
 import components.RoundedPanel;
 import constants.AppConstants;
 
+/**
+ * A custom dialog window used for adding details of a new card.
+ * It provides input fields for card number, cardholder name, expiry date,
+ * and initial balance. It includes input validation and confirms
+ * whether the user successfully added the card or cancelled.
+ */
 public class AddCardDialog extends JDialog {
+    
+    /**
+     * Text field for entering the card number.
+     */
     private JTextField cardNumberField;
+    
+    /**
+     * Text field for entering the cardholder name.
+     */
     private JTextField cardholderField;
+    
+    /**
+     * Text field for entering the card expiry date (MM/YY).
+     */
     private JTextField expiryDateField;
+    
+    /**
+     * Text field for entering the initial balance.
+     */
     private JTextField balanceField;
+    
+    /**
+     * Flag indicating whether the dialog was confirmed by the user
+     * (i.e., the "Add Card" button was clicked after successful validation).
+     */
     private boolean confirmed = false;
 
+    /**
+     * Constructs a new AddCardDialog with the specified parent frame.
+     * The dialog is modal and titled "Add New Card".
+     *
+     * @param parent The parent frame for this dialog.
+     */
     public AddCardDialog(Frame parent) {
         super(parent, "Add New Card", true);
         initUI();
@@ -20,6 +53,10 @@ public class AddCardDialog extends JDialog {
         setLocationRelativeTo(parent);
     }
 
+    /**
+     * Initializes the user interface components and layout for the dialog.
+     * Sets up the form fields, labels, panels, and buttons.
+     */
     private void initUI() {
         setLayout(new BorderLayout(10, 10));
         
@@ -89,6 +126,14 @@ public class AddCardDialog extends JDialog {
         add(mainPanel);
     }
     
+    /**
+     * Validates the input fields entered by the user.
+     * Checks for card number format (16 digits), non-empty cardholder name,
+     * expiry date format (MM/YY), and valid numeric balance.
+     * Displays error messages using JOptionPane if validation fails.
+     *
+     * @return true if all input fields are valid, false otherwise.
+     */
     private boolean validateInput() {
         // 验证卡号（16位数字）
         if (!cardNumberField.getText().matches("\\d{16}")) {
@@ -131,23 +176,55 @@ public class AddCardDialog extends JDialog {
         return true;
     }
     
+    /**
+     * Checks if the dialog was confirmed by the user.
+     * This method should be called after the dialog is closed.
+     *
+     * @return true if the user clicked the "Add Card" button after
+     *         successful validation, false if they clicked "Cancel"
+     *         or closed the dialog.
+     */
     public boolean isConfirmed() {
         return confirmed;
     }
     
+    /**
+     * Retrieves the card number entered in the text field.
+     * Should only be called if {@link #isConfirmed()} returns true.
+     *
+     * @return The entered card number string.
+     */
     public String getCardNumber() {
         return cardNumberField.getText();
     }
     
+    /**
+     * Retrieves the cardholder name entered in the text field.
+     * Should only be called if {@link #isConfirmed()} returns true.
+     *
+     * @return The entered cardholder name string.
+     */
     public String getCardholderName() {
         return cardholderField.getText();
     }
     
+    /**
+     * Retrieves the expiry date entered in the text field.
+     * Should only be called if {@link #isConfirmed()} returns true.
+     *
+     * @return The entered expiry date string (MM/YY format).
+     */
     public String getExpiryDate() {
         return expiryDateField.getText();
     }
     
+    /**
+     * Retrieves the initial balance entered in the text field as a double.
+     * Should only be called if {@link #isConfirmed()} returns true.
+     *
+     * @return The entered initial balance as a double.
+     */
     public double getBalance() {
         return Double.parseDouble(balanceField.getText());
     }
-} 
+}

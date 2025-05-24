@@ -10,19 +10,19 @@ import javax.swing.table.*;
 import java.awt.*;
 
 /**
- * CreditCardsView 类继承自 BaseView，用于展示信用卡相关信息的视图界面。
- * 该视图包含信用卡列表、统计图表以及添加新信用卡的表单。
+ * The CreditCardsView class extends BaseView and provides a view interface for displaying credit card-related information.
+ * This view includes a list of credit cards, statistical charts, and a form for adding new credit cards.
  */
 public class CreditCardsView extends BaseView {
     /**
-     * 饼图数据集，用于存储信用卡账户统计信息。
+     * Pie chart dataset, used to store credit card account statistics.
      */
     private DefaultPieDataset pieDataset;
 
     /**
-     * 获取视图的名称，用于在界面切换时标识该视图。
-     * 
-     * @return 视图的名称，固定为 "Credit Cards"
+     * Gets the name of the view, used to identify this view when switching between views.
+     *
+     * @return The name of the view, fixed as "Credit Cards".
      */
     @Override
     public String getViewName() {
@@ -30,72 +30,72 @@ public class CreditCardsView extends BaseView {
     }
 
     /**
-     * 初始化用户界面的方法，设置布局、添加标题、主内容区和添加卡片表单。
+     * Initializes the user interface, setting the layout, adding the title, main content area, and add card form.
      */
     @Override
     protected void initUI() {
-        // 设置布局管理器，组件间水平和垂直间距为 15 像素
+        // Set layout manager, horizontal and vertical gap is 15 pixels
         setLayout(new BorderLayout(15, 15));
-        // 设置面板的内边距，上、左、下、右均为 20 像素
+        // Set panel padding, top, left, bottom, right are all 20 pixels
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 顶部标题
-        // 创建标题标签，文本为 "My Cards"，左对齐
+        // Top title
+        // Create title label, text is "My Cards", left aligned
         JLabel titleLabel = new JLabel("My Cards", SwingConstants.LEFT);
-        // 设置标题字体为 Arial 加粗，字号 24
+        // Set title font to Arial Bold, size 24
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        // 将标题标签添加到面板的北部位置
+        // Add title label to the north position of the panel
         add(titleLabel, BorderLayout.NORTH);
 
-        // 主内容区
-        // 创建一个使用边界布局的面板，组件间水平和垂直间距为 15 像素
+        // Main content area
+        // Create a panel using BorderLayout, horizontal and vertical gap is 15 pixels
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
 
-        // 卡片列表和统计
-        // 创建一个使用 1x2 网格布局的面板，组件间水平和垂直间距为 15 像素
+        // Card list and statistics
+        // Create a panel using 1x2 GridLayout, horizontal and vertical gap is 15 pixels
         JPanel upperPanel = new JPanel(new GridLayout(1, 2, 15, 15));
-        // 添加信用卡列表面板
+        // Add credit card list panel
         upperPanel.add(createCardListPanel());
-        // 添加统计信息面板
+        // Add statistics panel
         upperPanel.add(createStatisticsPanel());
 
-        // 添加卡片表单
-        // 将包含卡片列表和统计信息的面板添加到主面板的中心位置
+        // Add card form
+        // Add the panel containing card list and statistics to the center position of the main panel
         mainPanel.add(upperPanel, BorderLayout.CENTER);
-        // 将添加卡片表单添加到主面板的南部位置
+        // Add the add card form to the south position of the main panel
         mainPanel.add(createAddCardForm(), BorderLayout.SOUTH);
 
-        // 将主面板添加到当前视图的中心位置
+        // Add the main panel to the center position of the current view
         add(mainPanel, BorderLayout.CENTER);
     }
 
     /**
-     * 创建信用卡列表面板，包含一个表格显示信用卡信息。
-     * 
-     * @return 包含信用卡列表表格的面板
+     * Creates the credit card list panel, containing a table to display credit card information.
+     *
+     * @return A panel containing the credit card list table.
      */
     private JPanel createCardListPanel() {
-        // 创建一个圆角面板，使用边界布局
+        // Create a rounded panel, using BorderLayout
         RoundedPanel panel = new RoundedPanel(new BorderLayout());
-        // 为面板设置一个标题边框，标题为 "Card List"
+        // Set a titled border for the panel, title is "Card List"
         panel.setBorder(new TitledBorder("Card List"));
 
-        // 定义表格的列名
+        // Define table column names
         String[] columns = {"Card Type", "Bank", "Card Number", "Name", "Actions"};
-        // 定义表格的初始数据
+        // Define table initial data
         Object[][] data = {
             {"Secondary", "DBL Bank", "**** 5600", "William", "View Details"},
             {"Secondary", "BRC Bank", "**** 7560", "Michel", "View Details"},
             {"Classic", "ABM Bank", "**** 1234", "Edward", "View Details"}
         };
 
-        // 创建一个表格，并重写 getColumnClass 方法，指定第 4 列的类型为 JButton
+        // Create a table and override the getColumnClass method to specify the type of the 4th column as JButton
         JTable table = new JTable(data, columns) {
             /**
-             * 获取指定列的数据类型。
-             * 
-             * @param column 列索引
-             * @return 列的数据类型，如果是第 4 列则返回 JButton 类，否则返回 Object 类
+             * Gets the data type of the specified column.
+             *
+             * @param column The column index.
+             * @return The data type of the column, returns JButton class if it is the 4th column, otherwise returns Object class.
              */
             @Override
             public Class<?> getColumnClass(int column) {
@@ -103,273 +103,273 @@ public class CreditCardsView extends BaseView {
             }
         };
 
-        // 设置表格的行高为 40 像素
+        // Set table row height to 40 pixels
         table.setRowHeight(40);
-        // 设置表格表头的字体为 Arial 加粗，字号 14
+        // Set table header font to Arial Bold, size 14
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        // 不显示表格的网格线
+        // Do not show table grid lines
         table.setShowGrid(false);
 
-        // 获取表格的第 4 列
+        // Get the 4th column of the table
         TableColumn actionColumn = table.getColumnModel().getColumn(4);
-        // 为该列设置自定义的单元格渲染器
+        // Set custom cell renderer for this column
         actionColumn.setCellRenderer(new ButtonRenderer());
-        // 为该列设置自定义的单元格编辑器
+        // Set custom cell editor for this column
         actionColumn.setCellEditor(new ButtonEditor(new JCheckBox()));
 
-        // 创建一个滚动面板，将表格添加到其中
+        // Create a scroll pane and add the table to it
         JScrollPane scrollPane = new JScrollPane(table);
-        // 去除滚动面板的边框
+        // Remove scroll pane border
         scrollPane.setBorder(null);
-        // 将滚动面板添加到圆角面板的中心位置
+        // Add the scroll pane to the center position of the rounded panel
         panel.add(scrollPane, BorderLayout.CENTER);
 
         return panel;
     }
 
     /**
-     * 创建统计信息面板，包含一个饼图显示信用卡账户统计信息。
-     * 
-     * @return 包含饼图的统计信息面板
+     * Creates the statistics panel, containing a pie chart to display credit card account statistics.
+     *
+     * @return A statistics panel containing the pie chart.
      */
     private JPanel createStatisticsPanel() {
-        // 创建一个圆角面板，使用边界布局
+        // Create a rounded panel, using BorderLayout
         RoundedPanel panel = new RoundedPanel(new BorderLayout());
-        // 为面板设置一个标题边框，标题为 "Card Account Statistics"
+        // Set a titled border for the panel, title is "Card Account Statistics"
         panel.setBorder(new TitledBorder("Card Account Statistics"));
 
-        // 初始化饼图数据集
+        // Initialize pie chart dataset
         pieDataset = new DefaultPieDataset();
-        // 向数据集中添加 DBL Bank 的数据
+        // Add DBL Bank data to the dataset
         pieDataset.setValue("DBL Bank", 35);
-        // 向数据集中添加 BRC Bank 的数据
+        // Add BRC Bank data to the dataset
         pieDataset.setValue("BRC Bank", 25);
-        // 向数据集中添加 ABM Bank 的数据
+        // Add ABM Bank data to the dataset
         pieDataset.setValue("ABM Bank", 20);
-        // 向数据集中添加 MCP Bank 的数据
+        // Add MCP Bank data to the dataset
         pieDataset.setValue("MCP Bank", 20);
 
-        // 创建一个饼图，不设置标题，使用指定的数据集，显示图例和工具提示
+        // Create a pie chart, no title, use the specified dataset, display legend and tooltips
         JFreeChart chart = ChartFactory.createPieChart(
             "", pieDataset, true, true, false
         );
 
-        // 获取饼图的绘图区域
+        // Get the pie chart plot area
         PiePlot plot = (PiePlot) chart.getPlot();
 
-        // 使用正确的方式设置颜色
+        // Set colors using the correct approach
         int index = 0;
-        // 遍历数据集中的键
+        // Iterate through keys in the dataset
         for (Object key : pieDataset.getKeys()) {
             switch (index) {
                 case 0:
-                    // 设置第 0 个扇区的颜色
+                    // Set color for the 0th section
                     plot.setSectionPaint(index, new Color(40, 80, 150));
                     break;
                 case 1:
-                    // 设置第 1 个扇区的颜色
+                    // Set color for the 1st section
                     plot.setSectionPaint(index, new Color(80, 120, 200));
                     break;
                 case 2:
-                    // 设置第 2 个扇区的颜色
+                    // Set color for the 2nd section
                     plot.setSectionPaint(index, new Color(120, 160, 220));
                     break;
                 case 3:
-                    // 设置第 3 个扇区的颜色
+                    // Set color for the 3rd section
                     plot.setSectionPaint(index, new Color(160, 200, 240));
                     break;
             }
             index++;
         }
 
-        // 设置绘图区域的背景颜色为 null
+        // Set plot area background color to null
         plot.setBackgroundPaint(null);
-        // 设置绘图区域的轮廓颜色为 null
+        // Set plot area outline color to null
         plot.setOutlinePaint(null);
 
-        // 创建一个图表面板，将饼图添加到其中
+        // Create a chart panel and add the pie chart to it
         ChartPanel chartPanel = new ChartPanel(chart);
-        // 将图表面板添加到圆角面板的中心位置
+        // Add the chart panel to the center position of the rounded panel
         panel.add(chartPanel, BorderLayout.CENTER);
 
         return panel;
     }
 
     /**
-     * 创建添加新信用卡的表单面板。
-     * 
-     * @return 包含添加新信用卡表单的面板
+     * Creates the form panel for adding a new credit card.
+     *
+     * @return A panel containing the add new credit card form.
      */
     private JPanel createAddCardForm() {
-        // 创建一个圆角面板
+        // Create a rounded panel
         RoundedPanel panel = new RoundedPanel();
-        // 为面板设置一个标题边框，标题为 "Add New Card"
+        // Set a titled border for the panel, title is "Add New Card"
         panel.setBorder(new TitledBorder("Add New Card"));
-        // 设置面板的布局为 2x1 的网格布局，组件间水平和垂直间距为 15 像素
+        // Set panel layout to 2x1 GridLayout, horizontal and vertical gap is 15 pixels
         panel.setLayout(new GridLayout(2, 1, 15, 15));
 
-        // 创建一个使用 2x4 网格布局的面板，用于放置表单字段
+        // Create a panel using 2x4 GridLayout, for placing form fields
         JPanel formPanel = new JPanel(new GridLayout(2, 4, 15, 15));
 
-        // 创建一个下拉框，包含信用卡类型选项
+        // Create a combo box containing credit card type options
         JComboBox<String> typeCombo = new JComboBox<>(new String[]{"Classic", "Premium", "Platinum"});
-        // 创建一个文本框，用于输入持卡人姓名
+        // Create a text field for entering cardholder name
         JTextField nameField = new JTextField();
-        // 创建一个文本框，用于输入信用卡号
+        // Create a text field for entering credit card number
         JTextField numberField = new JTextField();
-        // 创建一个文本框，用于输入信用卡有效期
+        // Create a text field for entering credit card expiry date
         JTextField expiryField = new JTextField();
 
-        // 将信用卡类型字段添加到表单面板
+        // Add credit card type field to the form panel
         formPanel.add(createFormField("Card Type:", typeCombo));
-        // 将持卡人姓名字段添加到表单面板
+        // Add cardholder name field to the form panel
         formPanel.add(createFormField("Name On Card:", nameField));
-        // 将信用卡号字段添加到表单面板
+        // Add credit card number field to the form panel
         formPanel.add(createFormField("Card Number:", numberField));
-        // 将信用卡有效期字段添加到表单面板
+        // Add credit card expiry date field to the form panel
         formPanel.add(createFormField("Expiration Date:", expiryField));
 
-        // 创建一个圆角按钮，文本为 "Add Card"
+        // Create a rounded button, text is "Add Card"
         RoundedButton addButton = new RoundedButton("Add Card");
-        // 设置按钮字体为 Arial 加粗，字号 16
+        // Set button font to Arial Bold, size 16
         addButton.setFont(new Font("Arial", Font.BOLD, 16));
-        // 设置按钮背景颜色
+        // Set button background color
         addButton.setBackground(new Color(40, 80, 150));
-        // 设置按钮文字颜色为白色
+        // Set button text color to white
         addButton.setForeground(Color.WHITE);
-        // 为按钮添加点击事件监听器，点击时调用 handleAddCard 方法
+        // Add action listener to the button, call handleAddCard method when clicked
         addButton.addActionListener(e -> handleAddCard());
 
-        // 将表单面板添加到圆角面板
+        // Add the form panel to the rounded panel
         panel.add(formPanel);
-        // 将添加按钮添加到圆角面板
+        // Add the add button to the rounded panel
         panel.add(addButton);
 
         return panel;
     }
 
     /**
-     * 创建表单字段面板，包含标签和对应的输入组件。
-     * 
-     * @param label 字段标签文本
-     * @param field 字段对应的输入组件
-     * @return 包含标签和输入组件的面板
+     * Creates a form field panel, containing a label and the corresponding input component.
+     *
+     * @param label The field label text.
+     * @param field The input component corresponding to the field.
+     * @return A panel containing the label and the input component.
      */
     private JPanel createFormField(String label, Component field) {
-        // 创建一个使用边界布局的面板，组件间水平和垂直间距为 10 像素
+        // Create a panel using BorderLayout, horizontal and vertical gap is 10 pixels
         JPanel panel = new JPanel(new BorderLayout(10, 10));
-        // 创建一个标签，显示指定的文本
+        // Create a label, displaying the specified text
         JLabel jLabel = new JLabel(label);
-        // 设置标签字体为 Arial 普通样式，字号 14
+        // Set label font to Arial Plain, size 14
         jLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // 如果输入组件是文本框，为其设置一个浅灰色的边框
+        // If the input component is a JTextField, set a light gray border for it
         if(field instanceof JTextField) {
             ((JTextField) field).setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
         }
 
-        // 将标签添加到面板的西部位置
+        // Add the label to the west position of the panel
         panel.add(jLabel, BorderLayout.WEST);
-        // 将输入组件添加到面板的中心位置
+        // Add the input component to the center position of the panel
         panel.add(field, BorderLayout.CENTER);
         return panel;
     }
 
     /**
-     * 处理添加信用卡的逻辑，显示一个消息对话框提示添加成功。
+     * Handles the logic for adding a credit card, displaying a message dialog indicating successful addition.
      */
     private void handleAddCard() {
-        // 显示一个消息对话框，提示信用卡添加成功
+        // Display a message dialog, indicating successful credit card addition
         JOptionPane.showMessageDialog(this, "Card Added Successfully!");
     }
 
     /**
-     * 自定义的表格单元格渲染器，用于渲染表格中的按钮列。
+     * Custom table cell renderer, used for rendering button columns in the table.
      */
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
         /**
-         * 构造方法，设置按钮背景可见。
+         * Constructor, sets button background visible.
          */
         public ButtonRenderer() {
             setOpaque(true);
         }
 
         /**
-         * 获取用于渲染表格单元格的组件。
-         * 
-         * @param table 包含该单元格的表格
-         * @param value 单元格的值
-         * @param isSelected 单元格是否被选中
-         * @param hasFocus 单元格是否有焦点
-         * @param row 单元格所在的行
-         * @param column 单元格所在的列
-         * @return 用于渲染该单元格的组件，即当前按钮
+         * Gets the component used for rendering the table cell.
+         *
+         * @param table      The table containing the cell.
+         * @param value      The value of the cell.
+         * @param isSelected Whether the cell is selected.
+         * @param hasFocus   Whether the cell has focus.
+         * @param row        The row of the cell.
+         * @param column     The column of the cell.
+         * @return The component used for rendering the cell, which is this button.
          */
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            // 设置按钮的文本为单元格的值
+            // Set button text to the cell value
             setText(value.toString());
-            // 设置按钮的背景颜色
+            // Set button background color
             setBackground(new Color(40, 80, 150));
-            // 设置按钮的文字颜色为白色
+            // Set button text color to white
             setForeground(Color.WHITE);
-            // 不绘制按钮的边框
+            // Do not paint button border
             setBorderPainted(false);
             return this;
         }
     }
 
     /**
-     * 自定义的表格单元格编辑器，用于编辑表格中的按钮列。
+     * Custom table cell editor, used for editing button columns in the table.
      */
     private static class ButtonEditor extends DefaultCellEditor {
         /**
-         * 用于编辑的按钮组件
+         * Button component used for editing.
          */
         private JButton button;
         /**
-         * 按钮显示的文本
+         * The text displayed on the button.
          */
         private String label;
 
         /**
-         * 构造方法，初始化按钮并添加点击事件监听器。
-         * 
-         * @param checkBox 用于初始化父类的复选框
+         * Constructor, initializes the button and adds an action listener.
+         *
+         * @param checkBox The checkbox used to initialize the superclass.
          */
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
-            // 创建一个按钮
+            // Create a button
             button = new JButton();
-            // 设置按钮背景可见
+            // Set button background visible
             button.setOpaque(true);
-            // 为按钮添加点击事件监听器，点击时触发编辑停止事件
+            // Add action listener to the button, trigger editing stopped event when clicked
             button.addActionListener(e -> fireEditingStopped());
         }
 
         /**
-         * 获取用于编辑表格单元格的组件。
-         * 
-         * @param table 包含该单元格的表格
-         * @param value 单元格的值
-         * @param isSelected 单元格是否被选中
-         * @param row 单元格所在的行
-         * @param column 单元格所在的列
-         * @return 用于编辑该单元格的组件，即按钮
+         * Gets the component used for editing the table cell.
+         *
+         * @param table      The table containing the cell.
+         * @param value      The value of the cell.
+         * @param isSelected Whether the cell is selected.
+         * @param row        The row of the cell.
+         * @param column     The column of the cell.
+         * @return The component used for editing the cell, which is the button.
          */
         public Component getTableCellEditorComponent(JTable table, Object value,
                 boolean isSelected, int row, int column) {
-            // 获取单元格的值作为按钮的文本
+            // Get the cell value as the button text
             label = (value == null) ? "" : value.toString();
-            // 设置按钮的文本
+            // Set the button text
             button.setText(label);
             return button;
         }
 
         /**
-         * 获取编辑后的单元格值。
-         * 
-         * @return 编辑后的单元格值，即按钮的文本
+         * Gets the edited cell value.
+         *
+         * @return The edited cell value, which is the button text.
          */
         public Object getCellEditorValue() {
             return label;

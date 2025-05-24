@@ -1,24 +1,40 @@
 package data;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import data.UserDataStorage;
 
 import java.io.File;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit test class for {@link UserDataStorage}.
+ * This class tests user registration and login authentication functionalities.
+ * Each test ensures that the user data file is reset before execution.
+ */
 public class UserDataStorageTest {
 
-    private static final String TEST_FILE = "users.txt"; // 默认文件
+    /** Path to the test user data file. */
+    private static final String TEST_FILE = "users.txt";
 
-    @Before
+    /**
+     * Sets up the test environment by deleting the test user file
+     * to avoid interference between test cases.
+     */
+    @BeforeEach
     public void setUp() {
-        // 每次测试前清空测试文件，避免干扰
         File file = new File(TEST_FILE);
         if (file.exists()) {
             file.delete();
         }
     }
 
+    /**
+     * Tests successful user registration and login.
+     * Ensures that the registered user can log in with correct credentials.
+     */
     @Test
     public void testRegisterAndLoginSuccess() {
         UserDataStorage.registerUser("testuser", "test123");
@@ -26,6 +42,10 @@ public class UserDataStorageTest {
         assertTrue(result);
     }
 
+    /**
+     * Tests login failure due to an incorrect username.
+     * Ensures that authentication fails when the username is not registered.
+     */
     @Test
     public void testLoginFailWrongUsername() {
         UserDataStorage.registerUser("userA", "abc");
@@ -33,6 +53,10 @@ public class UserDataStorageTest {
         assertFalse(result);
     }
 
+    /**
+     * Tests login failure due to an incorrect password.
+     * Ensures that authentication fails when the password is incorrect.
+     */
     @Test
     public void testLoginFailWrongPassword() {
         UserDataStorage.registerUser("userB", "correct");

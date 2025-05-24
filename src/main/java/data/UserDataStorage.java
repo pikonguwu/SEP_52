@@ -6,11 +6,23 @@ import java.util.List;
 
 import services.SecurityService;
 
+/**
+ * Handles user data storage and authentication operations.
+ * This class provides methods for user registration and authentication,
+ * storing user credentials in an encrypted format in a file.
+ */
 public class UserDataStorage {
 
+    /** File path for storing user information */
     private static final String FILE_PATH = "users.txt"; // 文件路径，保存用户信息
 
-    // 注册：将用户信息保存到文件
+    /**
+     * Registers a new user by saving their encrypted credentials to the file.
+     * The username and password are encrypted before being stored.
+     *
+     * @param username The username of the new user
+     * @param password The password of the new user
+     */
     public static void registerUser(String username, String password) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
             String encrypted = SecurityService.encrypt(username + ":" + password);
@@ -22,7 +34,14 @@ public class UserDataStorage {
         }
     }
 
-    // 登录：检查用户名和密码是否匹配
+    /**
+     * Authenticates a user by checking their credentials against stored data.
+     * Reads the encrypted user data from file and verifies the username and password.
+     *
+     * @param username The username to authenticate
+     * @param password The password to verify
+     * @return true if the credentials are valid, false otherwise
+     */
     public static boolean authenticateUser(String username, String password) {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
