@@ -91,7 +91,7 @@ Application functions
 
 After the application is launched, you will see the login interface:
 
-1. ** Login/Registration ** : An account needs to be registered when used for the first time
+1. "Login/Registration" : An account needs to be registered when used for the first time
 2. "Main Interface Functions" :
 - Dashboard: Overview of Financial Status
 - Transaction records: Manage income and expenditure
