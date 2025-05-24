@@ -16,20 +16,20 @@ import services.BaiduAIService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 /**
- * 投资分析服务类，负责生成投资分析报告
+ * Investment analysis service category, responsible for generating investment analysis reports
  */
 public class InvestmentAnalysisService {
 
     /**
-     * 生成并显示投资分析报告
-     * @param parentComponent 父组件，用于显示对话框
+     * Generate and display the investment analysis report
+     * @param parentComponent Parent component, used to display dialog boxes
      */
     public void generateInvestmentReport(Component parentComponent) {
         try {
-            // 1. 生成分析报告内容
+            // Generate the content of the analysis report
             String analysisReport = analyzeInvestments();
 
-            // 2. 显示分析报告
+            // 2. Display the analysis report
             showAnalysisReport(analysisReport, parentComponent);
 
             JOptionPane.showMessageDialog(parentComponent,
@@ -41,8 +41,8 @@ public class InvestmentAnalysisService {
     }
 
     /**
-     * 模拟调用大模型API分析投资数据
-     * @return 分析报告
+     * Simulate calling the large model API to analyze investment data
+     * @return Analysis report
      */
     private String analyzeInvestments() throws IOException {
         // 1. 准备要分析的数据
@@ -125,9 +125,9 @@ public class InvestmentAnalysisService {
     }
 
     /**
-     * 显示分析报告对话框
-     * @param report 分析报告内容
-     * @param parentComponent 父组件
+     * Display the analysis report dialog
+     * @param report Analysis report content
+     * @param parentComponent Parent component
      */
     private void showAnalysisReport(String report, Component parentComponent) {
         JDialog reportDialog = new JDialog((Frame)null, "Analysis Report", true);
@@ -160,9 +160,9 @@ public class InvestmentAnalysisService {
     }
 
     /**
-     * 将报告保存到文件
-     * @param report 报告内容
-     * @param parentComponent 父组件
+     * Save the report to a file
+     * @param report Report content
+     * @param parentComponent Parent component
      */
     private void saveReportToFile(String report, Component parentComponent) {
         JFileChooser fileChooser = new JFileChooser();
