@@ -164,7 +164,7 @@ Made by Zhimu Zhou
 Currency setting is made by Weijin He,Front-end page beautification is made by mjy,data protection is made by Jiayue Ma.
 
 ## Beautify the displayed page
-Uniform font is changed by Weijin He, backgroud colour and button size is changed by Jiayue Ma.
+Uniform font and backgroud colour are changed by Weijin He, sidebar colour and button size and Front-end page beautification are changed by Jiayue Ma.
 
 ## Complete Junit test of function
 Maded by Jiayue Ma and Weijin He.
@@ -178,11 +178,8 @@ Made by Jiayue Ma
 ## Add Javadocs for the added code snippets
 Made by Jiayue Ma,Weijin He and Zhimu Zhou
 
-## Write the report and complete UML class diagram
-Made by Jiayue Ma
-
-## Write the User menu
-Made by Weijin He
+## Write the report and complete UML class diagram and User menu
+Made by Jiayue Ma and Weijin He
 
 ## Write readme file to instruct how to set up or configure and run sofeware
 Made by Jiayue Ma and Weijin He
