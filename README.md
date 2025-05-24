@@ -161,13 +161,28 @@ The interface visualization synchronization is completed by Weiguang Wang.
 Made by Zhimu Zhou
 
 ## Currency setting and Data protection 
-Currency setting is made by Weijin He,data protection is made by Jiayue Ma.
+Currency setting is made by Weijin He,Front-end page beautification is made by mjy,data protection is made by Jiayue Ma.
 
 ## Beautify the displayed page
 Uniform font is changed by Weijin He, backgroud colour and button size is changed by Jiayue Ma.
 
-## Junit test of function
+## Complete Junit test of function
 Maded by Jiayue Ma and Weijin He.
 
 ## Update Junit test version and fix the version conflict
 Made by Zecheng Zuo
+
+## Modify the Chinese display on some pages
+Made by Jiayue Ma
+
+## Add Javadocs for the added code snippets
+Made by Jiayue Ma and Weijin He
+
+## Write the report and complete UML class diagram
+Made by Jiayue Ma
+
+## Write the User menu
+Made by Weijin He
+
+## Write readme file to instruct how to set up or configure and run sofeware
+Made by Jiayue Ma and Weijin He
