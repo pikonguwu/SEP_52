@@ -1,12 +1,15 @@
 package Controller;
 
 import Entity.Transaction;
-import org.junit.Test;
+// import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+// import static org.junit.Assert.*;
+// JUnit 5
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link TransactionController}.
@@ -16,7 +19,8 @@ import static org.junit.Assert.*;
 public class TransactionControllerTest {
 
     /**
-     * Tests that invoking {@link TransactionController#addTransaction(List, Transaction)}
+     * Tests that invoking
+     * {@link TransactionController#addTransaction(List, Transaction)}
      * adds the given transaction to the provided list.
      */
     @Test
@@ -32,7 +36,8 @@ public class TransactionControllerTest {
     }
 
     /**
-     * Tests that invoking {@link TransactionController#removeTransaction(List, Transaction)}
+     * Tests that invoking
+     * {@link TransactionController#removeTransaction(List, Transaction)}
      * removes the given transaction from the provided list.
      */
     @Test

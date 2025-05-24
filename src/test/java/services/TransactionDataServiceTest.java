@@ -1,11 +1,13 @@
 package services;
 
-import org.junit.Test;
+// import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import services.TransactionDataService;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+// import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test class for {@link TransactionDataService}.
@@ -30,8 +32,10 @@ public class TransactionDataServiceTest {
     }
 
     /**
-     * Tests automatic expense category recognition based on transaction description.
-     * Verifies that "buy grocery" is categorized under "Food" with the correct amount.
+     * Tests automatic expense category recognition based on transaction
+     * description.
+     * Verifies that "buy grocery" is categorized under "Food" with the correct
+     * amount.
      */
     @Test
     public void testCategoryRecognition() {

@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * The {@code TransactionsView} class extends {@code BaseView} to display the transactions view interface.
+ * The {@code TransactionsView} class extends {@code BaseView} to display the
+ * transactions view interface.
  * This view includes a title, card panel, expense chart, and transaction table,
- * and supports viewing transaction records with potential pagination (pagination is placeholder).
+ * and supports viewing transaction records with potential pagination
+ * (pagination is placeholder).
  */
 public class TransactionsView extends BaseView {
     /**
@@ -70,7 +72,8 @@ public class TransactionsView extends BaseView {
 
     /**
      * Initializes the user interface.
-     * Sets the layout, adds the title, card panel, expense chart, and transaction table.
+     * Sets the layout, adds the title, card panel, expense chart, and transaction
+     * table.
      * Also initializes table models and loads initial data.
      */
     @Override
@@ -89,7 +92,8 @@ public class TransactionsView extends BaseView {
         // Add title label to the north position
         add(titleLabel, BorderLayout.NORTH);
 
-        // Create main content panel, using a 1 row, 2 column grid layout with 15 pixel horizontal and vertical gaps
+        // Create main content panel, using a 1 row, 2 column grid layout with 15 pixel
+        // horizontal and vertical gaps
         RoundedPanel gridPanel = new RoundedPanel(new GridLayout(1, 2, 15, 15));
         // Add card panel wrapped with a title
         gridPanel.add(wrapComponent(createCardPanel(), "My Cards"));
@@ -212,7 +216,8 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * Creates the transaction table panel, including the title, tabbed pane, and pagination controls.
+     * Creates the transaction table panel, including the title, tabbed pane, and
+     * pagination controls.
      *
      * @return A panel containing the transaction tables and pagination controls.
      */
@@ -275,7 +280,8 @@ public class TransactionsView extends BaseView {
 
     /**
      * Creates the card panel, simulating bank card interfaces.
-     * It contains card representations, balance, number, holder, and expiry information,
+     * It contains card representations, balance, number, holder, and expiry
+     * information,
      * with horizontal scrolling and an "Add Card" function via a dialog.
      *
      * @return A panel containing the bank card information.
@@ -285,7 +291,7 @@ public class TransactionsView extends BaseView {
         JPanel cardsContainer = new JPanel();
         cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.X_AXIS));
         cardsContainer.setOpaque(false);
-        
+
         // Create scroll pane
         JScrollPane scrollPane = new JScrollPane(cardsContainer);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -293,7 +299,7 @@ public class TransactionsView extends BaseView {
         scrollPane.setBorder(null);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
-        
+
         // Create main panel
         RoundedPanel mainPanel = new RoundedPanel(new BorderLayout()) {
             @Override
@@ -308,13 +314,13 @@ public class TransactionsView extends BaseView {
             }
         };
         // Set card panel padding: 25 pixels top, left, bottom, right
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         // Set preferred size for the card panel to 320x200 pixels
-        mainPanel.setPreferredSize(new Dimension(320, 200)); 
+        mainPanel.setPreferredSize(new Dimension(320, 200));
 
         // Create default card
         RoundedPanel defaultCard = createCard();
-        
+
         // Create add button
         RoundedButton addCardButton = new RoundedButton("+ Add Card");
         addCardButton.setFont(new Font("Arial", Font.BOLD, 12));
@@ -324,49 +330,49 @@ public class TransactionsView extends BaseView {
         addCardButton.setFocusPainted(false);
         addCardButton.setContentAreaFilled(false);
         addCardButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Create button container panel for positioning the button
         JPanel buttonContainer = new JPanel(null); // Use absolute layout
         buttonContainer.setOpaque(false);
         buttonContainer.setPreferredSize(defaultCard.getPreferredSize());
         addCardButton.setBounds(
-            defaultCard.getPreferredSize().width - 100, // Right margin
-            10, // Top margin
-            100, // Button width
-            30  // Button height
+                defaultCard.getPreferredSize().width - 100, // Right margin
+                10, // Top margin
+                100, // Button width
+                30 // Button height
         );
         buttonContainer.add(addCardButton);
-        
+
         // Create layered pane for card and button overlay
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(defaultCard.getPreferredSize());
         layeredPane.add(defaultCard, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(buttonContainer, JLayeredPane.PALETTE_LAYER);
-        
+
         // Set bounds for the card and button container
         defaultCard.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
         buttonContainer.setBounds(0, 0, defaultCard.getPreferredSize().width, defaultCard.getPreferredSize().height);
-        
+
         // Add button event listener
         addCardButton.addActionListener(e -> {
             AddCardDialog dialog = new AddCardDialog((Frame) SwingUtilities.getWindowAncestor(this));
             dialog.setVisible(true);
-            
+
             if (dialog.isConfirmed()) {
                 // Get new card information
                 String cardNumber = dialog.getCardNumber();
                 String cardholderName = dialog.getCardholderName();
                 String expiryDate = dialog.getExpiryDate();
                 double balance = dialog.getBalance();
-                
+
                 // Create new card
                 RoundedPanel newCard = createCard(cardNumber, cardholderName, expiryDate, balance);
-                
+
                 // Create new card's button container
                 JPanel newButtonContainer = new JPanel(null);
                 newButtonContainer.setOpaque(false);
                 newButtonContainer.setPreferredSize(newCard.getPreferredSize());
-                
+
                 // Create new add button
                 RoundedButton newAddButton = new RoundedButton("+ Add Card");
                 newAddButton.setFont(addCardButton.getFont());
@@ -377,53 +383,52 @@ public class TransactionsView extends BaseView {
                 newAddButton.setContentAreaFilled(false);
                 newAddButton.setBorder(addCardButton.getBorder());
                 newAddButton.setBounds(
-                    newCard.getPreferredSize().width - 100,
-                    10,
-                    90,
-                    30
-                );
+                        newCard.getPreferredSize().width - 100,
+                        10,
+                        90,
+                        30);
                 newButtonContainer.add(newAddButton);
-                
+
                 // Create new card's layered pane
                 JLayeredPane newLayeredPane = new JLayeredPane();
                 newLayeredPane.setPreferredSize(newCard.getPreferredSize());
                 newLayeredPane.add(newCard, JLayeredPane.DEFAULT_LAYER);
                 newLayeredPane.add(newButtonContainer, JLayeredPane.PALETTE_LAYER);
-                
+
                 // Set bounds for the new card and button container
                 newCard.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
                 newButtonContainer.setBounds(0, 0, newCard.getPreferredSize().width, newCard.getPreferredSize().height);
-                
+
                 // Add new card to the container
                 cardsContainer.add(newLayeredPane);
                 cardsContainer.add(Box.createHorizontalStrut(15)); // Add spacing between cards
-                
+
                 // Refresh container
                 cardsContainer.revalidate();
                 cardsContainer.repaint();
-                
+
                 // Scroll to the newly added card
                 scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
-                
+
                 // Display success message
                 JOptionPane.showMessageDialog(this,
-                    "卡片添加成功！\n" + // Original Chinese comment
-                    "卡号: " + maskCardNumber(cardNumber) + "\n" + // Original Chinese comment
-                    "持卡人: " + cardholderName + "\n" + // Original Chinese comment
-                    "有效期: " + expiryDate + "\n" + // Original Chinese comment
-                    "余额: $" + String.format("%.2f", balance), // Original Chinese comment
-                    "成功", // Original Chinese comment
-                    JOptionPane.INFORMATION_MESSAGE);
+                        "卡片添加成功！\n" + // Original Chinese comment
+                                "卡号: " + maskCardNumber(cardNumber) + "\n" + // Original Chinese comment
+                                "持卡人: " + cardholderName + "\n" + // Original Chinese comment
+                                "有效期: " + expiryDate + "\n" + // Original Chinese comment
+                                "余额: $" + String.format("%.2f", balance), // Original Chinese comment
+                        "成功", // Original Chinese comment
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        
+
         // Add default card to the container
         cardsContainer.add(layeredPane);
-        
+
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         return mainPanel;
     }
-    
+
     /**
      * Creates a default card panel with predefined data.
      *
@@ -432,10 +437,11 @@ public class TransactionsView extends BaseView {
     private RoundedPanel createCard() {
         return createCard("3778****1234", "Eddy Cusuma", "12/22", 5756.00);
     }
-    
+
     /**
      * Creates a single card panel with the specified card details.
-     * Uses custom painting for the rounded background and arranges details using GridBagLayout.
+     * Uses custom painting for the rounded background and arranges details using
+     * GridBagLayout.
      *
      * @param cardNumber     The card number.
      * @param cardholderName The cardholder's name.
@@ -455,9 +461,9 @@ public class TransactionsView extends BaseView {
             }
         };
         // Set card panel padding: 25 pixels top, left, bottom, right
-        card.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25)); 
+        card.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         // Set preferred size for the card panel to 320x200 pixels
-        card.setPreferredSize(new Dimension(320, 200)); 
+        card.setPreferredSize(new Dimension(320, 200));
 
         // Main content container
         JPanel content = new JPanel(new GridBagLayout()) {
@@ -594,9 +600,10 @@ public class TransactionsView extends BaseView {
         card.add(content, BorderLayout.CENTER);
         return card;
     }
-    
+
     /**
-     * Masks the card number, showing only the first 4 and last 4 digits for longer numbers.
+     * Masks the card number, showing only the first 4 and last 4 digits for longer
+     * numbers.
      *
      * @param cardNumber The original card number string.
      * @return The masked card number string.
@@ -613,7 +620,8 @@ public class TransactionsView extends BaseView {
      * Creates a JLabel component for a segment of the card number.
      * Sets font, color, and padding for the segment text.
      *
-     * @param text     The text content for the card segment (e.g., "1234" or "****").
+     * @param text     The text content for the card segment (e.g., "1234" or
+     *                 "****").
      * @param fontSize The font size for the segment text.
      * @return A JLabel component displaying the card segment.
      */
@@ -645,7 +653,7 @@ public class TransactionsView extends BaseView {
         }
 
         // Create 3D bar chart
-        expenseChart = ChartFactory.createBarChart3D(
+        expenseChart = ChartFactory.createBarChart(
                 "", // Chart title
                 "Category", // Category axis label
                 "Amount ($)", // Value axis label
@@ -667,7 +675,8 @@ public class TransactionsView extends BaseView {
     }
 
     /**
-     * Updates the expense chart with the latest data from the transaction data service.
+     * Updates the expense chart with the latest data from the transaction data
+     * service.
      * Recreates the dataset based on current expense categories and their amounts.
      */
     private void updateExpenseChart() {
@@ -720,13 +729,15 @@ public class TransactionsView extends BaseView {
 
     /**
      * Adds a new transaction record to the view.
-     * This includes adding the transaction to the relevant tables and updating the expense chart.
+     * This includes adding the transaction to the relevant tables and updating the
+     * expense chart.
      * A random transaction ID and masked card number are generated for display.
      *
      * @param date        The date of the transaction.
      * @param description The description of the transaction.
      * @param amount      The transaction amount (e.g., "-$2,500" or "+$750").
-     * @param type        The conceptual type of the transaction (e.g., "Shopping", "Transfer", "Service").
+     * @param type        The conceptual type of the transaction (e.g., "Shopping",
+     *                    "Transfer", "Service").
      */
     public void addTransaction(String date, String description, String amount, String type) {
         try {
@@ -771,14 +782,17 @@ public class TransactionsView extends BaseView {
 
     /**
      * Removes a transaction record from the view based on matching details.
-     * Attempts to find and remove the transaction from the main and type-specific tables.
-     * Note: The underlying data service is not fully updated by this method in the current implementation.
+     * Attempts to find and remove the transaction from the main and type-specific
+     * tables.
+     * Note: The underlying data service is not fully updated by this method in the
+     * current implementation.
      * The expense chart is updated after removal from tables.
      *
      * @param date        The date of the transaction to remove.
      * @param description The description of the transaction to remove.
      * @param amount      The amount of the transaction to remove.
-     * @param type        The type of the transaction (used to determine which specific table to check).
+     * @param type        The type of the transaction (used to determine which
+     *                    specific table to check).
      */
     public void removeTransaction(String date, String description, String amount, String type) {
         try {
@@ -806,7 +820,8 @@ public class TransactionsView extends BaseView {
             }
 
             // Data in the data service should ideally be updated here
-            // However, TransactionDataService currently does not support removing single transactions
+            // However, TransactionDataService currently does not support removing single
+            // transactions
             // Therefore, all transaction data would need to be rebuilt
 
             // Update chart

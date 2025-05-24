@@ -1,12 +1,13 @@
 package services;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link SecurityService}.
  * <p>
- * Verifies that the encryption and decryption methods behave correctly under valid
+ * Verifies that the encryption and decryption methods behave correctly under
+ * valid
  * and invalid inputs.
  */
 public class SecurityServiceTest {
@@ -40,8 +41,10 @@ public class SecurityServiceTest {
     }
 
     /**
-     * Tests that invoking {@link SecurityService#decrypt(String)} on a clearly invalid
-     * ciphertext (containing illegal Base64 characters) returns null rather than throwing
+     * Tests that invoking {@link SecurityService#decrypt(String)} on a clearly
+     * invalid
+     * ciphertext (containing illegal Base64 characters) returns null rather than
+     * throwing
      * an exception.
      */
     @Test
