@@ -176,7 +176,7 @@ Made by Zecheng Zuo
 Made by Jiayue Ma
 
 ## Add Javadocs for the added code snippets
-Made by Jiayue Ma and Weijin He
+Made by Jiayue Ma,Weijin He and Zhimu Zhou
 
 ## Write the report and complete UML class diagram
 Made by Jiayue Ma
